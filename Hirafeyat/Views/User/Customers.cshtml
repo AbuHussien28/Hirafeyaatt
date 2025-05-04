@@ -1,0 +1,110 @@
+﻿@model X.PagedList.IPagedList<Hirafeyat.ViewModel.Admin.UserCustomerAdminViewModel>
+
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Customers</title>
+    <style>
+        .inactive-row {
+            background-color: #ffdddd;
+        }
+        .status-badge {
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <p>
+        <button id="batchActivate" class="btn btn-success">Activate Selected</button>
+        <button id="batchDeactivate" class="btn btn-danger">Deactivate Selected</button>
+    </p>
+    <table class="table table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th>
+                    <input type="checkbox" id="selectAll" />
+                </th>
+                <th>@Html.DisplayName("UserName")</th>
+                <th>@Html.DisplayName("Email")</th>
+                <th>@Html.DisplayName("Full Name")</th>
+                <th>@Html.DisplayName("Phone Number")</th>
+                <th>@Html.DisplayName("Profile Image")</th>
+                <th>@Html.DisplayName("Address")</th>
+                <th>@Html.DisplayName("Status")</th>
+                <th>@Html.DisplayName("Account Created Date")</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="@(item.IsActive ? "" : "inactive-row")">
+                    <td>
+                        <input type="checkbox" class="row-checkbox" data-userid="@item.UserName" />
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                    <td>@Html.DisplayFor(modelItem => item.FullName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ProfileImage))
+                        {
+                            <img src="@item.ProfileImage" alt="Profile" style="max-height: 50px;" />
+                        }
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Address)</td>
+                    <td>
+                        <span class="status-badge @(item.IsActive ? "status-active" : "status-inactive")">
+                            @(item.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </td>
+                    <td>@item.AccountCreatedDate?.ToString("yyyy-MM-dd")</td>
+                    @* <td class="action-buttons"> *@
+                    @*     @if (item.IsActive) *@
+                    @*     { *@
+                    @*         <form asp-action="ToggleUserStatus" method="post" style="display: inline;"> *@
+                    @*             <input type="hidden" name="userName" value="@item.UserName" /> *@
+                    @*             <input type="hidden" name="sourceAction" value="Customers" /> *@
+                    @*             <button type="submit" class="btn btn-sm btn-danger">Deactivate</button> *@
+                    @*         </form> *@
+                    @*     } *@
+                    @*     else *@
+                    @*     { *@
+                    @*         <form asp-action="ToggleUserStatus" method="post" style="display: inline;"> *@
+                    @*             <input type="hidden" name="userName" value="@item.UserName" /> *@
+                    @*             <input type="hidden" name="sourceAction" value="Customers" /> *@
+                    @*             <button type="submit" class="btn btn-sm btn-success">Activate</button> *@
+                    @*         </form> *@
+                    @*     } *@
+                    @*     <a asp-action="Edit" asp-route-id="@item.UserName" class="btn btn-sm btn-info">Edit</a> *@
+                    @*     <a asp-action="Details" asp-route-id="@item.UserName" class="btn btn-sm btn-secondary">Details</a> *@
+                    @* </td> *@
+                </tr>
+            }
+        </tbody>
+    </table>
+    @await Html.PartialAsync("_PaginationPartial", Model)
+
+    @section Scripts {
+        <script src="~/js/ActiveAccount.js"></script>
+    }
+</body>
+</html>

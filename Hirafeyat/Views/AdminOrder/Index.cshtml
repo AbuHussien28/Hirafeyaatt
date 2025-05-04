@@ -1,0 +1,168 @@
+﻿@model IPagedList<Hirafeyat.ViewModel.Admin.OrderManagement.AdminOrderViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    var currentStatus = ViewData["StatusFilter"]?.ToString();
+    var currentCategory = ViewData["CategoryFilter"]?.ToString();
+    var currentProduct = ViewData["ProductFilter"]?.ToString();
+    var currentStartDate = ViewData["StartDateFilter"]?.ToString();
+    var currentEndDate = ViewData["EndDateFilter"]?.ToString();
+    var statusOptions = Enum.GetValues(typeof(Hirafeyat.Models.OrderStatus))
+         .Cast<Hirafeyat.Models.OrderStatus>()
+         .Select(s => new SelectListItem
+         {
+             Text = s.ToString(),
+             Value = s.ToString(),
+             Selected = s.ToString() == currentStatus
+         })
+         .ToList();
+
+    // Add "All Orders" option
+    statusOptions.Insert(0, new SelectListItem("All Orders", ""));
+}
+
+@* <h1>Index</h1> *@
+@* <form method="get" asp-action="Index"> *@
+@*     <div class="form-group"> *@
+@*         <label>Filter by Status</label> *@
+
+@*         <select name="statusFilter" onchange="this.form.submit()" *@
+@*                 class="form-control" style="width:200px; display:inline-block;"> *@
+@*             @foreach (var option in statusOptions) *@
+@*             { *@
+@*                 <option value="@option.Value" selected="@option.Selected">@option.Text</option> *@
+@*             } *@
+@*         </select> *@
+@*     </div> *@
+@* </form> *@
+<h1>Order Management</h1>
+
+<form method="get" asp-action="Index">
+    <div class="form-row">
+        <div class="form-group col-md-2">
+            <label>Status</label>
+            <select name="statusFilter" class="form-control" onchange="this.form.submit()">
+                @foreach (var option in statusOptions)
+                {
+                    <option value="@option.Value" selected="@option.Selected">@option.Text</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group col-md-2">
+            <label>Category</label>
+            <input type="text" name="categoryFilter" class="form-control" value="@currentCategory" placeholder="Category" />
+        </div>
+
+        <div class="form-group col-md-2">
+            <label>Product</label>
+            <input type="text" name="productFilter" class="form-control" value="@currentProduct" placeholder="Product Name" />
+        </div>
+
+        <div class="form-group col-md-2">
+            <label>Start Date</label>
+            <input type="date" name="startDateFilter" class="form-control" value="@currentStartDate" />
+        </div>
+
+        <div class="form-group col-md-2">
+            <label>End Date</label>
+            <input type="date" name="endDateFilter" class="form-control" value="@currentEndDate" />
+        </div>
+
+        <div class="form-group col-md-2 align-self-end">
+            <button type="submit" class="btn btn-primary btn-block">Filter</button>
+        </div>
+        <div class="form-group col-md-2 align-self-end">
+            <a href="@Url.Action("Index")" class="btn btn-secondary btn-block">Clear Filters</a>
+        </div>
+    </div>
+</form>
+
+
+<br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @*     @Html.DisplayNameFor(model => model.CustomerFullName) *@
+                @Html.DisplayName("SellerFullName")
+            </th>
+            <th>
+            @*     @Html.DisplayNameFor(model => model.CustomerFullName) *@
+                @Html.DisplayName("CustomerFullName")
+            </th>
+            <th>
+            @*     @Html.DisplayNameFor(model => model.CustomerEmail) *@
+                @Html.DisplayName("CustomerEmail")
+            </th>
+            <th>
+            @*     @Html.DisplayNameFor(model => model.ProductTitle) *@
+                @Html.DisplayName("ProductTitle")
+            </th>
+            <th>
+            @*     @Html.DisplayNameFor(model => model.Quantity) *@
+                @Html.DisplayName("Quantity")
+            </th>
+            <th>
+            @*     @Html.DisplayNameFor(model => model.ProductPrice) *@
+                @Html.DisplayName("ProductPrice")
+            </th>
+            <th>
+            @*     @Html.DisplayNameFor(model => model.OrderDate) *@
+                @Html.DisplayName("OrderDate")
+            </th>
+            <th>
+            @*     @Html.DisplayNameFor(model => model.Status) *@
+                @Html.DisplayName("Status")
+            </th>
+            <th>
+            @*     @Html.DisplayNameFor(model => model.DeliveryAddress) *@
+                @Html.DisplayName("DeliveryAddress")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            @* <td> *@
+            @*     @Html.DisplayFor(modelItem => item.OrderId) *@
+            @* </td> *@
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellerFullName)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CustomerFullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CustomerEmail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryAddress)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@await Html.PartialAsync("_OrderAdminPaginationPartial", Model)

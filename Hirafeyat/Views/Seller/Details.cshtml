@@ -1,0 +1,28 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = "Details";
+    var isSoldOut = Model.Quentity == 0;
+}
+
+<h1>Details</h1>
+
+<div class="card @(isSoldOut ? "bg-danger text-white" : "")" style="width: 18rem;">
+    <img src="@Model.ImageUrl" class="card-img-top" alt="Product Image">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Title</h5>
+        <p class="card-text">@Model.Description</p>
+        <p class="card-text">@Model.Price.ToString("C")</p>
+        <p class="card-text">
+            @if (isSoldOut)
+            {
+                <strong>Sold Out</strong>
+            }
+            else
+            {
+                <strong>Quantity: @Model.Quentity</strong>
+            }
+        </p>
+        <a asp-action="Index" asp-controller="Seller" class="btn btn-primary">Back To List</a>
+    </div>
+</div>
