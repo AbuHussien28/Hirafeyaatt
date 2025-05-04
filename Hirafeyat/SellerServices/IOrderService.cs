@@ -1,16 +1,14 @@
 ﻿using Hirafeyat.Models;
+using Hirafeyat.SellerServices;
 
 namespace Hirafeyat.Services
 {
-    public interface IOrderService
+    public interface IOrderService : IRepository<Order>
     {
-        Order GetOrderById(int id);
-        //List<Order> GetAllOrders();
+
         List<Order> GetAllOrdersBySellerId(string stringId);
         void UpdateOrderStatus(int orderId, OrderStatus newStatus);
-       
-
-        void Save();
+        //public List<Order> getAllWithSeller();
 
 
     }

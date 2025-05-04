@@ -1,0 +1,56 @@
+﻿@* 3/5 *@
+
+@model Dictionary<string, List<Hirafeyat.Models.Product>>
+
+@foreach (var category in Model)
+{
+    <h3>@category.Key</h3>
+
+    <div class="row flex-row flex-nowrap overflow-auto mb-4" style="white-space: nowrap;">
+        @foreach (var product in category.Value)
+        {
+            <div class="card mx-2" style="width: 18rem; display: inline-block;">
+                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Title" style="height:200px; object-fit:cover;">
+                <div class="card-body">
+                    <h5 class="card-title">@product.Title</h5>
+                    <p class="card-text">@product.Description</p>
+                    <p class="card-text"><strong>Price:</strong> @product.Price.ToString("C")</p>
+                    <p class="card-text"><strong>Seller:</strong> @product.Seller?.FullName</p>
+
+                    <div class="d-flex justify-content-between">
+                        <form method="post" asp-action="AddToCart" asp-controller="Cart">
+                            <input type="hidden" name="productId" value="@product.Id" />
+                            <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+                        </form>
+
+                        <form method="post" asp-action="AddToFavourites" asp-controller="Favourite">
+                            <input type="hidden" name="productId" value="@product.Id" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                ❤️
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@* 3/5 *@
+
+<style>
+    .overflow-auto::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .overflow-auto::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+        .overflow-auto::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+</style>
+
+

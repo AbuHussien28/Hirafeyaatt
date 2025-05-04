@@ -2,20 +2,24 @@
 
 namespace Hirafeyat.SellerServices
 {
-    public class CategoryService:ICategoryRepository
+    public class CategoryService : ICategoryRepository
     {
         HirafeyatContext context;
-        public CategoryService(HirafeyatContext context) { 
+        public CategoryService(HirafeyatContext context)
+        {
             this.context = context;
         }
-        public List<Category> getAll() { 
+        public List<Category> getAll()
+        {
             return context.Categories.ToList();
         }
-        public Category getById(int id) {
+        public Category getById(int id)
+        {
             return context.Categories.Where(c => c.Id == id).FirstOrDefault();
         }
 
-        public void add(Category category) { 
+        public void add(Category category)
+        {
             context.Categories.Add(category);
         }
         public void update(Category category)
@@ -23,7 +27,8 @@ namespace Hirafeyat.SellerServices
             context.Categories.Update(category);
         }
 
-        public void delete(Category category) { 
+        public void delete(Category category)
+        {
             context.Categories.Remove(category);
         }
         public int save()
