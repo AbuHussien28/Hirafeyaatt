@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Change Profile Photo";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="ChangeProfilePhoto" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label>Select a new profile image</label>
+        <input type="file" name="ProfileImage" class="form-control mb-2" required />
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </div>
+</form>

@@ -31,9 +31,9 @@ namespace Hirafeyat
             })
                 .AddEntityFrameworkStores<HirafeyatContext>()
                 .AddDefaultTokenProviders();
+
             //regester service
             builder.Services.AddScoped<IOrderService, OrderService>();
-
             builder.Services.AddScoped<IProductRepository, ProductService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryService>();
 
