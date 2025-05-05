@@ -1,0 +1,10 @@
+﻿@model List<Hirafeyat.Models.Category>
+
+@{
+    Layout = null;
+}
+
+@foreach(var cat in Model)
+{
+    <a href="#" class="nav-item nav-link">@cat.Name</a>
+}
