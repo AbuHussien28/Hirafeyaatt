@@ -39,10 +39,6 @@ namespace Hirafeyat.Controllers
             return View("~/Views/Customer/Index.cshtml", viewModel);
         }
 
-        //public IActionResult Index()
-        //{
-        //    List<Product> products = productRepository.GetAllWithSeller();
-        //    return View("~/Views/Customer/Index.cshtml",products);
-        //}
+       
     }
 }
