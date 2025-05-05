@@ -11,6 +11,7 @@ using Hirafeyat.ViewModel.sellerVM;
 
 namespace Hirafeyat.Controllers
 {
+    [Authorize(Roles = "Seller")]
     public class SellerController : Controller
     {
         private readonly IProductRepository ProductRepository;
@@ -182,7 +183,6 @@ namespace Hirafeyat.Controllers
         //------------------------------------------------------------------------------
 
 
-        [Authorize(Roles="Seller")]
         public IActionResult Orders() 
         {
             var sellerid = User.FindFirstValue(ClaimTypes.NameIdentifier);
