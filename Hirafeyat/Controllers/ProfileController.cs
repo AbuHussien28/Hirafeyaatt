@@ -13,82 +13,128 @@ namespace Hirafeyat.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IProductRepository productRepository;
-        public ProfileController(UserManager<ApplicationUser> userManager , IProductRepository productRepo)
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        public ProfileController(UserManager<ApplicationUser> userManager, IProductRepository productRepo, SignInManager<ApplicationUser> _signInManager)
         {
             _userManager = userManager;
             productRepository = productRepo;
+            this._signInManager = _signInManager;
         }
 
+        // 3/5
         [HttpGet]
-        public async Task<IActionResult> ChangeProfileInfo()
+        [Authorize]
+        public IActionResult ChangeProfilePhoto()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                ChangeProfileViewModel userFromDb = new ChangeProfileViewModel()
-                {
-                    FullName = user.FullName,
-                    Address = user.Address,
-                    Email = user.Email,
-                    PhoneNumber = user.PhoneNumber,
-                    ProfileImageUrl = user.ProfileImage
-                };
-                
-                return View(userFromDb);
-            }
+            return View();
         }
-
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Seller,Customer,Admin")]
-        public async Task<IActionResult> ChangeProfileInfo(ChangeProfileViewModel userFromReq)
+        [Authorize]
+        public async Task<IActionResult> ChangeProfilePhoto(IFormFile ProfileImage)
         {
-            if (ModelState.IsValid)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            if (ProfileImage != null && ProfileImage.Length > 0)
             {
-                var user = await _userManager.GetUserAsync(User);
-                if (user == null) return NotFound();
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Imges");
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + ProfileImage.FileName;
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                user.FullName = userFromReq.FullName;
-                user.Address = userFromReq.Address;
-                user.Email = userFromReq.Email;
-                user.PhoneNumber = userFromReq.PhoneNumber;
-
-                if (userFromReq.ProfileImage != null && userFromReq.ProfileImage.Length > 0)
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Imges");
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + userFromReq.ProfileImage.FileName;
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await userFromReq.ProfileImage.CopyToAsync(fileStream);
-                    }
-
-                    user.ProfileImage = "/Imges/" + uniqueFileName;
+                    await ProfileImage.CopyToAsync(stream);
                 }
 
-                var result = await _userManager.UpdateAsync(user);
-                if (result.Succeeded)
-                {
-                    productRepository.save();
-                    return RedirectToAction("Index", "Home");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
+                user.ProfileImage = "/Imges/" + uniqueFileName;
+                await _userManager.UpdateAsync(user);
             }
 
-            var currentUser = await _userManager.GetUserAsync(User);
-            userFromReq.ProfileImageUrl = currentUser?.ProfileImage;
-
-            return View(userFromReq);
+            return RedirectToAction("Index", "Home");
         }
+        //----------------------------------------------------------
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> ChangePersonalInfo()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            var model = new ChangeProfileViewModel
+            {
+                FullName = user.FullName,
+                Address = user.Address,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePersonalInfo(ChangeProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            user.FullName = model.FullName;
+            user.Address = model.Address;
+            user.Email = model.Email;
+            user.PhoneNumber = model.PhoneNumber;
+
+            await _userManager.UpdateAsync(user);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        //----------------------------------------------------------
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+        {
+            if (newPassword != confirmPassword)
+            {
+                ModelState.AddModelError("", "Passwords do not match");
+                return View();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
+
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+
+            if (result.Succeeded)
+            {
+                ViewBag.SuccessMessage = "Password changed successfully";
+                return View("Index", "Home");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View();
+        }
+
+
+        // 3/5
+
+
     }
 }

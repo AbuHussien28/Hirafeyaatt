@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hirafeyat.SellerServices
 {
-    public class OrderService: IOrderService
+    public class OrderService : IOrderService
     {
         private readonly HirafeyatContext _context;
 
@@ -14,7 +14,13 @@ namespace Hirafeyat.SellerServices
             this._context = context;
         }
 
-        public Order GetOrderById(int id) 
+
+        public List<Order> getAll()
+        {
+            return _context.Orders.ToList();
+        }
+
+        public Order getById(int id)
         {
             return _context.Orders
                     .Where(o => o.Id == id)
@@ -22,34 +28,53 @@ namespace Hirafeyat.SellerServices
                     .ThenInclude(p => p.Category)
                     .Include(o => o.Customer)
                     .FirstOrDefault();
-        
+
         }
+
+
+
+
+        public void add(Order item)
+        {
+            _context.Orders.Add(item);
+        }
+        public void update(Order item)
+        {
+            _context.Orders.Update(item);
+        }
+        public void delete(Order item)
+        {
+            _context.Orders.Remove(item);
+        }
+
         public List<Order> GetAllOrdersBySellerId(string seller_id)
         {
             return _context.Orders
                .Where(o => o.Product.SellerId == seller_id)
-               .Include(o => o.Product) 
-                   .ThenInclude(p => p.Category) 
-               .Include(o => o.Customer) 
+               .Include(o => o.Product)
+                   .ThenInclude(p => p.Category)
+               .Include(o => o.Customer)
                .ToList();
         }
-  
-     
-        public void UpdateOrderStatus(int orderId, OrderStatus newStatus) 
+
+
+        public void UpdateOrderStatus(int orderId, OrderStatus newStatus)
         {
-         var order = _context.Orders.Find(orderId);
-            if (order != null) 
+            var order = _context.Orders.Find(orderId);
+            if (order != null)
             {
                 order.Status = newStatus;
                 _context.Orders.Update(order);
             }
 
         }
-        public void Save() 
+
+
+        public int save()
         {
-        
-         _context.SaveChanges();
-        
+
+            return _context.SaveChanges();
+
         }
 
     }

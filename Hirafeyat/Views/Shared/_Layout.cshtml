@@ -1,5 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManage
+
+    @* 3/5 *@
+@{
+    var currentUser = SignInManage.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
+    var UserProfileImageUrl = currentUser?.ProfileImage ?? "/imges/default-profile.png";
+    var UserName = currentUser?.UserName ?? "User";
+}
+@* 3/5 *@
 
 <!DOCTYPE html>
 <html lang="en">
@@ -49,12 +58,14 @@
                            </li> 
                           
                         }
-                        <li class="nav-item">
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="LogOut">LogOut</a>
-                            }
-                        </li>
+                        @if (SignInManage.IsSignedIn(User) && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="NewRole">NewRole</a>
+                            </li>
+                        }
+
+
                     </ul>
                 </div>
             </div>
@@ -75,5 +86,65 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+
+    @* 3/5 *@
+    @if (SignInManage.IsSignedIn(User))
+    {
+        <!-- Trigger Button -->
+        <button id="profileToggle" class="btn btn-light position-fixed" style="top:10px; right:20px; z-index:9999;">
+            <i class="fa fa-user"></i>
+        </button>
+
+        <!-- Sidebar Panel -->
+        <div id="profileSidebar" class="profile-sidebar">
+            <div class="text-center">
+                <h5>@UserName</h5>
+                <img src="@UserProfileImageUrl" class="img-thumbnail rounded-circle" style="width: 200px;" />
+                <a href="/Profile/ChangeProfilePhoto" class="btn btn-success">Change Profile Photo</a>
+                <hr />
+                <a href="/Profile/ChangePersonalInfo" class="btn btn-primary">Change Personal Info</a>
+                <a href="/Profile/ChangePassword" class="btn btn-danger mt-1">Change Password</a>
+                <form asp-controller="Account" asp-action="LogOut" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Log Out</button>
+                </form>
+
+            </div>
+        </div>
+    }
+
+
+    <style>
+        .profile-sidebar {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100%;
+            background: #fff;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease-in-out;
+            padding: 20px;
+            z-index: 9998;
+        }
+
+            .profile-sidebar.active {
+                right: 0;
+            }
+
+        .btn-success,
+        .btn-primary,
+        .btn-danger {
+            color: white !important;
+        }
+    </style>
+
+    <script>
+        document.getElementById("profileToggle").addEventListener("click", function () {
+            document.getElementById("profileSidebar").classList.toggle("active");
+        });
+    </script>
+
+    @* 3/5 *@
 </body>
 </html>

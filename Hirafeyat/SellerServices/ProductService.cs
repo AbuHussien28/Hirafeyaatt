@@ -1,11 +1,13 @@
 ﻿using Hirafeyat.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hirafeyat.SellerServices
 {
-    public class ProductService:IProductRepository
+    public class ProductService : IProductRepository
     {
         HirafeyatContext context;
-        public ProductService(HirafeyatContext context) {
+        public ProductService(HirafeyatContext context)
+        {
             this.context = context;
         }
         public List<Product> getAll()
@@ -13,21 +15,26 @@ namespace Hirafeyat.SellerServices
             return context.Products.ToList();
         }
 
-        public Product getById(int id) {
+        public Product getById(int id)
+        {
             return context.Products.Where(p => p.Id == id).FirstOrDefault();
         }
 
-        public Product getByCatId(int id) {
+        public Product getByCatId(int id)
+        {
             return context.Products.Where(p => p.CategoryId == id).FirstOrDefault();
         }
 
-        public void add(Product product) { 
+        public void add(Product product)
+        {
             context.Products.Add(product);
         }
-        public void update(Product product) { 
+        public void update(Product product)
+        {
             context.Products.Update(product);
         }
-        public void delete(Product product) { 
+        public void delete(Product product)
+        {
             context.Products.Remove(product);
         }
 
@@ -38,6 +45,11 @@ namespace Hirafeyat.SellerServices
         public List<Product> getProductsBySellerId(string sellerId)
         {
             return context.Products.Where(p => p.SellerId == sellerId).ToList();
+        }
+
+        public List<Product> GetAllWithSeller()
+        {
+            return context.Products.Include(p => p.Seller).ToList();
         }
     }
 }
