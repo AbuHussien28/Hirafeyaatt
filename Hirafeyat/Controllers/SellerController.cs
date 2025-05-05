@@ -8,6 +8,7 @@ using Hirafeyat.ViewModel;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Hirafeyat.ViewModel.sellerVM;
+using Hirafeyat.OtherServices;
 
 namespace Hirafeyat.Controllers
 {
@@ -43,21 +44,8 @@ namespace Hirafeyat.Controllers
         {
             if (ModelState.IsValid == true) {
                 string imageUrl = null;
-                if(productfromModel.Image != null && productfromModel.Image.Length > 0)
-                {
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(),
-                        "wwwroot", "Imges");
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + productfromModel.Image.FileName;
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await productfromModel.Image.CopyToAsync(fileStream);
-                    }
-
-                    imageUrl = "/Imges/" + uniqueFileName;
-
-                    var product = new Product
+                var product = new Product
                     {
                         Title = productfromModel.Title,
                         Description = productfromModel.Description,
@@ -70,7 +58,11 @@ namespace Hirafeyat.Controllers
                     };
                     try
                     {
-                        ProductRepository.add(product);
+                    if (productfromModel.Image != null)
+                    {
+                        product.ImageUrl = ImageUploader.UploadImage(productfromModel.Image, "Imges");
+                    }
+                    ProductRepository.add(product);
                         ProductRepository.save();
                         return RedirectToAction("Index");
                     }
@@ -80,7 +72,7 @@ namespace Hirafeyat.Controllers
 
                     }
                 }
-            }
+            
             
             ViewData["catList"] = CategoryRepository.getAll();
             return View(productfromModel);
@@ -130,17 +122,7 @@ namespace Hirafeyat.Controllers
 
                 if (model.Image != null && model.Image.Length > 0)
                 {
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(),
-                        "wwwroot", "Imges");
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Image.FileName;
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.Image.CopyToAsync(fileStream);
-                    }
-
-                    product.ImageUrl = "/Imges/" + uniqueFileName;
+                        product.ImageUrl = ImageUploader.UploadImage(model.Image, "Imges");
                 }
 
                 ProductRepository.update(product);
