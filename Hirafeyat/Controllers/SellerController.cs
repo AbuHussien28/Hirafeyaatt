@@ -165,6 +165,7 @@ namespace Hirafeyat.Controllers
         //------------------------------------------------------------------------------
 
 
+        [Authorize(Roles="Seller")]
         public IActionResult Orders() 
         {
             var sellerid = User.FindFirstValue(ClaimTypes.NameIdentifier);

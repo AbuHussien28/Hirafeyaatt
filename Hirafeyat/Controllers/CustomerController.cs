@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hirafeyat.Controllers
 {
-    [Authorize(Roles = "Customer")]
+   // [Authorize(Roles = "Customer")]
     public class CustomerController : Controller
     {
         private readonly ICategoryRepository categoryRepository;
