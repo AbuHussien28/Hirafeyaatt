@@ -21,7 +21,7 @@ namespace Hirafeyat
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<HirafeyatContext>(options =>
              options.UseSqlServer(builder.Configuration.GetConnectionString("CS")));
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => 
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
@@ -34,8 +34,15 @@ namespace Hirafeyat
 
             //regester service
             builder.Services.AddScoped<IOrderService, OrderService>();
-            builder.Services.AddScoped<IProductRepository, ProductService>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryService>();
+
+            builder.Services.AddScoped<AdminRepository.IProductRepository, AdminRepository.ProductRepository>();
+            builder.Services.AddScoped<AdminServices.IProductService, AdminServices.ProductService>();
+
+            builder.Services.AddScoped<AdminRepository.ICategoryRepository, AdminRepository.CategoryRepository>();
+            builder.Services.AddScoped<AdminServices.ICategoryService, AdminServices.CategoryService>();
+
+            builder.Services.AddScoped<SellerServices.IProductRepository, SellerServices.ProductService>();
+            builder.Services.AddScoped<SellerServices.ICategoryRepository, SellerServices.CategoryService>();
 
 
 
@@ -45,14 +52,14 @@ namespace Hirafeyat
             builder.Services.AddScoped<IOrderAdminService, OrderAdminService>();
             builder.Services.AddTransient<IEmailSender, EmailSender>();
             builder.Services.AddAuthentication()
-    .AddGoogle(options =>
-    {
-        options.ClientId = clientId;
-        options.ClientSecret = clientSecret;
-        options.CallbackPath = "/signin-google";
+            .AddGoogle(options =>
+            {
+                options.ClientId = clientId;
+                options.ClientSecret = clientSecret;
+                options.CallbackPath = "/signin-google";
+           
+            });
 
-    });
-            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
