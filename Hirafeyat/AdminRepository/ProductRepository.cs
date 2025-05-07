@@ -3,6 +3,7 @@ using Hirafeyat.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using X.PagedList.Extensions;
 
 namespace Hirafeyat.AdminRepository
 {
@@ -27,14 +28,39 @@ namespace Hirafeyat.AdminRepository
             return await _context.Products.Include(p => p.Category).Include(p => p.Seller).FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IPagedList<Product>> GetProductsAsync(int page, int pageSize, string? sellerId = null)
+        public async Task<IPagedList<Product>> GetProductsAsync(int page, int pageSize, string? sellerId = null )
         {
-            var query = _context.Products.Include(p => p.Seller).AsQueryable();
+            var query = _context.Products.Include(p => p.Category).Include(p => p.Seller).AsQueryable();
 
             if (!string.IsNullOrEmpty(sellerId))
             {
-                query = query.Where(p => p.Seller.Id == sellerId);
+               query = _context.Products.Include(p => p.Category).Include(p => p.Seller).Where(p => p.SellerId == sellerId).AsQueryable();
             }
+
+
+            var totalCount = await query.CountAsync();
+            var productsData = await query
+                .OrderByDescending(x => x.Title)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new StaticPagedList<Product>(productsData, page, pageSize, totalCount);
+        }
+
+        public async Task<IPagedList<Product>> GetProductsByNameAsync(int page, int pageSize, string? name = null)
+        {
+            var query = _context.Products.Include(p => p.Category).Include(p => p.Seller).AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = _context.Products.Include(p => p.Category).Include(p => p.Seller).Where(p => p.Seller.FullName.ToLower().Contains(name.ToLower())).AsQueryable();
+            }
+            //var productsData = _context.Products
+            //    .Include(p => p.Seller)
+            //    .Where(p => string.IsNullOrEmpty(name) || p.Title.Contains(name))
+            //    .OrderBy(p => p.Title)
+            //    .ToPagedList(page, pageSize);
 
             var totalCount = await query.CountAsync();
             var productsData = await query
@@ -53,8 +79,7 @@ namespace Hirafeyat.AdminRepository
             if (!string.IsNullOrEmpty(sellerId))
             {
                 query = query.Where(p => p.Seller.Id == sellerId);
-            }
-
+            } 
             return await query.CountAsync();
         }
 

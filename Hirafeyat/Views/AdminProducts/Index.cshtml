@@ -3,19 +3,15 @@
 
 @{
     ViewBag.Title = "Manage Products";
-    int pageNumber = ViewBag.PageNumber;
-    int pageSize = ViewBag.PageSize;
-    int totalProducts = ViewBag.TotalProducts;
-    int totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
     Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<partial name="~/Views/AdminProducts/_NavPartial.cshtml"/> 
+<partial name="~/Views/AdminProducts/_NavPartial.cshtml" />
 
 <style>
     .action-btns {
-        text-align: center; 
+        text-align: center;
     }
 
     .btn-action {
@@ -33,52 +29,35 @@
         }
 </style>
 
-<div class="container-fluid">
-    <div class="py-3 px-xl-5">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Seller</th>
-                    <th class="text-center">Actions</th> <!-- توسيط عنوان العمود -->
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var product in Model)
-                {
-                    <tr>
-                        <td>@product.Title</td>
-                        <td>@product.Price.ToString("N2")</td>
-                        <td>@product.Seller?.FullName</td>
-                        <td class="action-btns">
-                            <div class="d-flex justify-content-center">
-                                <!-- توسيط الأزرار باستخدام flexbox -->
-                                <a class="btn btn-info btn-action" href="@Url.Action("Details", new { id = product.Id })">
-                                    <i class="fas fa-eye"></i> Details
-                                </a>
-                                <a class="btn btn-warning btn-action" href="@Url.Action("Edit", new { id = product.Id })">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
-                                <a class="btn btn-danger btn-action" href="@Url.Action("Delete", new { id = product.Id })">
-                                    <i class="fas fa-trash-alt"></i> Delete
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
-    <div class="py-3 px-xl-5">
-        <ul class="pagination">
-            @for (int i = 1; i <= totalPages; i++)
-            {
-                <li class="page-item @(i == pageNumber ? "active" : "")">
-                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = i, pageSize = pageSize, sellerId = ViewBag.SellerId })">@i</a>
-                </li>
-            }
-        </ul>
-    </div>
+<div id="results">
+    @await Html.PartialAsync("~/Views/AdminProducts/_SearchResultsPartial.cshtml", Model)
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        function loadData(name, page = 1) {
+            $.ajax({
+                url: '@Url.Action("AjaxSearch", "Product")',
+                type: 'GET',
+                data: { name: name, pageNumber: page },
+                success: function (result) {
+                    $("#results").html(result);
+                }
+            });
+        }
+
+        $("#searchBtn").click(function () {
+            var name = $("#searchInput").val();
+            loadData(name);
+        });
+
+        $(document).on("click", ".pagination a", function (e) {
+            e.preventDefault();
+            var name = $("#searchInput").val();
+            var url = $(this).attr("href");
+            var page = new URLSearchParams(url.split('?')[1]).get("pageNumber");
+            loadData(name, page);
+        });
+    });
+</script>

@@ -12,6 +12,7 @@ using System.Data.Entity;
 using Hirafeyat.ViewModel.Admin;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
+using Microsoft.IdentityModel.Tokens;
 namespace Hirafeyat.Controllers.Admin
 {
     //[Authorize(Roles = "Admin")]
@@ -38,20 +39,32 @@ namespace Hirafeyat.Controllers.Admin
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10, string? sellerId = null)
         {
             var products = await _productService.GetProductsAsync(pageNumber, pageSize, sellerId);
-            var totalProducts = await _productService.GetTotalProductsCountAsync(sellerId);
 
             if (products == null || !products.Any())
             {
                 ViewBag.Message = "No products available.";
             }
 
+            var totalProducts = await _productService.GetTotalProductsCountAsync(sellerId);
+
             ViewBag.TotalProducts = totalProducts;
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
             ViewBag.SellerId = sellerId;
-
-            return View("/Views/AdminProducts/Index.cshtml", products);
+            return View("~/Views/AdminProducts/Index.cshtml", products);
         }
+        
+        [HttpGet]
+        [Route("/Admin/Product/AjaxSearch")]
+        public async Task<IActionResult> AjaxSearch([FromQuery]string name, int pageNumber = 1, int pageSize = 10)
+        {
+            var products = await _productService.GetProductsByNameAsync(pageNumber,pageSize,name);
+
+            ViewBag.Name = name;
+
+            return PartialView("~/Views/AdminProducts/_SearchResultsPartial.cshtml", products);
+        }
+
 
         [Route("/Admin/Product/Details/{id}")]
         public async Task<IActionResult> Details(int id)
@@ -91,9 +104,10 @@ namespace Hirafeyat.Controllers.Admin
         }
 
         #region Search
-        //public async IActionResult Search ()
+        //public async IActionResult Search()
         //{
 
+        //    return View();
         //}
         #endregion
     }

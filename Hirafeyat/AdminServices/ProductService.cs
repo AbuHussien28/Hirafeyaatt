@@ -39,6 +39,13 @@ namespace Hirafeyat.AdminServices
 
             return await _productRepository.GetProductsAsync(pageNumber, pageSize, sellerId);
         }
+        public async Task<IPagedList<Product>> GetProductsByNameAsync(int pageNumber, int pageSize, string? name = null)
+        {
+            if (pageNumber < 1) throw new ArgumentException("Page number must be greater than 0");
+            if (pageSize < 1) throw new ArgumentException("Page size must be greater than 0");
+
+            return await _productRepository.GetProductsByNameAsync(pageNumber, pageSize, name);
+        }
 
         public async Task<int> GetTotalProductsCountAsync(string? sellerId = null)
         {
