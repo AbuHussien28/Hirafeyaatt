@@ -65,7 +65,6 @@ namespace Hirafeyat.Controllers.Admin
             return PartialView("~/Views/AdminProducts/_SearchResultsPartial.cshtml", products);
         }
 
-
         [Route("/Admin/Product/Details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
@@ -104,11 +103,14 @@ namespace Hirafeyat.Controllers.Admin
         }
 
         #region Search
-        //public async IActionResult Search()
-        //{
 
-        //    return View();
-        //}
+        [HttpGet]
+        [Route("/Admin/Product/Board")]
+        public async Task<IActionResult> Board([FromQuery]string name, int pageNumber = 1, int pageSize = 10)
+        {
+
+            return PartialView("~/Views/AdminProducts/DashBoard.cshtml");
+        }
         #endregion
     }
 }
