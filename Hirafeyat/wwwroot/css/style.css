@@ -1,4 +1,4 @@
-/******* Bootstrap Theming ********/
+﻿/******* Bootstrap Theming ********/
 /*!
  * Bootstrap v4.5.3 (https://getbootstrap.com/)
  * Copyright 2011-2020 The Bootstrap Authors
@@ -9582,3 +9582,10 @@ a.text-dark:hover, a.text-dark:focus {
     transform: translateY(-15px);
   }
 }
+
+
+.fixed-image {
+    height: 350px; /* يمكنك تعديل الرقم حسب التصميم */
+    object-fit: cover;
+}
+

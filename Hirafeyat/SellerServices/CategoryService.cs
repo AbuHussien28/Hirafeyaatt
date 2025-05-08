@@ -31,6 +31,7 @@ namespace Hirafeyat.SellerServices
         {
             context.Categories.Remove(category);
         }
+
         public int save()
         {
             return context.SaveChanges();

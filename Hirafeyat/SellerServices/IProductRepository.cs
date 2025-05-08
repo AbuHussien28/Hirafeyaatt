@@ -8,5 +8,7 @@ namespace Hirafeyat.SellerServices
         List<Product> getProductsBySellerId(string sellerId);
 
         List<Product> GetAllWithSeller();
+        //IQueryable<Product> GetAllProducts();
+
     }
 }

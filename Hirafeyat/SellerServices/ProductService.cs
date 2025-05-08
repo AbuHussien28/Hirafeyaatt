@@ -12,7 +12,7 @@ namespace Hirafeyat.SellerServices
         }
         public List<Product> getAll()
         {
-            return context.Products.ToList();
+            return context.Products.Include(p=>p.Category).ToList();
         }
 
         public Product getById(int id)
@@ -51,5 +51,8 @@ namespace Hirafeyat.SellerServices
         {
             return context.Products.Include(p => p.Seller).ToList();
         }
+
+
+
     }
 }

@@ -1,77 +1,45 @@
 ﻿@model List<Hirafeyat.Models.Product>
 @{
-	Layout = null;
+    Layout = null;
 }
 
+<div class="container">
+    <div class="row justify-content-center">
+        @foreach (var pro in Model)
+        {
+            <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                <div class="card product-item border-0 mb-4">
 
-@* <!DOCTYPE html> *@
-@* <html lang="en"> *@
+                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                        <img class="img-fluid w-100 fixed-image" src="@pro.ImageUrl" alt="@pro.Title">
 
-@* <head> *@
-@*     <meta charset="utf-8"> *@
-@*     <title>Hirafyat - Bootstrap Shop Template</title> *@
-@*     <meta content="width=device-width, initial-scale=1.0" name="viewport"> *@
-@*     <meta content="Free HTML Templates" name="keywords"> *@
-@*     <meta content="Free HTML Templates" name="description"> *@
+                        <!-- زر الفيفورت بشكل مضبوط -->
+                        <form method="post" asp-action="AddToFavourites" asp-controller="Favourite" class="position-absolute" style="top: 10px; right: 10px;">
+                            <input type="hidden" name="productId" value="@pro.Id" />
+                            <button type="submit" class="btn btn-sm text-danger bg-white rounded-circle shadow-sm p-1" title="Add to Favourites">
+                                ❤️
+                            </button>
+                        </form>
+                    </div>
 
-@*     <!-- Favicon --> *@
-@*     <link href="img/favicon.ico" rel="icon"> *@
+                    <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                        <h6 class="text-truncate mb-3">@pro.Category.Name</h6>
+                        <div class="d-flex justify-content-center">
+                            <h6>$@(@pro.Price - 200)</h6>
+                            <h6 class="text-muted ml-2"><del>$@pro.Price</del></h6>
+                        </div>
+                    </div>
 
-@*     <!-- Google Web Fonts --> *@
-@*     <link rel="preconnect" href="https://fonts.gstatic.com"> *@
-@*     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> *@
-
-@*     <!-- Font Awesome --> *@
-@*     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet"> *@
-
-@*     <!-- Libraries Stylesheet --> *@
-@*     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet"> *@
-
-@*     <!-- Customized Bootstrap Stylesheet --> *@
-@*     <link href="~/css/style.css" rel="stylesheet"> *@
-@* </head> *@
-
-@* <body> *@
-<div class="row px-xl-5 pb-3">
-@foreach(var pro in Model)
-{
-        <div class="col-lg-6 col-md-6 col-sm-12 pb-1">
-            <div class="card product-item border-0 mb-4 ">
-               
-                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                    <img class="img-fluid w-100" src="@pro.ImageUrl" alt="">
-                </div>
-                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                    <h6 class="text-truncate mb-3">@pro.Category.Name</h6>
-                    <div class="d-flex justify-content-center">
-                        <h6>$@(@pro.Price - 200)</h6><h6 class="text-muted ml-2"><del>$@pro.Price</del></h6>
-
+                    <div class="card-footer d-flex justify-content-between bg-light border">
+                        <a asp-action="details" asp-controller="home" asp-route-Id="@pro.Id" class="btn btn-sm text-dark p-0">
+                            <i class="fas fa-eye text-primary mr-1"></i>View Detail
+                        </a>
+                        <a asp-action="login" asp-controller="account" class="btn btn-sm text-dark p-0">
+                            <i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart
+                        </a>
                     </div>
                 </div>
-                <div class="card-footer d-flex justify-content-between bg-light border">
-                    <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                    <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
-                </div>
             </div>
-        </div>
-
-	   
-
-}
-
-@* </div> *@
-@*     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> *@
-@*     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script> *@
-@*     <script src="lib/easing/easing.min.js"></script> *@
-@*     <script src="lib/owlcarousel/owl.carousel.min.js"></script> *@
-
-@*     <!-- Contact Javascript File --> *@
-@*     <script src="mail/jqBootstrapValidation.min.js"></script> *@
-@*     <script src="mail/contact.js"></script> *@
-
-@*     <!-- Template Javascript --> *@
-@*     <script src="~/js/main.js"></script> *@
-@* </body> *@
-
-@* </html> *@
-
+        }
+    </div>
+</div>
