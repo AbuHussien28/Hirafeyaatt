@@ -1,11 +1,14 @@
 using Hirafeyat.AdminRepository;
 using Hirafeyat.AdminServices;
+using Hirafeyat.CustomersPaymentsRepo;
+using Hirafeyat.CustomersPaymentsSerives;
 using Hirafeyat.EmailServices;
 using Hirafeyat.Models;
 using Hirafeyat.SellerServices;
 using Hirafeyat.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 namespace Hirafeyat
 {
@@ -34,7 +37,7 @@ namespace Hirafeyat
 
             //regester service
             builder.Services.AddScoped<IOrderService, OrderService>();
-            builder.Services.AddScoped<IProductRepository, ProductService>();
+            builder.Services.AddScoped<IProductRepository, SellerServices.ProductService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryService>();
 
 
@@ -44,6 +47,8 @@ namespace Hirafeyat
             builder.Services.AddScoped<IOrderRepositoryAdmin, OrderRepositoryAdmin>();
             builder.Services.AddScoped<IOrderAdminService, OrderAdminService>();
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddAuthentication()
     .AddGoogle(options =>
     {
@@ -52,7 +57,7 @@ namespace Hirafeyat
         options.CallbackPath = "/signin-google";
 
     });
-            
+            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -72,11 +77,7 @@ namespace Hirafeyat
                  //pattern: "{controller=Role}/{action=NewRole}")
                  // pattern: "{controller=User}/{action=Sellers}")
                  //pattern: "{controller=AdminOrder}/{action=Index}")
-                 //pattern: "{controller=User}/{action=Customers}")
-                 //pattern: "{controller=Home}/{action=Index}/{id?}")
-                // pattern: "{controller=Home}/{action=Index}")
-                //.WithStaticAssets();
-
+                .WithStaticAssets();
             app.Run();
         }
     }
