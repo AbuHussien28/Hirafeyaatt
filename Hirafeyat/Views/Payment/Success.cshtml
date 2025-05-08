@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewData["Title"] = "Success";
+}
+
+
+
+<h2 style="color: green;">Payment Successful 🎉</h2>
+<p>Thank you for your payment!</p>
+<p>Order ID: @TempData["OrderId"]</p>
+<p>Amount Paid: @TempData["Amount"] USD</p>
+<a href="@Url.Action("Index", "Home")" class="btn btn-primary">Return to Home</a>
