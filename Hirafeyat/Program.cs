@@ -42,7 +42,7 @@ namespace Hirafeyat
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IOrderRepositoryAdmin, OrderRepositoryAdmin>();
-            //builder.Services.AddScoped<IOrderAdminService, OrderAdminService>();
+            builder.Services.AddScoped<IOrderAdminService, OrderAdminService>();
             builder.Services.AddTransient<IEmailSender, EmailSender>();
             builder.Services.AddAuthentication()
     .AddGoogle(options =>
