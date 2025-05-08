@@ -4,6 +4,7 @@ using Hirafeyat.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hirafeyat.Migrations
 {
     [DbContext(typeof(HirafeyatContext))]
-    partial class HirafeyatContextModelSnapshot : ModelSnapshot
+    [Migration("20250507152114_addEmailColumn")]
+    partial class addEmailColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,8 +224,8 @@ namespace Hirafeyat.Migrations
 
                     b.ToTable("Orders");
                 });
+
             modelBuilder.Entity("Hirafeyat.Models.OrderItem", b =>
-            modelBuilder.Entity("Hirafeyat.Models.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -238,21 +241,7 @@ namespace Hirafeyat.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StripePaymentIntentId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
@@ -260,7 +249,6 @@ namespace Hirafeyat.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderItems");
-                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Hirafeyat.Models.Product", b =>
@@ -514,17 +502,6 @@ namespace Hirafeyat.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("Hirafeyat.Models.Payment", b =>
-                {
-                    b.HasOne("Hirafeyat.Models.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Hirafeyat.Models.Product", b =>

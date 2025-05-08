@@ -1,0 +1,172 @@
+﻿@model Hirafeyat.ViewModel.CheckoutViewModel
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Hirafyat - Checkout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="img/favicon.ico" rel="icon">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="~/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container-fluid bg-secondary mb-2">
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 100px">
+            <h1 class="font-weight-semi-bold text-uppercase mb-3">Checkout</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid pt-5">
+        <form asp-action="PlaceOrder" method="post">
+            @Html.AntiForgeryToken()
+            <div class="row px-xl-5">
+                <!-- Billing Info -->
+                <div class="col-lg-6">
+                    <div class="mb-4">
+                        <h4 class="font-weight-semi-bold mb-4">Billing Details</h4>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label asp-for="FullName"></label>
+                                <input asp-for="FullName" class="form-control" placeholder="John Doe" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12 form-group">
+                                <label asp-for="Email"></label>
+                                <input asp-for="Email" class="form-control" placeholder="example@email.com" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12 form-group">
+                                <label asp-for="PhoneNumber"></label>
+                                <input asp-for="PhoneNumber" class="form-control" placeholder="+123 456 789" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12 form-group">
+                                <label asp-for="Address"></label>
+                                <input asp-for="Address" class="form-control" placeholder="123 Main Street" />
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Total -->
+                <div class="col-lg-3">
+                    <div class="card border-secondary mb-4">
+                        <div class="card-header bg-secondary border-0">
+                            <h4 class="font-weight-semi-bold m-0">Order Total</h4>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="font-weight-medium mb-3">Cart</h5>
+                            <ul class="list-unstyled">
+                                @foreach (var item in ViewBag.CartItems as List<Hirafeyat.Models.CartItem>)
+                                {
+                                    <li>@item.Product.Title x @item.Quantity = @(@item.Product.Price * item.Quantity) EGP</li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="card-footer border-secondary bg-transparent">
+                            <div class="d-flex justify-content-between mt-2">
+                                <h5 class="font-weight-bold">Total</h5>
+                                <h5 class="font-weight-bold">@ViewBag.TotalPrice EGP</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Options -->
+                <div class="col-lg-3">
+                    <div class="card border-secondary mb-4">
+                        <div class="card-header bg-secondary border-0">
+                            <h4 class="font-weight-semi-bold m-0">Payment</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="paypal">
+                                    <label class="custom-control-label" for="paypal">Paypal</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="directcheck">
+                                    <label class="custom-control-label" for="directcheck">Direct Check</label>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="banktransfer">
+                                    <label class="custom-control-label" for="banktransfer">Bank Transfer</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-secondary bg-transparent">
+                            <button class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3" type="submit">Place Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+@* @model Hirafeyat.ViewModel.CheckoutViewModel *@
+
+@* <h3>Checkout</h3> *@
+@* <form asp-action="PlaceOrder" method="post"> *@
+@*     <div class="form-group"> *@
+@*         <label>Full Name</label> *@
+@*         <input asp-for="FullName" class="form-control" /> *@
+@*         <span asp-validation-for="FullName" class="text-danger"></span> *@
+@*     </div> *@
+
+@*     <div class="form-group"> *@
+@*         <label>Address</label> *@
+@*         <input asp-for="Address" class="form-control" /> *@
+@*         <span asp-validation-for="Address" class="text-danger"></span> *@
+@*     </div> *@
+
+@*     <div class="form-group"> *@
+@*         <label>Phone Number</label> *@
+@*         <input asp-for="PhoneNumber" class="form-control" /> *@
+@*         <span asp-validation-for="PhoneNumber" class="text-danger"></span> *@
+@*     </div> *@
+
+@*     <div class="form-group"> *@
+@*         <label>Email</label> *@
+@*         <input asp-for="Email" class="form-control" /> *@
+@*         <span asp-validation-for="Email" class="text-danger"></span> *@
+@*     </div> *@
+
+@*     <h4>Your Cart</h4> *@
+@*     <ul> *@
+@*         @foreach (var item in ViewBag.CartItems as List<Hirafeyat.Models.CartItem>) *@
+@*         { *@
+@*             <li>@item.Product.Title (@item.Quantity) - @item.Product.Price x @item.Quantity = @(@item.Product.Price * @item.Quantity)</li> *@
+@*         } *@
+@*     </ul> *@
+
+@*     <h5><strong>Total:</strong> @ViewBag.TotalPrice</h5> *@
+
+@*     <button type="submit" class="btn btn-success">Place Order</button> *@
+@* </form> *@
