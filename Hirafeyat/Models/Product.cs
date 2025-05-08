@@ -8,6 +8,7 @@ namespace Hirafeyat.Models
     }
     public class Product
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
@@ -16,7 +17,7 @@ namespace Hirafeyat.Models
         public string Description { get; set; }
 
         [Required]
-        public decimal Price { get; set; }
+        public int Price { get; set; }
         [Display(Name = "Product Image")]
 
         public string ImageUrl { get; set; }

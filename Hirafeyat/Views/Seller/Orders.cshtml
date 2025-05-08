@@ -6,87 +6,54 @@
 
 <h1>Orders</h1>
 
-
-<p>
-   
-</p>
-<h1>
-</h1>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Product)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Customer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th></th>
+            <th>Order ID</th>
+            <th>Customer Name</th>
+            <th>Order Date</th>
+            <th>Status</th>
+            <th>Address</th>
+            <th>Update Status</th>
+            <th>Details</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @item.Product?.Title
-            </td>
-            <td>
-                @item.Customer?.FullName
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                    <form asp-action="UpdateOrderStatus" method="post" asp-route-orderId="@item.Id">
-                        <select name="newStatus" class="form form-control">
-                            @foreach (var status in Enum.GetValues(typeof(Hirafeyat.Models.OrderStatus)))
-                            {
-                                <option value="@status" selected="@(item.Status == (OrderStatus)status ? "selected" : null)">
-                                    @status
-                                </option>
-                            }
-                           
-                        </select>
-                        <button type="submit" class="btn btn-primary btn-sm">save</button>
-                    </form>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.FullName</td>
+                <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                <td>@item.Status</td>
+                <td>@item.Address</td>
+                <td>
+                    @if (item.Status == OrderStatus.Cancelled || item.Status == OrderStatus.Delivered)
+                    {
+                        <form asp-action="RemoveOrder" method="post" asp-route-orderId="@item.Id" onsubmit="return confirm('Are you sure you want to remove this order?');">
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="UpdateOrderStatus" method="post" asp-route-orderId="@item.Id">
+                            <select name="newStatus" class="form-control">
+                                @foreach (var status in Enum.GetValues(typeof(Hirafeyat.Models.OrderStatus)))
+                                {
+                                    <option value="@status" selected="@(item.Status == (OrderStatus)status ? "selected" : null)">
+                                        @status
+                                    </option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                        </form>
+                    }
+                </td>
 
-            </td>
-            <td>
-                    <a asp-action="OrderDetail" asp-route-id="@item.Id" class="btn btn-info">details</a>
-            </td>
-            @* <td> *@
-            @*     @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) | *@
-            @*     @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) | *@
-            @*     @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ }) *@
-            @* </td> *@
-        </tr>
-}
+                <td>
+                    <a asp-action="OrderDetail" asp-route-id="@item.Id" class="btn btn-info">Details</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

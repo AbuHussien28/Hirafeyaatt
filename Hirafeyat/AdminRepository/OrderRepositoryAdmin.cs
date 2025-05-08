@@ -19,7 +19,7 @@ namespace Hirafeyat.AdminRepository
         {
             var query = _context.Orders
              .Include(o => o.Customer)
-             .Include(o => o.Product).ThenInclude(p => p.Seller)
+             //.Include(o => o.Product).ThenInclude(p => p.Seller)
         .AsQueryable();
 
             // 2. إضافة فلترة لو موجودة
@@ -35,7 +35,7 @@ namespace Hirafeyat.AdminRepository
             // Apply category filter if provided
             if (!string.IsNullOrEmpty(categoryFilter))
             {
-                query = query.Where(x => x.Product.Category.Name.Contains(categoryFilter));
+                //query = query.Where(x => x.Product.Category.Name.Contains(categoryFilter));
             }
 
             // Apply date filters if provided (startDate and endDate)
@@ -51,7 +51,7 @@ namespace Hirafeyat.AdminRepository
             // Apply product filter if provided (based on product title or any other field)
             if (!string.IsNullOrEmpty(productFilter))
             {
-                query = query.Where(x => x.Product.Title.Contains(productFilter));
+                //query = query.Where(x => x.Product.Title.Contains(productFilter));
             }
             // 3. حساب العدد الكلي بعد الفلترة
             var totalCount = await query.CountAsync();

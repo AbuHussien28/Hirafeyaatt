@@ -23,11 +23,13 @@ namespace Hirafeyat.SellerServices
         public Order getById(int id)
         {
             return _context.Orders
-                    .Where(o => o.Id == id)
-                    .Include(o => o.Product)
-                    .ThenInclude(p => p.Category)
-                    .Include(o => o.Customer)
-                    .FirstOrDefault();
+        .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Product)
+                .ThenInclude(p => p.Category)
+        .Include(o => o.Customer)
+        .FirstOrDefault(o => o.Id == id);
+
+            
 
         }
 
@@ -50,9 +52,9 @@ namespace Hirafeyat.SellerServices
         public List<Order> GetAllOrdersBySellerId(string seller_id)
         {
             return _context.Orders
-               .Where(o => o.Product.SellerId == seller_id)
-               .Include(o => o.Product)
-                   .ThenInclude(p => p.Category)
+               //.Where(o => o.Product.SellerId == seller_id)
+               //.Include(o => o.Product)
+                   //.ThenInclude(p => p.Category)
                .Include(o => o.Customer)
                .ToList();
         }

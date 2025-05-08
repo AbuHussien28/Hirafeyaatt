@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hirafeyat.Controllers
 {
-   // [Authorize(Roles = "Customer")]
+    [Authorize(Roles = "Customer")]
     public class CustomerController : Controller
     {
         private readonly ICategoryRepository categoryRepository;
@@ -32,13 +32,15 @@ namespace Hirafeyat.Controllers
             foreach (var category in categories)
             {
                 var productsInCategory = productRepository.GetAllWithSeller()
-                    .Where(p => p.CategoryId == category.Id).ToList();
+                    .Where(p => p.CategoryId == category.Id
+                    //&& p.Status == productStatus.Approved
+                    ).ToList();
                 viewModel[category.Name] = productsInCategory;
             }
 
             return View("~/Views/Customer/Index.cshtml", viewModel);
         }
 
-       
+
     }
 }

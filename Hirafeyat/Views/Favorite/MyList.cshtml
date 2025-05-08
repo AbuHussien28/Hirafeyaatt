@@ -1,0 +1,64 @@
+﻿@model List<Favorite>
+
+<h3>My Favorites ❤️</h3>
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <img src="@item.Product.ImageUrl" class="card-img-top" style="height:200px; object-fit:cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">@item.Product.Title</h5>
+                    <p>@item.Product.Description</p>
+                    <p><strong>Price:</strong> @item.Product.Price.ToString("C")</p>
+
+                    <!-- فورم إزالة من المفضلة -->
+                    <form method="post" asp-area="Customer" asp-controller="Favorite" asp-action="RemoveFromFavourites">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button class="btn btn-outline-danger">Remove</button>
+                    </form>
+
+                    <!-- فورم الإضافة للسلة -->
+                    <form method="post" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart">
+                        <input type="hidden" name="productId" value="@item.Product.Id" />
+                        <button class="btn btn-success">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+
+
+
+@* @model List<Favorite> *@
+
+@* <h3>My Favorites❤️</h3> *@
+@* <div class="row"> *@
+@*     @foreach (var item in Model) *@
+@*     { *@
+@*         <div class="col-md-4"> *@
+@*             <div class="card mb-3"> *@
+@*                 <img src="@item.Product.ImageUrl" class="card-img-top" style="height:200px; object-fit:cover;" /> *@
+@*                 <div class="card-body"> *@
+@*                     <h5 class="card-title">@item.Product.Title</h5> *@
+@*                     <p>@item.Product.Description</p> *@
+@*                     <p><strong>Price:</strong> @item.Product.Price.ToString("C")</p> *@
+
+@*                     <form method="post" asp-action="RemoveFromFavourites"> *@
+@*                         <input type="hidden" name="id" value="@item.Id" /> *@
+@*                         <button class="btn btn-outline-danger">Remove</button> *@
+@*                     </form> *@
+
+@*                     <form method="post" asp-controller="Cart" asp-action="AddToCart"> *@
+@*                         <input type="hidden" name="productId" value="@item.Product.Id" /> *@
+@*                         <button class="btn btn-success">Add to Cart</button> *@
+@*                     </form> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@*     } *@
+@* </div> *@

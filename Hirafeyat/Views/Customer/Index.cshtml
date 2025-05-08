@@ -14,7 +14,7 @@
                 <div class="card-body">
                     <h5 class="card-title">@product.Title</h5>
                     <p class="card-text">@product.Description</p>
-                    <p class="card-text"><strong>Price:</strong> @product.Price.ToString("C")</p>
+                    <p class="card-text"><strong>Price:</strong> @product.Price$</p>
                     <p class="card-text"><strong>Seller:</strong> @product.Seller?.FullName</p>
 
                     <div class="d-flex justify-content-between">
@@ -23,7 +23,7 @@
                             <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
                         </form>
 
-                        <form method="post" asp-action="AddToFavourites" asp-controller="Favourite">
+                        <form method="post" asp-action="AddToFavourites" asp-controller="Favorite">
                             <input type="hidden" name="productId" value="@product.Id" />
                             <button type="submit" class="btn btn-outline-danger btn-sm">
                                 ❤️
