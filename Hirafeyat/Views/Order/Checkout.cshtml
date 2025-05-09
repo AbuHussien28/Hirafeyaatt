@@ -2,6 +2,7 @@
 
 @{
     Layout = null;
+    ViewBag.orderId = ViewBag.orderId ?? 0;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +25,7 @@
     </div>
 
     <div class="container-fluid pt-5">
-        <form asp-action="PlaceOrder" method="post">
+        <form asp-action="PlaceOrder" method="post" id="payment-form">
             @Html.AntiForgeryToken()
             <div class="row px-xl-5">
                 <!-- Billing Info -->
@@ -70,7 +71,7 @@
                             <ul class="list-unstyled">
                                 @foreach (var item in ViewBag.CartItems as List<Hirafeyat.Models.CartItem>)
                                 {
-                                    <li>@item.Product.Title x @item.Quantity = @(@item.Product.Price * item.Quantity) EGP</li>
+                                    <li>@item.Product.Title x @item.Quantity = @(@item.Product.Price* item.Quantity) EGP</li>
                                 }
                             </ul>
                         </div>
@@ -92,81 +93,143 @@
                         <div class="card-body">
                             <div class="form-group">
                                 <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" name="payment" id="paypal">
-                                    <label class="custom-control-label" for="paypal">Paypal</label>
+                                    <input type="radio" class="custom-control-input" name="paymentMethod" id="stripe" value="stripe" checked>
+                                    <label class="custom-control-label" for="stripe">Credit Card (Stripe)</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" name="payment" id="directcheck">
-                                    <label class="custom-control-label" for="directcheck">Direct Check</label>
+                                    <input type="radio" class="custom-control-input" name="paymentMethod" id="paypal" value="paypal">
+                                    <label class="custom-control-label" for="paypal">PayPal</label>
                                 </div>
                             </div>
-                            <div>
+                            <div class="form-group">
                                 <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" name="payment" id="banktransfer">
-                                    <label class="custom-control-label" for="banktransfer">Bank Transfer</label>
+                                    <input type="radio" class="custom-control-input" name="paymentMethod" id="cod" value="cod">
+                                    <label class="custom-control-label" for="cod">Cash on Delivery</label>
                                 </div>
+                            </div>
+
+                            <!-- Stripe Payment Form -->
+                            <div id="stripe-payment-container" class="mt-4">
+                                <div id="card-element" class="form-control" style="padding: 10px; height: 40px;"></div>
+                                <div id="card-errors" role="alert" class="text-danger mt-2"></div>
+                            </div>
+
+                            <!-- PayPal Not Available Message -->
+                            <div id="paypal-not-available" class="alert alert-warning mt-4" style="display: none;">
+                                <i class="fas fa-exclamation-circle"></i> PayPal payment is not available yet. Please choose another payment method.
+                            </div>
+
+                            <!-- COD Confirmation -->
+                            <div id="cod-confirmation" class="alert alert-info mt-4" style="display: none;">
+                                <i class="fas fa-info-circle"></i> You'll pay cash when your order is delivered.
                             </div>
                         </div>
                         <div class="card-footer border-secondary bg-transparent">
-                            <button class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3" type="submit">Place Order</button>
+                            <button type="button" class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3" id="placeOrderBtn">
+                                Place Order
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+            <input type="hidden" name="paymentIntentId" id="paymentIntentId" value="" />
         </form>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+        var stripe = Stripe('@ViewBag.StripePublishableKey');
+            var elements = stripe.elements();
+            var cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#32325d',
+                    }
+                }
+            });
+            cardElement.mount('#card-element');
+            $('input[name="paymentMethod"]').change(function() {
+                var method = $(this).val();
+                $('#stripe-payment-container').hide();
+                $('#paypal-not-available').hide();
+                $('#cod-confirmation').hide();
+                if (method === 'stripe') {
+                    $('#stripe-payment-container').show();
+                } else if (method === 'paypal') {
+                    $('#paypal-not-available').show();
+                } else if (method === 'cod') {
+                    $('#cod-confirmation').show();
+                }
+            });
+
+            $('input[name="paymentMethod"]:checked').trigger('change');
+
+            $('#placeOrderBtn').click(async function(e) {
+                e.preventDefault();
+                const formData = {
+                    FullName: $('#FullName').val(),
+                    Email: $('#Email').val(),
+                    PhoneNumber: $('#PhoneNumber').val(),
+                    Address: $('#Address').val(),
+                    PaymentMethod: $('input[name="paymentMethod"]:checked').val()
+                };
+
+                if (!formData.FullName || !formData.Email || !formData.PhoneNumber || !formData.Address) {
+                    Swal.fire('Error', 'Please fill all required fields', 'error');
+                    return;
+                }
+
+                if (formData.PaymentMethod === 'paypal') {
+                    Swal.fire('Error', 'PayPal payment is not available yet. Please choose another payment method.', 'error');
+                    return;
+                }
+                $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+                if (formData.PaymentMethod === 'stripe') {
+                    try {
+      
+                        const { paymentIntent, error } = await stripe.confirmCardPayment(
+                            '@ViewBag.ClientSecret', {
+                                payment_method: {
+                                    card: cardElement,
+                                    billing_details: {
+                                        name: formData.FullName,
+                                        email: formData.Email,
+                                        phone: formData.PhoneNumber,
+                                        address: {
+                                            line1: formData.Address
+                                        }
+                                    }
+                                }
+                            }
+                        );
+
+                        if (error) {
+                            $('#card-errors').text(error.message);
+                            $(this).prop('disabled', false).text('Place Order');
+                            return;
+                        }
+
+                        if (paymentIntent.status === 'succeeded') {
+                            $('#paymentIntentId').val(paymentIntent.id);
+                            $('#payment-form').submit();
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        Swal.fire('Error', 'An error occurred during payment processing', 'error');
+                        $(this).prop('disabled', false).text('Place Order');
+                    }
+                } else if (formData.PaymentMethod === 'cod') {
+                    $('#payment-form').submit();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-@* @model Hirafeyat.ViewModel.CheckoutViewModel *@
-
-@* <h3>Checkout</h3> *@
-@* <form asp-action="PlaceOrder" method="post"> *@
-@*     <div class="form-group"> *@
-@*         <label>Full Name</label> *@
-@*         <input asp-for="FullName" class="form-control" /> *@
-@*         <span asp-validation-for="FullName" class="text-danger"></span> *@
-@*     </div> *@
-
-@*     <div class="form-group"> *@
-@*         <label>Address</label> *@
-@*         <input asp-for="Address" class="form-control" /> *@
-@*         <span asp-validation-for="Address" class="text-danger"></span> *@
-@*     </div> *@
-
-@*     <div class="form-group"> *@
-@*         <label>Phone Number</label> *@
-@*         <input asp-for="PhoneNumber" class="form-control" /> *@
-@*         <span asp-validation-for="PhoneNumber" class="text-danger"></span> *@
-@*     </div> *@
-
-@*     <div class="form-group"> *@
-@*         <label>Email</label> *@
-@*         <input asp-for="Email" class="form-control" /> *@
-@*         <span asp-validation-for="Email" class="text-danger"></span> *@
-@*     </div> *@
-
-@*     <h4>Your Cart</h4> *@
-@*     <ul> *@
-@*         @foreach (var item in ViewBag.CartItems as List<Hirafeyat.Models.CartItem>) *@
-@*         { *@
-@*             <li>@item.Product.Title (@item.Quantity) - @item.Product.Price x @item.Quantity = @(@item.Product.Price * @item.Quantity)</li> *@
-@*         } *@
-@*     </ul> *@
-
-@*     <h5><strong>Total:</strong> @ViewBag.TotalPrice</h5> *@
-
-@*     <button type="submit" class="btn btn-success">Place Order</button> *@
-@* </form> *@

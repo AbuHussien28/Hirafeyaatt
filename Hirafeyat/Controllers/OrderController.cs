@@ -1,20 +1,23 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Hirafeyat.Models;
+using Hirafeyat.ViewModel;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Hirafeyat.Models;
+using Stripe;
 using System.Linq;
 using System.Threading.Tasks;
-using Hirafeyat.ViewModel;
 
 public class OrderController : Controller
 {
     private readonly HirafeyatContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IConfiguration configuration;
 
-    public OrderController(HirafeyatContext context, UserManager<ApplicationUser> userManager)
+    public OrderController(HirafeyatContext context, UserManager<ApplicationUser> userManager, IConfiguration configuration)
     {
         _context = context;
         _userManager = userManager;
+        this.configuration = configuration;
     }
 
     [HttpGet]
@@ -25,18 +28,26 @@ public class OrderController : Controller
             .Include(c => c.Product)
             .Where(c => c.UserId == userId)
             .ToListAsync();
+        var paymentIntentService = new PaymentIntentService();
+        var options = new PaymentIntentCreateOptions
+        {
+            Amount = (long)(cartItems.Sum(c => c.Product.Price * c.Quantity) * 100),
+            Currency = "egp",
+            PaymentMethodTypes = new List<string> { "card" }
+        };
+        var intent = await paymentIntentService.CreateAsync(options);
 
         ViewBag.CartItems = cartItems;
         ViewBag.TotalPrice = cartItems.Sum(c => c.Product.Price * c.Quantity);
+        ViewBag.ClientSecret = intent.ClientSecret ;
+        ViewBag.StripePublishableKey = configuration["Stripe:PublishableKey"];
 
         return View(new CheckoutViewModel());
     }
 
-    [HttpPost]
-    public async Task<IActionResult> PlaceOrder(CheckoutViewModel model)
+    public async Task<IActionResult> PlaceOrder(CheckoutViewModel model, string paymentMethod, string paymentIntentId = null)
     {
         var userId = _userManager.GetUserId(User);
-
         var cartItems = await _context.CartItems
             .Include(c => c.Product)
             .Where(c => c.UserId == userId)
@@ -48,7 +59,6 @@ public class OrderController : Controller
             ViewBag.TotalPrice = cartItems.Sum(c => c.Product.Price * c.Quantity);
             return View("Checkout", model);
         }
-
         var order = new Order
         {
             CustomerId = userId,
@@ -56,7 +66,7 @@ public class OrderController : Controller
             Address = model.Address,
             PhoneNumber = model.PhoneNumber,
             Email = model.Email,
-            Status = OrderStatus.Pending,
+            Status = paymentMethod == "cod" ? OrderStatus.Processing : OrderStatus.Pending,
             OrderItems = cartItems.Select(item => new OrderItem
             {
                 ProductId = item.ProductId,
@@ -65,16 +75,38 @@ public class OrderController : Controller
         };
 
         _context.Orders.Add(order);
+        var payment = new Payment
+        {
+            Order = order,
+            Amount = cartItems.Sum(c => c.Product.Price * c.Quantity),
+            PaymentDate = DateTime.Now,
+            PaymentMethod = paymentMethod,
+            Status = paymentMethod == "cod" ? PaymentStatus.Paid : PaymentStatus.Pending
+        };
+
+        if (paymentMethod == "stripe" && !string.IsNullOrEmpty(paymentIntentId))
+        {
+            payment.StripePaymentIntentId = paymentIntentId ;
+            var paymentIntentService = new PaymentIntentService();
+            var intent = await paymentIntentService.GetAsync(paymentIntentId);
+
+            if (intent.Status == "succeeded")
+            {
+                payment.Status = PaymentStatus.Paid;
+                order.Status = OrderStatus.Processing;
+            }
+        }
+
+        _context.Payments.Add(payment);
         _context.CartItems.RemoveRange(cartItems);
         await _context.SaveChangesAsync();
 
-        return RedirectToAction("OrderConfirmation");
+        return RedirectToAction("PaymentSuccess", "Payment", new { orderId = order.Id });
     }
-
 
     public IActionResult OrderConfirmation()
     {
-        return View();
+        return RedirectToAction("Checkout", "Payment");
     }
     [HttpGet]
     public async Task<IActionResult> MyOrders()

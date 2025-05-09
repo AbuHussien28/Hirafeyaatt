@@ -1,16 +1,20 @@
-﻿namespace Hirafeyat.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Hirafeyat.Models
 {
  
     public class Payment
     {
         [Key]
         public int Id { get; set; }
-        public string StripePaymentIntentId { get; set; }
+        public string? StripePaymentIntentId { get; set; }
         public int OrderId { get; set; }
         public Order Order { get; set; }
         public decimal Amount { get; set; }
         public DateTime PaymentDate { get; set; } = DateTime.Now;
         public PaymentStatus Status { get; set; }
+        [NotMapped]
+        public string PaymentMethod { get; set; } 
     }
 
     public enum PaymentStatus
