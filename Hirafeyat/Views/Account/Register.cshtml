@@ -2,87 +2,141 @@
 
 @{
     ViewData["Title"] = "Register";
+    
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-<h1>Register</h1>
 
-<h4>RegisterViewModel</h4>
+    <!-- Font Icon -->
+
+    <link rel="stylesheet" href="~/fonts/material-icon/css/material-design-iconic-font.min.css" />
+    <!-- Main css -->
+    <link rel="stylesheet" href="~/css/style2.css" />
+</head>
+<body>
+
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Register" enctype="multipart/form-data" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="FullName" class="control-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
+        <section class="signup">
+            <div class="container-fluid">
+                <div class="signup-content">
+                    <div class="signup-form">
+                        <h2 class="form-title">Sign up</h2>
+                        <form form asp-action="Register" enctype="multipart/form-data" method="post">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <div class="form-group">
+                                <label asp-for="FullName">
+                                    <i class="zmdi zmdi-account material-icons-name"></i>
+                                </label>
+                                <input type="text"
+                                       asp-for="FullName"
+                                       id="name"
+                                       placeholder="Your FullName" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="UserName">
+                                    <i class="fa-regular fa-user"></i>
+                                </label>
+                                <input asp-for="UserName"
+                                       placeholder="Your Name" />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Email"><i class="zmdi zmdi-email"></i></label>
+                                <input type="email"
+                                       asp-for="Email"
+                                       id="email"
+                                       placeholder="Your Email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Password"><i class="zmdi zmdi-lock "></i></label>
+                                <input type="password"
+                                       asp-for="Password"
+                                       id="pass"
+                                       placeholder="Password" />
+                                <span asp-validation-for="Password" class="text-danger "></span>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="ConfirmPassword">
+                                    <i class="zmdi zmdi-lock-outline"></i>
+                                </label>
+                                <input type="password"
+                                       asp-for="ConfirmPassword"
+                                       id="re_pass"
+                                       placeholder="Repeat your password" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger "></span>
+
+                            </div>
+                            <div class="form-group">
+                                @* <label asp-for="ImageFile" class="control-label"></label> *@
+                                <input asp-for="ImageFile" type="file" class="form-control " onchange="previewImage(event)" />
+                                <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; display: none;" />
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="PhoneNumber">
+                                    <i class="fa-solid fa-phone" style="color: #000000;"></i>
+                                </label>
+                                <input asp-for="PhoneNumber" placeholder="PhoneNumber" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Address">
+                                    <i class="fa-solid fa-location-dot" style="color: #000000;"></i>
+                                </label>
+                                <input asp-for="Address" placeholder="Address" />
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                            <div class="row d-flex align-items-center">
+                                <i class="fa-solid fa-circle-user fa-lg col-1" style="color: #000000;"></i>
+                            <div class="form-group col-11 ">
+                                <label  class="control-label px-3"></label>
+                                <select asp-for="Role" class="form-control" id="roleSelect">
+                                    <option value="">Select Role</option>
+                                    <option value="Seller">Seller</option>
+                                    <option value="Customer">Customer</option>
+                                </select>
+                                <span asp-validation-for="Role" class="text-danger"></span>
+                            </div>
+                            </div>
+                            <div class="form-group my-5" id="brandNameGroup" style="display:none">
+                                <label asp-for="BrandName" class="control-label"></label>
+                                <input asp-for="BrandName" class="form-control" />
+                                <span asp-validation-for="BrandName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group form-button">
+                                <input type="submit"
+                                       name="signup"
+                                       id="signup"
+                                       class="form-submit"
+                                       value="Register" />
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="signup-image">
+                        <figure>
+                            <img src="~/images/signup-image.jpg" alt="sing up image" />
+                        </figure>
+                        <a asp-action="Login" class="signup-image-link">I am already member</a>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ConfirmPassword" class="control-label"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ImageFile" class="control-label"></label>
-                <input asp-for="ImageFile" type="file" class="form-control" onchange="previewImage(event)" />
-                <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; display: none;" />
-            </div>
-           
-            @* <div class="form-group"> *@
-            @*     <label asp-for="BrandName"></label> *@
-            @*     <input asp-for="BrandName" class="form-control" /> *@
-            @*     <span asp-validation-for="BrandName" class="text-danger"></span> *@
-            @*     </div> *@
-            
-            <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Role" class="control-label"></label>
-                <select asp-for="Role" class="form-control" id="roleSelect">
-                    <option value="">Select Role</option>
-                    <option value="Seller">Seller</option>
-                    <option value="Customer">Customer</option>
-                </select>
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
-            <div class="form-group" id="brandNameGroup" style="display:none">
-                <label asp-for="BrandName" class="control-label"></label>
-                <input asp-for="BrandName" class="form-control" />
-                <span asp-validation-for="BrandName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+        </section>
 </div>
 
-<div>
-    <a asp-action="Login">Login</a>
-</div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -104,3 +158,8 @@
         }
     </script>
 }
+</body>
+</html>
+
+
+

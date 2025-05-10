@@ -95,11 +95,16 @@ namespace Hirafeyat
             app.MapControllerRoute(
                 name: "default",
                   //pattern: "{controller=Seller}/{action=Orders}")
-                  pattern: "{controller=Account}/{action=Login}");
-                 //pattern: "{controller=Role}/{action=NewRole}")
-                 // pattern: "{controller=User}/{action=Sellers}")
-                 //pattern: "{controller=AdminOrder}/{action=Index}")
-                //.WithStaticAssets();
+
+                //  pattern: "{controller=Account}/{action=Login}")
+                //pattern: "{controller=Role}/{action=NewRole}")
+                // pattern: "{controller=User}/{action=Sellers}")
+                //pattern: "{controller=AdminOrder}/{action=Index}")
+                //pattern: "{controller=User}/{action=Customers}")
+                pattern: "{controller=Home}/{action=Index}/{id?}")
+                //pattern: "{controller=Home}/{action=Index}")
+                .WithStaticAssets();
+
             app.Run();
         }
     }

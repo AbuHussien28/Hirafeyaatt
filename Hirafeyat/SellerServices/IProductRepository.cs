@@ -8,5 +8,9 @@ namespace Hirafeyat.SellerServices
         List<Product> getProductsBySellerId(string sellerId);
 
         List<Product> GetAllWithSeller();
+
+        IEnumerable<Product> GetFilteredProducts(string searchText, List<string> selectedPrices);
+
+
     }
 }
