@@ -76,39 +76,30 @@
 			<thead>
 				<tr>
 					<th>
-						@*     @Html.DisplayNameFor(model => model.CustomerFullName) *@
 						@Html.DisplayName("SellerFullName")
 					</th>
 					<th>
-						@*     @Html.DisplayNameFor(model => model.CustomerFullName) *@
 						@Html.DisplayName("CustomerFullName")
 					</th>
 					<th>
-						@*     @Html.DisplayNameFor(model => model.CustomerEmail) *@
 						@Html.DisplayName("CustomerEmail")
 					</th>
 					<th>
-						@*     @Html.DisplayNameFor(model => model.ProductTitle) *@
 						@Html.DisplayName("ProductTitle")
 					</th>
 					<th>
-						@*     @Html.DisplayNameFor(model => model.Quantity) *@
 						@Html.DisplayName("Quantity")
 					</th>
 					<th>
-						@*     @Html.DisplayNameFor(model => model.ProductPrice) *@
 						@Html.DisplayName("ProductPrice")
 					</th>
 					<th>
-						@*     @Html.DisplayNameFor(model => model.OrderDate) *@
 						@Html.DisplayName("OrderDate")
 					</th>
 					<th>
-						@*     @Html.DisplayNameFor(model => model.Status) *@
 						@Html.DisplayName("Status")
 					</th>
 					<th>
-						@*     @Html.DisplayNameFor(model => model.DeliveryAddress) *@
 						@Html.DisplayName("DeliveryAddress")
 					</th>
 					<th></th>
@@ -118,9 +109,6 @@
 				@foreach (var item in Model)
 				{
 					<tr>
-						@* <td> *@
-						@*     @Html.DisplayFor(modelItem => item.OrderId) *@
-						@* </td> *@
 						<td>
 							@Html.DisplayFor(modelItem => item.SellerFullName)
 						</td>
@@ -147,11 +135,6 @@
 						</td>
 						<td>
 							@Html.DisplayFor(modelItem => item.DeliveryAddress)
-						</td>
-						<td>
-							@Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-							@Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-							@Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
 						</td>
 					</tr>
 				}
