@@ -1,11 +1,14 @@
 using Hirafeyat.AdminRepository;
 using Hirafeyat.AdminServices;
+using Hirafeyat.CustomersPaymentsRepo;
+using Hirafeyat.CustomersPaymentsSerives;
 using Hirafeyat.EmailServices;
 using Hirafeyat.Models;
 using Hirafeyat.SellerServices;
 using Hirafeyat.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 namespace Hirafeyat
 {
@@ -35,6 +38,7 @@ namespace Hirafeyat
             //regester service
             builder.Services.AddScoped<IOrderService, OrderService>();
 
+
             builder.Services.AddScoped<AdminRepository.IProductRepository, AdminRepository.ProductRepository>();
             builder.Services.AddScoped<AdminServices.IProductService, AdminServices.ProductService>();
 
@@ -44,6 +48,9 @@ namespace Hirafeyat
             builder.Services.AddScoped<SellerServices.IProductRepository, SellerServices.ProductService>();
             builder.Services.AddScoped<SellerServices.ICategoryRepository, SellerServices.CategoryService>();
 
+            builder.Services.AddScoped<IProductRepository, SellerServices.ProductService>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryService>();
+
 
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -51,6 +58,8 @@ namespace Hirafeyat
             builder.Services.AddScoped<IOrderRepositoryAdmin, OrderRepositoryAdmin>();
             builder.Services.AddScoped<IOrderAdminService, OrderAdminService>();
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddAuthentication()
             .AddGoogle(options =>
             {
@@ -59,6 +68,10 @@ namespace Hirafeyat
                 options.CallbackPath = "/signin-google";
            
             });
+
+
+    });
+            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
             var app = builder.Build();
 
@@ -74,16 +87,12 @@ namespace Hirafeyat
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                 //pattern: "{controller=Seller}/{action=Orders}")
-                 // pattern: "{controller=Account}/{action=Login}")
+                  //pattern: "{controller=Seller}/{action=Orders}")
+                  pattern: "{controller=Account}/{action=Login}");
                  //pattern: "{controller=Role}/{action=NewRole}")
                  // pattern: "{controller=User}/{action=Sellers}")
                  //pattern: "{controller=AdminOrder}/{action=Index}")
-                 //pattern: "{controller=User}/{action=Customers}")
-                 //pattern: "{controller=Home}/{action=Index}/{id?}")
-                 pattern: "{controller=Home}/{action=Index}")
                 .WithStaticAssets();
-
             app.Run();
         }
     }

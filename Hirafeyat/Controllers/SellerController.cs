@@ -49,8 +49,8 @@ namespace Hirafeyat.Controllers
                     {
                         Title = productfromModel.Title,
                         Description = productfromModel.Description,
-                        Price = productfromModel.Price,
-                        Quentity = productfromModel.Quentity,
+                        Price = (int)productfromModel.Price,
+                    Quentity = productfromModel.Quentity,
                         ImageUrl = imageUrl,
                         CategoryId = productfromModel.catId,
                         SellerId = productfromModel.sellerId,
@@ -115,7 +115,7 @@ namespace Hirafeyat.Controllers
 
                 product.Title = model.Title;
                 product.Description = model.Description;
-                product.Price = model.Price;
+                product.Price = (int)model.Price;
                 product.CategoryId = model.catId;
                 product.Quentity = model.Quentity;
                 product.SellerId = model.sellerId;
@@ -169,7 +169,7 @@ namespace Hirafeyat.Controllers
         public IActionResult Orders() 
         {
             var sellerid = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Console.WriteLine($"Seller ID: {sellerid}");
+            
             var orders = orderService.GetAllOrdersBySellerId(sellerid);
 
             if (orders == null)
@@ -178,8 +178,7 @@ namespace Hirafeyat.Controllers
             }
             return View(orders);
         }
-        //STATIC ID
-        //var orders = orderService.GetAllOrdersBySellerId("6D793D4A-A25C-46B8-A48F-A5183E7A0683");
+        
 
         public IActionResult OrderDetail(int id)
         {
@@ -188,7 +187,7 @@ namespace Hirafeyat.Controllers
             {
                 return NotFound();
             }
-            return View(order); // هنبعت تفاصيل الطلب للـ View
+            return View(order); 
         }
         public IActionResult UpdateOrderStatus(int orderId, OrderStatus newStatus) 
         {
@@ -199,8 +198,27 @@ namespace Hirafeyat.Controllers
 
         
         }
-        
-        
+        // -----------------------------------------------------
+
+        [HttpPost]
+        [Authorize(Roles = "Seller")]
+        public IActionResult RemoveOrder(int orderId)
+        {
+            var order = orderService.getById(orderId);
+            if (order == null)
+                return NotFound();
+
+            if (order.Status == OrderStatus.Cancelled || order.Status == OrderStatus.Delivered)
+            {
+                orderService.delete(order);
+                orderService.save();
+            }
+
+            return RedirectToAction("Orders");
+        }
+
+
+
 
     }
 }

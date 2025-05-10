@@ -1,0 +1,49 @@
+﻿@model List<CartItem>
+
+<h3>My Cart</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            if (item.Product != null)
+            {
+                <tr>
+                    <td>@item.Product.Title</td>
+                    <td>@item.Product.Price</td>
+                    <td>
+                        <form method="post" asp-action="UpdateQuantity">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="number" name="quantity" value="@item.Quantity" min="1" />
+                            <button class="btn btn-sm btn-success">Update</button>
+                        </form>
+                    </td>
+                    <td>@(item.Product.Price * item.Quantity)$</td>
+                    <td>
+                        <form method="post" asp-action="RemoveFromCart">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr><td colspan="5" class="text-danger"> Product not found or deleted.</td></tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+<form method="get" asp-controller="Order" asp-action="Checkout">
+    <button class="btn btn-primary mt-3">Proceed to Checkout</button>
+</form>
