@@ -23,123 +23,106 @@
 }
 
 
-
 <partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
+<style>
+	label {
+		color: #000 !important;
+		font-weight: bold !important;
+	}
+</style>
 
 <div class="container-fluid">
 	<div class="py-3 px-xl-5">
-		<form method="get" asp-action="Index">
-			<div class="form-row">
-				<div class="form-group col-md-2">
-					<label>Status</label>
-					<select name="statusFilter" class="form-control" onchange="this.form.submit()">
-						@foreach (var option in statusOptions)
-						{
-							<option value="@option.Value" selected="@option.Selected">@option.Text</option>
-						}
-					</select>
-				</div>
-
-				<div class="form-group col-md-2">
-					<label>Category</label>
-					<input type="text" name="categoryFilter" class="form-control" value="@currentCategory" placeholder="Category" />
-				</div>
-
-				<div class="form-group col-md-2">
-					<label>Product</label>
-					<input type="text" name="productFilter" class="form-control" value="@currentProduct" placeholder="Product Name" />
-				</div>
-
-				<div class="form-group col-md-2">
-					<label>Start Date</label>
-					<input type="date" name="startDateFilter" class="form-control" value="@currentStartDate" />
-				</div>
-
-				<div class="form-group col-md-2">
-					<label>End Date</label>
-					<input type="date" name="endDateFilter" class="form-control" value="@currentEndDate" />
-				</div>
-
-				<div class="form-group col-md-2 align-self-end">
-					<button type="submit" class="btn btn-primary btn-block">Filter</button>
-				</div>
-				<div class="form-group col-md-2 align-self-end">
-					<a href="@Url.Action("Index")" class="btn btn-secondary btn-block">Clear Filters</a>
-				</div>
+		<div class="card mb-4 shadow-sm">
+			<div class="card-header bg-primary text-white">
+				<h5 class="mb-0">Filter Orders</h5>
 			</div>
-		</form>
+			<div class="card-body">
+				<form method="get" asp-action="Index">
+					<div class="form-row">
+						<div class="form-group col-md-2">
+							<label>Status</label>
+							<select name="statusFilter" class="form-control" onchange="this.form.submit()">
+								@foreach (var option in statusOptions)
+								{
+									<option value="@option.Value" selected="@option.Selected">@option.Text</option>
+								}
+							</select>
+						</div>
 
+						<div class="form-group col-md-2">
+							<label>Category</label>
+							<input type="text" name="categoryFilter" class="form-control" value="@currentCategory" placeholder="Category" />
+						</div>
 
-		<br />
+						<div class="form-group col-md-2">
+							<label>Product</label>
+							<input type="text" name="productFilter" class="form-control" value="@currentProduct" placeholder="Product Name" />
+						</div>
 
-		<table class="table">
-			<thead>
-				<tr>
-					<th>
-						@Html.DisplayName("SellerFullName")
-					</th>
-					<th>
-						@Html.DisplayName("CustomerFullName")
-					</th>
-					<th>
-						@Html.DisplayName("CustomerEmail")
-					</th>
-					<th>
-						@Html.DisplayName("ProductTitle")
-					</th>
-					<th>
-						@Html.DisplayName("Quantity")
-					</th>
-					<th>
-						@Html.DisplayName("ProductPrice")
-					</th>
-					<th>
-						@Html.DisplayName("OrderDate")
-					</th>
-					<th>
-						@Html.DisplayName("Status")
-					</th>
-					<th>
-						@Html.DisplayName("DeliveryAddress")
-					</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var item in Model)
-				{
-					<tr>
-						<td>
-							@Html.DisplayFor(modelItem => item.SellerFullName)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.CustomerFullName)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.CustomerEmail)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.ProductTitle)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.Quantity)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.ProductPrice)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.OrderDate)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.Status)
-						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.DeliveryAddress)
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-		@await Html.PartialAsync("_OrderAdminPaginationPartial", Model)
+						<div class="form-group col-md-2">
+							<label>Start Date</label>
+							<input type="date" name="startDateFilter" class="form-control" value="@currentStartDate" />
+						</div>
+
+						<div class="form-group col-md-2">
+							<label>End Date</label>
+							<input type="date" name="endDateFilter" class="form-control" value="@currentEndDate" />
+						</div>
+
+						<div class="form-group col-md-1 align-self-end">
+							<button type="submit" class="btn btn-primary btn-block">Filter</button>
+						</div>
+
+						<div class="form-group col-md-1 align-self-end">
+							<a href="@Url.Action("Index")" class="btn btn-secondary btn-block">Clear</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="card shadow-sm">
+			<div class="card-header bg-dark text-white">
+				<h5 class="mb-0">Orders List</h5>
+			</div>
+			<div class="card-body p-0">
+				<table class="table table-bordered table-striped table-hover mb-0">
+					<thead class="thead-light">
+						<tr>
+							<th>@Html.DisplayName("Seller Name")</th>
+							<th>@Html.DisplayName("Customer Name")</th>
+							<th>@Html.DisplayName("Customer Email")</th>
+							<th>@Html.DisplayName("Product Title")</th>
+							<th>@Html.DisplayName("Quantity")</th>
+							<th>@Html.DisplayName("Product Price")</th>
+							<th>@Html.DisplayName("Order Date")</th>
+							<th>@Html.DisplayName("Status")</th>
+							<th>@Html.DisplayName("Delivery Address")</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var item in Model)
+						{
+							<tr>
+								<td>@Html.DisplayFor(modelItem => item.SellerFullName)</td>
+								<td>@Html.DisplayFor(modelItem => item.CustomerFullName)</td>
+								<td>@Html.DisplayFor(modelItem => item.CustomerEmail)</td>
+								<td>@Html.DisplayFor(modelItem => item.ProductTitle)</td>
+								<td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+								<td>@Html.DisplayFor(modelItem => item.ProductPrice)</td>
+								<td>@Html.DisplayFor(modelItem => item.OrderDate)</td>
+								<td>@Html.DisplayFor(modelItem => item.Status)</td>
+								<td>@Html.DisplayFor(modelItem => item.DeliveryAddress)</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="mt-3">
+			@await Html.PartialAsync("_OrderAdminPaginationPartial", Model)
+		</div>
 	</div>
 </div>
