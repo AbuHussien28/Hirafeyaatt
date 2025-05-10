@@ -221,8 +221,8 @@ namespace Hirafeyat.Migrations
 
                     b.ToTable("Orders");
                 });
+
             modelBuilder.Entity("Hirafeyat.Models.OrderItem", b =>
-            modelBuilder.Entity("Hirafeyat.Models.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -238,6 +238,24 @@ namespace Hirafeyat.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("Hirafeyat.Models.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
@@ -247,19 +265,21 @@ namespace Hirafeyat.Migrations
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("StripePaymentIntentId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .IsUnique();
 
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("OrderItems");
                     b.ToTable("Payments");
                 });
 
@@ -519,8 +539,8 @@ namespace Hirafeyat.Migrations
             modelBuilder.Entity("Hirafeyat.Models.Payment", b =>
                 {
                     b.HasOne("Hirafeyat.Models.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
+                        .WithOne("Payment")
+                        .HasForeignKey("Hirafeyat.Models.Payment", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -612,6 +632,9 @@ namespace Hirafeyat.Migrations
             modelBuilder.Entity("Hirafeyat.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("Payment")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Hirafeyat.Models.Product", b =>

@@ -1,5 +1,6 @@
 using Hirafeyat.AdminRepository;
 using Hirafeyat.AdminServices;
+using Hirafeyat.CustomerRepository;
 using Hirafeyat.CustomersPaymentsRepo;
 using Hirafeyat.CustomersPaymentsSerives;
 using Hirafeyat.EmailServices;
@@ -36,12 +37,11 @@ namespace Hirafeyat
                 .AddDefaultTokenProviders();
 
             //regester service
-            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<Services.IOrderService, SellerServices.OrderService>();
             builder.Services.AddScoped<IProductRepository, SellerServices.ProductService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryService>();
-
-
-
+            builder.Services.AddScoped<IOrderCustomerRepository, OrderCustomerRepository>();
+            builder.Services.AddScoped<IOrderCustomerService, OrderCustoemrService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IOrderRepositoryAdmin, OrderRepositoryAdmin>();
@@ -56,8 +56,12 @@ namespace Hirafeyat
         options.ClientSecret = clientSecret;
         options.CallbackPath = "/signin-google";
 
+
     });
-            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+            builder.Services.AddSingleton<StripeConfigService>();
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -68,15 +72,15 @@ namespace Hirafeyat
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+          
             app.UseStaticFiles();
             app.MapStaticAssets();
+            app.UseMiddleware<StripeExceptionHandlingMiddleware>();
+
             app.MapControllerRoute(
                 name: "default",
                   //pattern: "{controller=Seller}/{action=Orders}")
-                  pattern: "{controller=Account}/{action=Login}");
-                 //pattern: "{controller=Role}/{action=NewRole}")
-                 // pattern: "{controller=User}/{action=Sellers}")
-                 //pattern: "{controller=AdminOrder}/{action=Index}")
+                  pattern: "{controller=Account}/{action=Login}")
                 .WithStaticAssets();
             app.Run();
         }

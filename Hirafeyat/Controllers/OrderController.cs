@@ -1,110 +1,129 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Hirafeyat.CustomerRepository;
+using Hirafeyat.Models;
+using Hirafeyat.ViewModel;
+using Hirafeyat.ViewModel.OrderCustomer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Hirafeyat.Models;
+using Stripe;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Hirafeyat.ViewModel;
 
 public class OrderController : Controller
 {
     private readonly HirafeyatContext _context;
+    private readonly IOrderCustomerService orderService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IConfiguration configuration;
 
-    public OrderController(HirafeyatContext context, UserManager<ApplicationUser> userManager)
+    public OrderController(IOrderCustomerService orderService, UserManager<ApplicationUser> userManager , IConfiguration configuration)
     {
-        _context = context;
+        this.orderService = orderService;
         _userManager = userManager;
+        this.configuration = configuration;
+        var stripeSecretKey = configuration["Stripe:SecretKey"];
+        if (!string.IsNullOrEmpty(stripeSecretKey))
+        {
+            StripeConfiguration.ApiKey = stripeSecretKey;
+        }
+        else
+        {
+            throw new Exception("Stripe Secret Key is not configured");
+        }
     }
-
     [HttpGet]
     public async Task<IActionResult> Checkout()
     {
-        var userId = _userManager.GetUserId(User);
-        var cartItems = await _context.CartItems
-            .Include(c => c.Product)
-            .Where(c => c.UserId == userId)
-            .ToListAsync();
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-        ViewBag.CartItems = cartItems;
-        ViewBag.TotalPrice = cartItems.Sum(c => c.Product.Price * c.Quantity);
+            var model = await orderService.PrepareCheckoutAsync(userId);
 
-        return View(new CheckoutViewModel());
+            if (string.IsNullOrEmpty(model.StripePublishableKey))
+            {
+                throw new Exception("Payment system configuration error");
+            }
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+            return RedirectToAction("Index", "Cart");
+        }
     }
 
     [HttpPost]
-    public async Task<IActionResult> PlaceOrder(CheckoutViewModel model)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PlaceOrder(
+        CheckoutPageViewModel model,
+        string paymentMethod,
+        string paymentIntentId = null)
     {
-        var userId = _userManager.GetUserId(User);
-
-        var cartItems = await _context.CartItems
-            .Include(c => c.Product)
-            .Where(c => c.UserId == userId)
-            .ToListAsync();
-
-        if (!ModelState.IsValid)
+        try
         {
-            ViewBag.CartItems = cartItems;
-            ViewBag.TotalPrice = cartItems.Sum(c => c.Product.Price * c.Quantity);
-            return View("Checkout", model);
-        }
-
-        var order = new Order
-        {
-            CustomerId = userId,
-            FullName = model.FullName,
-            Address = model.Address,
-            PhoneNumber = model.PhoneNumber,
-            Email = model.Email,
-            Status = OrderStatus.Pending,
-            OrderItems = cartItems.Select(item => new OrderItem
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
             {
-                ProductId = item.ProductId,
-                Quantity = item.Quantity
-            }).ToList()
-        };
+                return RedirectToAction("Login", "Account");
+            }
 
-        _context.Orders.Add(order);
-        _context.CartItems.RemoveRange(cartItems);
-        await _context.SaveChangesAsync();
+            // Process the order
+            var orderId = await orderService.ProcessOrderAsync(
+                userId, model, paymentMethod, paymentIntentId);
 
-        return RedirectToAction("OrderConfirmation");
+            // Redirect to payment success
+            return RedirectToAction("PaymentSuccess", "Payment", new { orderId });
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+            return RedirectToAction("PaymentFailed", "Payment");
+        }
     }
 
-
-    public IActionResult OrderConfirmation()
-    {
-        return View();
-    }
     [HttpGet]
     public async Task<IActionResult> MyOrders()
     {
-        var userId = _userManager.GetUserId(User);
-        var orders = await _context.Orders
-            .Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.Product)
-            .Where(o => o.CustomerId == userId && o.Status != OrderStatus.Delivered && o.Status != OrderStatus.Cancelled)
-            .OrderByDescending(o => o.OrderDate)
-            .ToListAsync();
-
-        return View(orders);
+        try
+        {
+            var userId = _userManager.GetUserId(User);
+            var orders = await orderService.GetUserOrdersAsync(userId);
+            return View(orders);
+        }
+        catch (Exception ex)
+        {
+            ViewBag.ErrorMessage = "Error loading orders: " + ex.Message;
+            return View(Enumerable.Empty<OrderWithPaymentViewModel>());
+        }
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CancelOrder(int id)
     {
-        var userId = _userManager.GetUserId(User);
-        var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id && o.CustomerId == userId);
-
-        if (order == null || order.Status == OrderStatus.Shipped || order.Status == OrderStatus.Delivered)
+        try
         {
-            return BadRequest("You can't cancel this order.");
+            var userId = _userManager.GetUserId(User);
+            var success = await orderService.CancelOrderAsync(id, userId);
+
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "Unable to cancel order";
+            }
+
+            return RedirectToAction("MyOrders");
         }
-
-        order.Status = OrderStatus.Cancelled;
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction("MyOrders");
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+            return RedirectToAction("MyOrders");
+        }
     }
-
 }

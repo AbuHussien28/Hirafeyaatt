@@ -5,3 +5,5 @@ global using X.PagedList;
 global using  X.PagedList.EntityFramework;
 global using Hirafeyat.ViewModel.Account.ForgetPassword;
 global using Hirafeyat.EmailServices;
+global using Hirafeyat.Models;
+global using Hirafeyat.ViewModel;
