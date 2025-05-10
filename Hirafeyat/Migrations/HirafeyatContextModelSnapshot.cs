@@ -116,7 +116,7 @@ namespace Hirafeyat.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Hirafeyat.Models.Order", b =>
@@ -153,7 +153,7 @@ namespace Hirafeyat.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Hirafeyat.Models.Product", b =>
@@ -201,7 +201,7 @@ namespace Hirafeyat.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

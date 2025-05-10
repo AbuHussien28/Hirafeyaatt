@@ -56,11 +56,6 @@ namespace Hirafeyat.AdminRepository
             {
                 query = _context.Products.Include(p => p.Category).Include(p => p.Seller).Where(p => p.Seller.FullName.ToLower().Contains(name.ToLower())).AsQueryable();
             }
-            //var productsData = _context.Products
-            //    .Include(p => p.Seller)
-            //    .Where(p => string.IsNullOrEmpty(name) || p.Title.Contains(name))
-            //    .OrderBy(p => p.Title)
-            //    .ToPagedList(page, pageSize);
 
             var totalCount = await query.CountAsync();
             var productsData = await query

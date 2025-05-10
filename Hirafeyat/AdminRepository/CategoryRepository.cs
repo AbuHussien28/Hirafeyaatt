@@ -1,5 +1,8 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using Hirafeyat.Models;
+using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Hirafeyat.AdminRepository
 {
@@ -18,7 +21,7 @@ namespace Hirafeyat.AdminRepository
 
         public async Task DeleteAsync(int id)
         {
-            var cat = _context.Categories.FirstOrDefault(c => c.Id == id);
+            var cat = await GetByIdAsync(id);
             if (cat != null)
             {
                 _context.Categories.Remove(cat);
@@ -31,10 +34,17 @@ namespace Hirafeyat.AdminRepository
              return _context.Categories.ToList();
         }
 
-        public Category? GetByIdAsync(int id)
+        public async Task<Category?> GetByIdAsync(int id)
         {
-            var cat = _context.Categories.FirstOrDefault(c => c.Id == id);
+            var cat = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
             return cat != null ? cat : null;
+        }
+        public IEnumerable<Category> GetByNameAsync(string query)
+        {
+            var categories = string.IsNullOrWhiteSpace(query)
+            ? _context.Categories.ToList()
+                : _context.Categories.Where(c => c.Name.Contains(query)).ToList();
+            return categories;
         }
 
         public async Task SaveAsync()
@@ -44,9 +54,10 @@ namespace Hirafeyat.AdminRepository
 
         public async Task UpdateAsync(Category category)
         {
-            var cat = _context.Categories.FirstOrDefault(c => c.Id == category.Id);
+            var cat = await GetByIdAsync(category.Id);
             if (cat != null)
             {
+                cat.Name = category.Name;
                 _context.Categories.Update(cat);
                 await SaveAsync();
             }

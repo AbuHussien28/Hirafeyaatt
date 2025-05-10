@@ -1,74 +1,88 @@
 ﻿@model Hirafeyat.Models.Product
 
 @{
-    ViewData["Title"] = "DeleteAsync";
+	ViewData["Title"] = "Delete Product";
+	Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
 
-<h1>DeleteAsync</h1>
+<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
+<style>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageUrl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CategoryId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CategoryId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SellerId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SellerId)
-        </dd>
-    </dl>
-    
-    <form asp-action="DeleteAsync">
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+	.img-hover-effect img {
+		transition: all 0.3s ease;
+	}
+
+		.img-hover-effect img:hover {
+			transform: scale(1.05);
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+		}
+</style>
+
+
+<div class="container-fluid">
+	<div class="row justify-content-center px-xl-5 pb-5">
+		<h2 class="text-danger mb-4">Are you sure you want to delete this product?</h2>
+		<div class="row">
+			<!-- Product Image -->
+			<div class="col-md-5 mb-4">
+				<div class="bg-light p-4 rounded shadow-sm img-hover-effect">
+					<img class="img-fluid rounded" src="@Url.Content("~/" + Model.ImageUrl)" alt="Product Image" />
+				</div>
+			</div>
+
+			<!-- Product Info -->
+			<div class="col-md-7">
+				<div class="bg-light p-4 rounded shadow-sm">
+					<h3 class="text-primary d-flex justify-content-center">@Model.Title</h3>
+					<dl class="row">
+
+						<dt class="col-sm-2"> @Html.DisplayNameFor(model => model.Description) </dt>
+						<dd class="col-sm-10"> @Html.DisplayFor(model => model.Description) </dd>
+
+						<dt class="col-sm-2">Price</dt>
+						<dd class="col-sm-10">@Model.Price.ToString("C")</dd>
+
+						<dt class="col-sm-2">Date</dt>
+						<dd class="col-sm-10">@Model.CreatedAt.ToString("yyyy-MM-dd")</dd>
+
+						<dt class="col-sm-2">Category</dt>
+						<dd class="col-sm-10"> @Html.DisplayFor(model => model.Category.Name) </dd>
+
+						<dt class="col-sm-2"> @Html.DisplayNameFor(model => model.Seller.FullName) </dt>
+						<dd class="col-sm-10"> @Html.DisplayFor(model => model.Seller.FullName) </dd>
+
+						<dt class="col-sm-2 ">Status</dt>
+						<dd class="col-sm-10" style="display: flex; align-items: center; gap: 5px;">
+							@if (Model.Status == productStatus.Approved)
+							{
+								<span style="color:green;font-size: 1.5rem;">●</span>
+								<span>@Model.Status</span>
+							}
+							else if (Model.Status == productStatus.Rejected)
+							{
+								<span style="color:red;font-size: 1.5rem;">●</span>
+								<span>@Model.Status</span>
+							}
+							else
+							{
+								<span style="color:yellow;  font-size: 1.5rem;">●</span>
+								<span>@Model.Status</span>
+							}
+						</dd>
+
+
+					</dl>
+					<div class="mt-4 d-flex justify-content-end gap-2">
+						<form asp-action="DeleteConfirmed" method="post" class="mt-4">
+							<input type="hidden" asp-for="Id" />
+							<button type="submit" class="btn btn-danger me-2">Delete</button>
+							<a asp-action="Index" class="btn btn-primary">Cancel</a>
+						</form>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
 </div>

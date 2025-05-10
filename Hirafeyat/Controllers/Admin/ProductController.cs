@@ -13,6 +13,7 @@ using Hirafeyat.ViewModel.Admin;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.IdentityModel.Tokens;
+using Hirafeyat.ViewModel;
 namespace Hirafeyat.Controllers.Admin
 {
     //[Authorize(Roles = "Admin")]
@@ -88,7 +89,7 @@ namespace Hirafeyat.Controllers.Admin
             return View("/Views/AdminProducts/Delete.cshtml", product);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -99,6 +100,48 @@ namespace Hirafeyat.Controllers.Admin
             }
 
             await _productService.DeleteProductAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [Route("/Admin/Product/EditStatus/{id}")]
+        [HttpGet]
+        public async Task<IActionResult> EditStatus(int id)
+        {
+            var product = await _productService.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new ProductStatusViewModel
+            {
+                Id = product.Id,
+                ImageUrl = product.ImageUrl,
+                Title = product.Title,
+                Status = product.Status
+            };
+
+            return View("/Views/AdminProducts/Edit.cshtml", viewModel);
+        }
+
+        [Route("/Admin/Product/EditStatus/{id}")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditStatus(ProductStatusViewModel model , int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("/Views/AdminProducts/Edit.cshtml", model);
+            }
+
+            var product = await _productService.GetProductByIdAsync(model.Id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            product.Status = model.Status.Value;
+            await _productService.UpdateProductAsync(product);
+
             return RedirectToAction(nameof(Index));
         }
 

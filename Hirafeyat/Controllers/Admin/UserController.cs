@@ -1,4 +1,5 @@
 ﻿using Hirafeyat.AdminServices;
+using Hirafeyat.ViewModel.Admin;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -25,6 +26,30 @@ namespace Hirafeyat.Controllers.Admin
             var customers = await userService.GetCustomersAsync(page, pageSize); 
             return View("Customers", customers);
         }
+        [Route("/User/SellerDetails")]
+        public async Task<IActionResult> SellerDetails([FromQuery]string username)
+        {
+            
+            if (string.IsNullOrEmpty(username))
+            {
+                return BadRequest("Username is required");
+            }
+            var user = await userService.SellerDetailsAsync(username);
+            return View("SellerDetails", user);
+        }
+        public async Task<IActionResult> CustomerDetails(string username)
+        {
+            
+            var user = await userService.CustomerDetailsAsync(username);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View("CustomerDetails", user);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleUserStatus(string userName, string sourceAction)
@@ -52,7 +77,8 @@ namespace Hirafeyat.Controllers.Admin
             };
         }
         [HttpPost]
-        public async Task<IActionResult> BatchToggleUserStatus(List<string> userNames, bool activate)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BatchToggleUserStatus([FromBody] List<string> userNames, bool activate)
         {
             try
             {
@@ -64,5 +90,20 @@ namespace Hirafeyat.Controllers.Admin
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchSellers(string query, int page = 1)
+        {
+            int pageSize = 10; 
+            var sellers = await userService.GetSellersAsync(page, pageSize, query);
+            return PartialView("SellerTablePartial", sellers);
+        }
+        [HttpGet]
+        public async Task<IActionResult> SearchCustomers(string query, int page = 1)
+        {
+            int pageSize = 10;
+            var customers = await userService.GetCustomersAsync(page, pageSize, query);
+            return PartialView("CustomerTablePartial", customers);
+        }
+
     }
 }

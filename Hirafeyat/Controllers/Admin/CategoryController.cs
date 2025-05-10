@@ -8,20 +8,22 @@ namespace Hirafeyat.Controllers.Admin
     public class CategoryController : Controller
     {
         private readonly ICategoryService _service;
-        private readonly HirafeyatContext _context;
-        public CategoryController(ICategoryService service, HirafeyatContext context)
+       
+
+        public CategoryController(ICategoryService service)
         {
             _service = service;
-            _context = context;
         }
+
         public IActionResult Index()
         {
             var categories = _service.GetAll();
             return View(categories);
         }
-        public IActionResult Details(int id)
+
+        public async Task<IActionResult> Details(int id)
         {
-            var category = _service.GetByIdAsync(id);
+            var category = await _service.GetByIdAsync(id);
             if (category == null)
                 return NotFound();
 
@@ -32,6 +34,7 @@ namespace Hirafeyat.Controllers.Admin
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category category)
@@ -44,9 +47,9 @@ namespace Hirafeyat.Controllers.Admin
             return View(category);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var category = _service.GetByIdAsync(id);
+            var category = await _service.GetByIdAsync(id);
             if (category == null)
                 return NotFound();
 
@@ -55,31 +58,38 @@ namespace Hirafeyat.Controllers.Admin
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Category category)
+        public async Task<IActionResult> Edit(Category category)
         {
             if (ModelState.IsValid)
             {
-                _service.UpdateAsync(category);
+                await _service.UpdateAsync(category);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
 
-        public IActionResult Delete(int id)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("/Category/Delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            var category = _service.GetByIdAsync(id);
+            var category = await _service.GetByIdAsync(id);
             if (category == null)
                 return NotFound();
 
-            return View(category);
-        }
+            // Proceed to delete the category
+            await _service.DeleteAsync(id);
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            _service.DeleteAsync(id);
+            // After deletion, redirect back to the index page
             return RedirectToAction(nameof(Index));
+        }
+        [HttpGet]
+        public IActionResult Search(string query)
+        {
+            var categories = _service.GetByNameAsync(query);
+
+            return PartialView("_CategoryTablePartial", categories);
         }
 
     }

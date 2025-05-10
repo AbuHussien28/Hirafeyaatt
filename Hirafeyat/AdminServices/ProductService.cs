@@ -52,9 +52,9 @@ namespace Hirafeyat.AdminServices
             return await _productRepository.GetTotalProductsCountAsync(sellerId);
         }
 
-        public Task UpdateProductAsync(Product product)
+        public async Task UpdateProductAsync(Product product)
         {
-            throw new NotImplementedException();
+             await _productRepository.UpdateProductAsync(product);
         }
     }
 }

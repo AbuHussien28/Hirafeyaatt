@@ -30,7 +30,7 @@ namespace Hirafeyat.AdminServices
             return _categoryRepository.GetAll();
         }
 
-        public Category? GetByIdAsync(int id)
+        public Task<Category?> GetByIdAsync(int id)
         {
             return _categoryRepository?.GetByIdAsync(id);
         }
@@ -38,6 +38,10 @@ namespace Hirafeyat.AdminServices
         public async Task UpdateAsync(Category category)
         {
             await _categoryRepository.UpdateAsync(category);
+        }
+        public IEnumerable<Category> GetByNameAsync(string query)
+        {
+            return _categoryRepository.GetByNameAsync(query);
         }
     }
 }
