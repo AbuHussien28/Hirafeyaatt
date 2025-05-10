@@ -18,7 +18,5 @@ namespace Hirafeyat.ViewModel
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-
-        
     }
 }
