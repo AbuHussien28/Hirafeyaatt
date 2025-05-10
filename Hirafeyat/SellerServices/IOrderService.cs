@@ -8,7 +8,9 @@ namespace Hirafeyat.Services
 
         List<Order> GetAllOrdersBySellerId(string stringId);
         void UpdateOrderStatus(int orderId, OrderStatus newStatus);
-        //public List<Order> getAllWithSeller();
+        public void UpdateOrderStatusByProducts(int orderId);
+        public IQueryable<Order> getAllWithoutLoading();
+
 
 
     }

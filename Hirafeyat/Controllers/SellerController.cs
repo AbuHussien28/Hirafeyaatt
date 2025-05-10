@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Hirafeyat.ViewModel.sellerVM;
 using Hirafeyat.OtherServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hirafeyat.Controllers
 {
@@ -19,13 +20,16 @@ namespace Hirafeyat.Controllers
         private readonly ICategoryRepository CategoryRepository;
         private readonly IOrderService orderService;
         private readonly Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> user;
+        private readonly IOrderItemsRepository orderItemsRepository;
 
-        public SellerController(IOrderService orderService,UserManager<ApplicationUser> user , IProductRepository productRepo , ICategoryRepository catRepo)
+        public SellerController(IOrderService orderService,UserManager<ApplicationUser> user , IProductRepository productRepo ,
+            ICategoryRepository catRepo, HirafeyatContext context, IOrderItemsRepository orderItemsRepository)
         {
             this.orderService = orderService;
             this.user = user;
             ProductRepository = productRepo;
             CategoryRepository = catRepo;
+            this.orderItemsRepository = orderItemsRepository;
         }
         public IActionResult Index()
         {
@@ -33,11 +37,13 @@ namespace Hirafeyat.Controllers
             List<Product> products = ProductRepository.getProductsBySellerId(sId);
             return View("Index" , products);
         }
+
         public IActionResult New()
         {
             ViewData["CatList"] = CategoryRepository.getAll() ;
             return View("New");
         }
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> New(NewProductViewModel productfromModel)
@@ -78,6 +84,7 @@ namespace Hirafeyat.Controllers
             return View(productfromModel);
         }
 
+        
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -100,6 +107,7 @@ namespace Hirafeyat.Controllers
             ViewData["catList"]= CategoryRepository.getAll();
             return View(productToEdit);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -139,14 +147,13 @@ namespace Hirafeyat.Controllers
 
         public IActionResult Details(int id)
         {
-            Product pro = ProductRepository.getById(id);
-            if(pro == null)
+            var product = ProductRepository.getById(id);
+            if (product == null)
             {
                 return NotFound();
             }
-            return View(pro);
+            return View(product);
         }
-
 
 
         [HttpPost]
@@ -162,43 +169,88 @@ namespace Hirafeyat.Controllers
             return RedirectToAction("Index");
 
         }
-        //------------------------------------------------------------------------------
-
-
-        [Authorize(Roles="Seller")]
-        public IActionResult Orders() 
-        {
-            var sellerid = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
-            var orders = orderService.GetAllOrdersBySellerId(sellerid);
-
-            if (orders == null)
-            {
-                return NotFound();
-            }
-            return View(orders);
-        }
         
 
+        public IActionResult Orders()
+        {
+            var sellerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var orders = orderService.GetAllOrdersBySellerId(sellerId);
+
+            var sellerOrders = orders.Select(order => new SellerOrderViewModel
+            {
+                OrderId = order.Id,
+                CustomerName = order.FullName,
+                OrderDate = order.OrderDate,
+                Address = order.Address,
+                Status = order.Status,
+                Items = order.OrderItems
+                    .Where(oi => oi.Product.SellerId == sellerId)
+                    .Select(oi => new SellerOrderItemViewModel
+                            {
+                            OrderItemId = oi.Id,
+                            ProductId = oi.Product.Id, // ✅ هنا
+                            ProductTitle = oi.Product.Title,
+                            Quantity = oi.Quantity,
+                            ProductStatus = oi.ItemStatus
+                            }).ToList()
+                    }).ToList();
+
+
+            return View(sellerOrders);
+        }
+
+
+        [Authorize(Roles = "Seller")]
         public IActionResult OrderDetail(int id)
         {
-            var order = orderService.getById(id);
+            var sellerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var order = orderService.getAllWithoutLoading()
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                .Include(o => o.Customer)
+                .FirstOrDefault(o => o.Id == id);
+
             if (order == null)
             {
                 return NotFound();
             }
-            return View(order); 
-        }
-        public IActionResult UpdateOrderStatus(int orderId, OrderStatus newStatus) 
-        {
-        
-            orderService.UpdateOrderStatus(orderId, newStatus);
-            orderService.save();
-         return   RedirectToAction("orders");
 
-        
+            ViewBag.SellerId = sellerId;
+            return View(order);
         }
-        // -----------------------------------------------------
+
+
+
+        [HttpPost]
+        [Authorize(Roles = "Seller")]
+        public IActionResult UpdateProductStatus(int orderItemId, OrderStatus newStatus)
+        {
+            var sellerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var orderItem = orderItemsRepository.getAllWithoutLoading()
+                .Include(oi => oi.Product)
+                .Include(oi => oi.Order)
+                .FirstOrDefault(oi => oi.Id == orderItemId);
+
+            if (orderItem == null || orderItem.Product.SellerId != sellerId)
+            {
+                return Unauthorized();
+            }
+
+            orderItem.ItemStatus = newStatus;
+            orderItemsRepository.update(orderItem);
+
+            // حدث حالة الأوردر بعد تغيير حالة أحد العناصر
+            orderService.UpdateOrderStatusByProducts(orderItem.OrderId);
+
+            //context.SaveChanges();
+            orderItemsRepository.save();
+
+            return RedirectToAction("Orders");
+        }
+
+
 
         [HttpPost]
         [Authorize(Roles = "Seller")]

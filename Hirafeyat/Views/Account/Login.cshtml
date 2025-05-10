@@ -2,50 +2,89 @@
 
 @{
     ViewData["Title"] = "Login";
+
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+   
 
-<h1>Login</h1>
+    <!-- Font Icon -->
 
-<h4>LoginViewModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Login">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserName" class="control-label"></label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
+    <link rel="stylesheet" href="~/fonts/material-icon/css/material-design-iconic-font.min.css" />
+    <!-- Main css -->
+    <link rel="stylesheet" href="~/css/style2.css" />
+</head>
+<body>
+    <div class="my-5">
+    <section class="sign-in ">
+        <div class="container-fluid ">
+            <div class="signin-content">
+                <div class="signin-image">
+                    <figure>
+                        <img src="~/images/signin-image.jpg" alt="sing up image" />
+                    </figure>
+                    <a asp-action="Register" class="signup-image-link">Create an account</a>
+                </div>
+
+                <div class="signin-form">
+                    <h2 class="form-title">Sign up</h2>
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+
+                        <div class="form-group">
+                            <label asp-for="UserName">
+                                <i class="zmdi zmdi-account material-icons-name"></i>
+                            </label>
+                            <input type="text" asp-for="UserName" id="your_name" placeholder="Your Name" />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Password"><i class="zmdi zmdi-lock"></i></label>
+                            <input type="password" asp-for="Password" id="your_pass" placeholder="Password" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="row">
+                        <div class="form-group">
+                            <input type="checkbox" asp-for="RememberMe" id="remember-me" class="agree-term" />
+                            <label asp-for="RememberMe" class="label-agree-term">
+                                </span></span>Remember me
+                            </label>
+                            <span asp-validation-for="RememberMe" class="text-danger"></span>
+                        </div>
+                        <div>
+                            <p>
+                                <a asp-controller="Account" asp-action="ForgotPassword">Forgot Password ?</a>
+                            </p>
+                        </div>
+                        </div>
+
+
+                        <div class="form-group form-button">
+                            <input type="submit" value="Login" class="form-submit" />
+                        </div>
+                    </form>
+                    <span class="social-label">Or login with</span>
+                    <a class="btn btn-danger" asp-controller="Account" asp-action="ExternalLogin" asp-route-provider="Google">
+                        <i class="display-flex-center zmdi zmdi-google"></i>
+                    </a>
+           
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="RememberMe" /> @Html.DisplayNameFor(model => model.RememberMe)
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <p>
-        <a asp-controller="Account" asp-action="ForgotPassword">Forgot Password ?</a>
-    </p>
-    <br />
-    <a asp-action="Register">Register</a>
-    <a class="btn btn-danger" asp-controller="Account" asp-action="ExternalLogin" asp-route-provider="Google">
-        Login with Google
-    </a>
-
-</div>
+    </section>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+</body>
+</html>
+
+
+

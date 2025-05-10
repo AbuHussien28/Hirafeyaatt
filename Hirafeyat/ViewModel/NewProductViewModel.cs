@@ -7,7 +7,9 @@
         public string Description { get; set; }
         [Required]
         public decimal Price { get; set; }
+
         [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
         public int Quentity { get; set; }
         public IFormFile? Image { get; set; }
 

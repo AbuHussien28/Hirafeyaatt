@@ -55,9 +55,9 @@ namespace Hirafeyat.SellerServices
     .Include(o => o.OrderItems)
         .ThenInclude(oi => oi.Product)
             .ThenInclude(p => p.Category)
-    .Include(o => o.Customer)
-    .Where(o => o.OrderItems.Any(oi => oi.Product.SellerId == seller_id))
-    .ToList();
+            .Include(o => o.Customer)
+            .Where(o => o.OrderItems.Any(oi => oi.Product.SellerId == seller_id))
+            .ToList();
         }
 
 
@@ -72,6 +72,36 @@ namespace Hirafeyat.SellerServices
 
         }
 
+        public void UpdateOrderStatusByProducts(int orderId)
+        {
+            var order = _context.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefault(o => o.Id == orderId);
+
+            if (order == null) return;
+
+            var statuses = order.OrderItems.Select(oi => oi.ItemStatus).ToList();
+
+            if (statuses.All(s => s == OrderStatus.Delivered))
+            {
+                order.Status = OrderStatus.Delivered;
+            }
+            else if (statuses.All(s => s == OrderStatus.Shipped || s == OrderStatus.Delivered))
+            {
+                order.Status = OrderStatus.Shipped;
+            }
+            else
+            {
+                order.Status = OrderStatus.Processing;
+            }
+
+            _context.Orders.Update(order);
+        }
+
+        public IQueryable<Order> getAllWithoutLoading()
+        {
+            return _context.Orders ;
+        }
 
         public int save()
         {

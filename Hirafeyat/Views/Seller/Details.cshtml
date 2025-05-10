@@ -5,24 +5,95 @@
     var isSoldOut = Model.Quentity == 0;
 }
 
-<h1>Details</h1>
+<div class="row px-xl-5 py-5">
+    <div class="col-lg-5 pb-5">
+        <img class="w-100 fixed-image" src="@Model.ImageUrl" alt="Product Image">
+    </div>
 
-<div class="card @(isSoldOut ? "bg-danger text-white" : "")" style="width: 18rem;">
-    <img src="@Model.ImageUrl" class="card-img-top" alt="Product Image">
-    <div class="card-body">
-        <h5 class="card-title">@Model.Title</h5>
-        <p class="card-text">@Model.Description</p>
-        <p class="card-text">@Model.Price.ToString("C")</p>
-        <p class="card-text">
-            @if (isSoldOut)
-            {
-                <strong>Sold Out</strong>
-            }
-            else
-            {
-                <strong>Quantity: @Model.Quentity</strong>
-            }
-        </p>
-        <a asp-action="Index" asp-controller="Seller" class="btn btn-primary">Back To List</a>
+    <div class="col-lg-7 pb-5">
+        <h3 class="font-weight-semi-bold">@Model.Title</h3>
+
+        <div class="d-flex mb-3">
+            <div class="text-primary mr-2">
+                <small class="fas fa-star"></small>
+                <small class="fas fa-star"></small>
+                <small class="fas fa-star"></small>
+                <small class="fas fa-star-half-alt"></small>
+                <small class="far fa-star"></small>
+            </div>
+            <small class="pt-1">(50 Reviews)</small>
+        </div>
+
+        <div class="d-flex mb-3">
+            <div><h6 class="text-primary"><del>$@(Model.Price + 200) </del></h6></div>
+            <h6 class="text-muted ml-3">$@Model.Price</h6> 
+        </div>
+
+        <p class="mb-4">@Model.Description</p>
+
+        @if (isSoldOut)
+        {
+            <h5 class="text-danger"> Sold Out</h5>
+        }
+        else
+        {
+            <p class="text-dark">Available Quantity: <strong>@Model.Quentity</strong></p>
+        }
+
+        <div class="d-flex pt-2">
+            <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
+            <div class="d-inline-flex">
+                <a class="text-dark px-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                <a class="text-dark px-2" href="#"><i class="fab fa-twitter"></i></a>
+                <a class="text-dark px-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a class="text-dark px-2" href="#"><i class="fab fa-pinterest"></i></a>
+            </div>
+        </div>
+
+        <a asp-action="Index" asp-controller="Seller" class="btn btn-brown mt-4"> Back To List</a>
     </div>
 </div>
+<style>
+    .btn-brown {
+        background-color: #8b5e3c;
+        color: white;
+        border: none;
+    }
+
+        .btn-brown:hover {
+            background-color: #6b3e26;
+        }
+</style>
+
+
+
+
+@* @model Product *@
+
+@* @{ *@
+@*     ViewData["Title"] = "Details"; *@
+@*     var isSoldOut = Model.Quentity == 0; *@
+@* } *@
+
+@* <h1>Details</h1> *@
+
+@* <div class="card @(isSoldOut ? "bg-danger text-white" : "")" style="width: 18rem;"> *@
+@*     <img src="@Model.ImageUrl" class="card-img-top" alt="Product Image"> *@
+@*     <div class="card-body"> *@
+@*         <h5 class="card-title">@Model.Title</h5> *@
+@*         <p class="card-text">@Model.Description</p> *@
+@*         <p class="card-text">@Model.Price.ToString("C")</p> *@
+@*         <p class="card-text"> *@
+@*             @if (isSoldOut) *@
+@*             { *@
+@*                 <strong>Sold Out</strong> *@
+@*             } *@
+@*             else *@
+@*             { *@
+@*                 <strong>Quantity: @Model.Quentity</strong> *@
+@*             } *@
+@*         </p> *@
+@*         <a asp-action="Index" asp-controller="Seller" class="btn btn-primary">Back To List</a> *@
+@*     </div> *@
+@* </div> *@
+

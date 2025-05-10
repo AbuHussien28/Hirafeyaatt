@@ -4,5 +4,6 @@ namespace Hirafeyat.SellerServices
 {
     public interface ICategoryRepository : IRepository<Category>
     {
+
     }
 }

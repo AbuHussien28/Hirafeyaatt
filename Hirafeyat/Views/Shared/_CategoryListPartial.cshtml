@@ -4,7 +4,7 @@
     Layout = null;
 }
 
-@foreach(var cat in Model)
+@foreach (var cat in Model)
 {
-    <a href="#" class="nav-item nav-link">@cat.Name</a>
+    <a href="#category-@cat.Name" class="nav-item nav-link">@cat.Name</a>
 }

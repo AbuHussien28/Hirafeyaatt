@@ -1,56 +1,144 @@
-﻿@* 3/5 *@
-
-@model Dictionary<string, List<Hirafeyat.Models.Product>>
+﻿@model Dictionary<string, List<Hirafeyat.Models.Product>>
 
 @foreach (var category in Model)
 {
-    <h3>@category.Key</h3>
+    <h3 class="mt-5 mb-3 text-center p-3">@category.Key</h3>
 
-    <div class="row flex-row flex-nowrap overflow-auto mb-4" style="white-space: nowrap;">
+
+    var rowClass = category.Value.Count < 4 ? "row justify-content-center" : "row";
+
+
+    <div class="@rowClass">
         @foreach (var product in category.Value)
         {
+
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="card product-item border-0 ml-3">
+
+                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                        <img class="img-fluid w-100 fixed-image" src="@product.ImageUrl" alt="@product.Title">
+
+                      
+                        <form method="post" asp-action="AddToFavourites" asp-controller="Favourite" class="position-absolute" style="top: 10px; right: 10px;">
+
             <div class="card mx-2" style="width: 18rem; display: inline-block;">
                 <img src="@product.ImageUrl" class="card-img-top" alt="@product.Title" style="height:200px; object-fit:cover;">
                 <div class="card-body">
                     <h5 class="card-title">@product.Title</h5>
                     <p class="card-text">@product.Description</p>
+
+                    @if (product.Quentity > 0)
+                    {
+                        <p class="card-text"><strong>Quantity:</strong> @product.Quentity</p>
+                    }
+                    else
+                    {
+                        <p class="card-text text-danger"><strong>Status:</strong> Sold Out</p>
+                    }
+
                     <p class="card-text"><strong>Price:</strong> @product.Price$</p>
                     <p class="card-text"><strong>Seller:</strong> @product.Seller?.FullName</p>
 
                     <div class="d-flex justify-content-between">
-                        <form method="post" asp-action="AddToCart" asp-controller="Cart">
-                            <input type="hidden" name="productId" value="@product.Id" />
-                            <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
-                        </form>
+                        @if (product.Quentity > 0)
+                        {
+                            <form method="post" asp-action="AddToCart" asp-controller="Cart" class="add-to-cart-form">
+                                <input type="hidden" name="productId" value="@product.Id" />
+                                <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+                                <div class="add-to-cart-message" style="display:none;"></div>
+                            </form>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-sm" disabled>Add to Cart</button>
+                        }
 
-                        <form method="post" asp-action="AddToFavourites" asp-controller="Favorite">
+                        <form method="post" asp-action="AddToFavourites" asp-controller="Favorite" class="add-to-favorites-form">
                             <input type="hidden" name="productId" value="@product.Id" />
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <button type="submit" class="btn btn-sm text-danger bg-white rounded-circle shadow-sm p-1" title="Add to Favourites">
                                 ❤️
                             </button>
+                            <div class="add-to-favorites-message" style="display:none;"></div>
                         </form>
                     </div>
-                </div>
-            </div>
-        }
-    </div>
-}
 
-@* 3/5 *@
+                    <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                        <h6 class="text-truncate mb-3">@product.Category?.Name</h6>
+                        <div class="d-flex justify-content-center">
+                            <h6>$@(@product.Price - 200)</h6>
+                            <h6 class="text-muted ml-2"><del>$@product.Price</del></h6>
+                        </div>
+                        <p class="card-text small mb-1">@product.Description</p>
+                        <p class="card-text small text-muted mb-2"><strong>Seller:</strong> @product.Seller?.FullName</p>
+                    </div>
 
 <style>
     .overflow-auto::-webkit-scrollbar {
         height: 8px;
     }
 
-    .overflow-auto::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 4px;
-    }
+                        <form method="post" asp-action="AddToCart" asp-controller="Cart" class="mb-0">
 
-        .overflow-auto::-webkit-scrollbar-thumb:hover {
-            background: #555;
+                    //    <form method="post" asp-action="AddToFavourites" asp-controller="Favorite">
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.add-to-cart-form').submit(function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var button = form.find('button[type="submit"]');
+                var messageDiv = form.find('.add-to-cart-message');
+
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: form.serialize(),
+                    success: function(response) {
+                        messageDiv.text('Added to cart!').css('color', 'green').fadeIn().delay(2000).fadeOut();
+                        button.prop('disabled', false);
+                    },
+                    error: function() {
+                        messageDiv.text('Error adding to cart').css('color', 'red').fadeIn().delay(2000).fadeOut();
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+
+            $('.add-to-favorites-form').submit(function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var button = form.find('button[type="submit"]');
+                var messageDiv = form.find('.add-to-favorites-message');
+
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: form.serialize(),
+                    success: function(response) {
+                        messageDiv.text('Added to favorites!').css('color', 'green').fadeIn().delay(2000).fadeOut();
+                        button.prop('disabled', false);
+                    },
+                    error: function() {
+                        messageDiv.text('Error adding to favorites').css('color', 'red').fadeIn().delay(2000).fadeOut();
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+
+
+
+
+                </div>
+            </div>
         }
-</style>
-
-
+    </div>
+}

@@ -21,7 +21,9 @@ namespace Hirafeyat.Models
         [Display(Name = "Product Image")]
 
         public string ImageUrl { get; set; }
+
         [Required]
+        [ConcurrencyCheck]
         public int Quentity { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -35,6 +37,7 @@ namespace Hirafeyat.Models
 
         // Navigation
         public ICollection<Order> Orders { get; set; }
+
 
     }
 
