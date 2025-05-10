@@ -1,5 +1,5 @@
 ﻿<!-- Topbar Start -->
-<div class="container-fluid ">
+<div class="container-fluid">
 	<div class="row bg-dark py-2 px-xl-5">
 		<div class="col-lg-6 d-none d-lg-block">
 			<div class="d-inline-flex align-items-center">
@@ -12,38 +12,43 @@
 		</div>
 		<div class="col-lg-6 text-center text-lg-right">
 			<div class="d-inline-flex align-items-center">
-				<a class="text-white px-2" href="">
-					<i class="fab fa-facebook-f"></i>
-				</a>
-				<a class="text-white px-2" href="">
-					<i class="fab fa-twitter"></i>
-				</a>
-				<a class="text-white px-2" href="">
-					<i class="fab fa-linkedin-in"></i>
-				</a>
-				<a class="text-white px-2" href="">
-					<i class="fab fa-instagram"></i>
-				</a>
-				<a class="text-white pl-2" href="">
-					<i class="fab fa-youtube"></i>
-				</a>
+				<a class="text-white px-2" target="_blank" href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a>
+				<a class="text-white px-2" target="_blank" href="https://x.com/"><i class="fab fa-twitter"></i></a>
+				<a class="text-white px-2" target="_blank" href="https://www.linkedin.com/login"><i class="fab fa-linkedin-in"></i></a>
+				<a class="text-white px-2" target="_blank" href="https://www.instagram.com/"><i class="fab fa-instagram"></i></a>
+				<a class="text-white pl-2" target="_blank" href="https://www.youtube.com/"><i class="fab fa-youtube"></i></a>
 			</div>
 		</div>
 	</div>
-	<div class="row align-items-center py-3 px-xl-5">
-		<div class="col-lg-3 d-none d-lg-block">
-			<a href="" class="text-decoration-none">
-				<h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">H</span>irafeyat</h1>
-			</a>
-		</div>
-		<div class="col-lg-6 col-6 text-left">
-			<div class="input-group mb-3">
-				<input type="text" id="searchInput" class="form-control" placeholder="Search by Seller name" value="@ViewBag.Name">
-				<div class="input-group-append">
-					<button class="btn btn-primary" id="searchBtn"><i class="fa fa-search"></i></button>
-				</div>
+
+<div class="row align-items-center py-3 px-xl-5">
+	<div class="col-lg-3 d-none d-lg-block">
+		<a href="#" class="text-decoration-none">
+			<h1 class="m-0 display-5 font-weight-semi-bold">
+				<span class="text-primary font-weight-bold border px-3 mr-1">H</span>irafeyat
+			</h1>
+		</a>
+	</div>
+
+	<!-- مربع البحث -->
+	<div class="col-lg-4 col-8">
+		<div class="input-group">
+			<input type="text" id="searchInput" class="form-control" placeholder="Search by Seller name" value="@ViewBag.Name">
+			<div class="input-group-append">
+				<button class="btn btn-primary" id="searchBtn"><i class="fa fa-search"></i></button>
 			</div>
+		</div>
+	</div>
+
+	<!-- روابط النافبار -->
+	<div class="col-lg-5 mt-3 mt-lg-0">
+			<div class="d-flex flex-wrap justify-content-end align-items-center">
+			<a href="/Admin/Product/Board" class="nav-item nav-link px-2">Home</a>
+			<a href="/Admin/Product/Index" class="nav-item nav-link px-2">Products</a>
+			<a href="detail.html" class="nav-item nav-link px-2">Orders</a>
+			<a href="/Category/index" class="nav-item nav-link px-2">Categories</a>
+			<a href="/user/customers" class="nav-item nav-link px-2">Customers</a>
+			<a href="/User/Sellers" class="nav-item nav-link px-2">Sellers</a>
 		</div>
 	</div>
 </div>
-<!-- Topbar End -->
