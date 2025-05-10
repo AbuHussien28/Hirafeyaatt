@@ -42,6 +42,7 @@ namespace Hirafeyat.SellerServices
         {
             return context.SaveChanges();
         }
+
         public List<Product> getProductsBySellerId(string sellerId)
         {
             return context.Products.Where(p => p.SellerId == sellerId).ToList();

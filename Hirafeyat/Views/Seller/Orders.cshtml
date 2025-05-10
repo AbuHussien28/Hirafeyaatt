@@ -1,59 +1,164 @@
-﻿@model IEnumerable<Hirafeyat.Models.Order>
+﻿@model List<Hirafeyat.ViewModel.SellerOrderViewModel>
 
-@{
-    ViewData["Title"] = "Orders";
-}
-
-<h1>Orders</h1>
-
-<table class="table">
+<table class="seller-orders-table">
     <thead>
         <tr>
-            <th>Order ID</th>
-            <th>Customer Name</th>
-            <th>Order Date</th>
-            <th>Status</th>
+            <th>Customer</th>
+            <th>Date</th>
             <th>Address</th>
-            <th>Update Status</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Product Status</th>
+            <th>Action</th>
             <th>Details</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var order in Model)
         {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.FullName</td>
-                <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
-                <td>@item.Status</td>
-                <td>@item.Address</td>
-                <td>
-                    @if (item.Status == OrderStatus.Cancelled || item.Status == OrderStatus.Delivered)
-                    {
-                        <form asp-action="RemoveOrder" method="post" asp-route-orderId="@item.Id" onsubmit="return confirm('Are you sure you want to remove this order?');">
-                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <form asp-action="UpdateOrderStatus" method="post" asp-route-orderId="@item.Id">
-                            <select name="newStatus" class="form-control">
-                                @foreach (var status in Enum.GetValues(typeof(Hirafeyat.Models.OrderStatus)))
-                                {
-                                    <option value="@status" selected="@(item.Status == (OrderStatus)status ? "selected" : null)">
-                                        @status
-                                    </option>
-                                }
-                            </select>
-                            <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                        </form>
-                    }
-                </td>
+            foreach (var item in order.Items)
+            {
+                <tr>
+                    <td>@order.CustomerName</td>
+                    <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                    <td>@order.Address</td>
+                    <td>@item.ProductTitle</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.ProductStatus</td>
 
-                <td>
-                    <a asp-action="OrderDetail" asp-route-id="@item.Id" class="btn btn-info">Details</a>
-                </td>
-            </tr>
+                    <td>
+                        @if (order.Status == OrderStatus.Cancelled || order.Status == OrderStatus.Delivered)
+                        {
+                            <form asp-action="RemoveOrder" method="post" asp-route-orderId="@order.OrderId" onsubmit="return confirm('Are you sure you want to remove this order?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="UpdateProductStatus" method="post" class="form-inline">
+                                <input type="hidden" name="orderItemId" value="@item.OrderItemId" />
+                                <select name="newStatus" class="form-control form-control-sm">
+                                    @foreach (var status in Enum.GetValues(typeof(Hirafeyat.Models.OrderStatus)))
+                                    {
+                                        <option value="@status" selected="@(item.ProductStatus == (OrderStatus)status ? "selected" : null)">
+                                            @status
+                                        </option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary mt-1">Save</button>
+                            </form>
+                        }
+                    </td>
+
+                    <td>
+                        <a asp-action="OrderDetail" asp-controller="Seller" asp-route-id="@order.OrderId" class="btn-details btn-sm">Details</a>
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>
+
+<style>
+    /* ستايل الجدول الأساسي */
+    .seller-orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        /* رأس الجدول */
+        .seller-orders-table thead tr {
+            background-color: #8B4513; /* بني داكن */
+            color: #ffffff;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .seller-orders-table th,
+        .seller-orders-table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+
+        /* خلايا الجدول */
+        .seller-orders-table tbody tr {
+            border-bottom: 1px solid #D2B48C; /* بني فاتح للخط الفاصل */
+            background-color: #FAF0E6; /* بيج خفيف جداً */
+        }
+
+            .seller-orders-table tbody tr:nth-of-type(even) {
+                background-color: #FFF8DC; /* درجة بيج مختلفة للتبادل */
+            }
+
+            .seller-orders-table tbody tr:last-of-type {
+                border-bottom: 2px solid #8B4513; /* بني داكن لآخر خط */
+            }
+
+            /* تأثيرات hover */
+            .seller-orders-table tbody tr:hover {
+                background-color: #F5DEB3; /* بيج أكثر وضوحاً عند hover */
+                transform: scale(1.005);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                transition: all 0.2s ease;
+            }
+
+    /* الأزرار */
+    .btn-details {
+        background-color: #8B4513; /* بني داكن */
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+        .btn-details:hover {
+            background-color: #A0522D; /* بني أغمق عند hover */
+            color: white;
+            transform: translateY(-1px);
+        }
+
+    .btn-danger {
+        transition: all 0.3s;
+    }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+        }
+
+    .btn-primary {
+        background-color: #8B4513;
+        border-color: #8B4513;
+        transition: all 0.3s;
+    }
+
+        .btn-primary:hover {
+            background-color: #A0522D;
+            border-color: #A0522D;
+            transform: translateY(-1px);
+        }
+
+    /* حقل التحديد */
+    .form-control {
+        border: 1px solid #D2B48C;
+        border-radius: 4px;
+        padding: 6px;
+        margin-bottom: 5px;
+    }
+
+    /* جعل الخلايا متساوية في الارتفاع */
+    .seller-orders-table tbody td {
+        vertical-align: middle;
+    }
+</style>
+
+
+
+

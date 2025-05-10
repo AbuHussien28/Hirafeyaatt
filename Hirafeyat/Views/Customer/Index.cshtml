@@ -1,6 +1,4 @@
-﻿@* 3/5 *@
-
-@model Dictionary<string, List<Hirafeyat.Models.Product>>
+﻿@model Dictionary<string, List<Hirafeyat.Models.Product>>
 
 @foreach (var category in Model)
 {
@@ -14,20 +12,39 @@
                 <div class="card-body">
                     <h5 class="card-title">@product.Title</h5>
                     <p class="card-text">@product.Description</p>
+
+                    @if (product.Quentity > 0)
+                    {
+                        <p class="card-text"><strong>Quantity:</strong> @product.Quentity</p>
+                    }
+                    else
+                    {
+                        <p class="card-text text-danger"><strong>Status:</strong> Sold Out</p>
+                    }
+
                     <p class="card-text"><strong>Price:</strong> @product.Price$</p>
                     <p class="card-text"><strong>Seller:</strong> @product.Seller?.FullName</p>
 
                     <div class="d-flex justify-content-between">
-                        <form method="post" asp-action="AddToCart" asp-controller="Cart">
-                            <input type="hidden" name="productId" value="@product.Id" />
-                            <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
-                        </form>
+                        @if (product.Quentity > 0)
+                        {
+                            <form method="post" asp-action="AddToCart" asp-controller="Cart" class="add-to-cart-form">
+                                <input type="hidden" name="productId" value="@product.Id" />
+                                <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+                                <div class="add-to-cart-message" style="display:none;"></div>
+                            </form>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-sm" disabled>Add to Cart</button>
+                        }
 
-                        <form method="post" asp-action="AddToFavourites" asp-controller="Favorite">
+                        <form method="post" asp-action="AddToFavourites" asp-controller="Favorite" class="add-to-favorites-form">
                             <input type="hidden" name="productId" value="@product.Id" />
                             <button type="submit" class="btn btn-outline-danger btn-sm">
                                 ❤️
                             </button>
+                            <div class="add-to-favorites-message" style="display:none;"></div>
                         </form>
                     </div>
                 </div>
@@ -35,8 +52,6 @@
         }
     </div>
 }
-
-@* 3/5 *@
 
 <style>
     .overflow-auto::-webkit-scrollbar {
@@ -52,5 +67,60 @@
             background: #555;
         }
 </style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.add-to-cart-form').submit(function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var button = form.find('button[type="submit"]');
+                var messageDiv = form.find('.add-to-cart-message');
+
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: form.serialize(),
+                    success: function(response) {
+                        messageDiv.text('Added to cart!').css('color', 'green').fadeIn().delay(2000).fadeOut();
+                        button.prop('disabled', false);
+                    },
+                    error: function() {
+                        messageDiv.text('Error adding to cart').css('color', 'red').fadeIn().delay(2000).fadeOut();
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+
+            $('.add-to-favorites-form').submit(function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var button = form.find('button[type="submit"]');
+                var messageDiv = form.find('.add-to-favorites-message');
+
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: form.serialize(),
+                    success: function(response) {
+                        messageDiv.text('Added to favorites!').css('color', 'green').fadeIn().delay(2000).fadeOut();
+                        button.prop('disabled', false);
+                    },
+                    error: function() {
+                        messageDiv.text('Error adding to favorites').css('color', 'red').fadeIn().delay(2000).fadeOut();
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+
+
 
 
