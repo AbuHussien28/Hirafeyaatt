@@ -36,15 +36,6 @@ namespace Hirafeyat
                 .AddDefaultTokenProviders();
 
             //regester service
-            builder.Services.AddScoped<IOrderService, OrderService>();
-            builder.Services.AddScoped<IProductRepository, ProductService>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryService>();
-            builder.Services.AddScoped<IOrderItemsRepository, OrderItemsService>();
-            builder.Services.AddScoped<ICartItemsRepository, CartItemsService>();
-
-
-
-
             builder.Services.AddScoped<AdminRepository.IProductRepository, AdminRepository.ProductRepository>();
             builder.Services.AddScoped<AdminServices.IProductService, AdminServices.ProductService>();
 
@@ -56,8 +47,8 @@ namespace Hirafeyat
 
             builder.Services.AddScoped<SellerServices.IProductRepository, SellerServices.ProductService>();
 
-
-            builder.Services.AddScoped<Services.IOrderService, SellerServices.OrderService>();
+            builder.Services.AddScoped<SellerServices.IOrderItemsRepository, SellerServices.OrderItemsService>();
+            builder.Services.AddScoped<IOrderService,OrderService>();
             builder.Services.AddScoped<SellerServices.IProductRepository, SellerServices.ProductService>();
             builder.Services.AddScoped<SellerServices.ICategoryRepository, SellerServices.CategoryService>();
             builder.Services.AddScoped<IOrderCustomerRepository, OrderCustomerRepository>();

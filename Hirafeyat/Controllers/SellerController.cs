@@ -16,31 +16,34 @@ namespace Hirafeyat.Controllers
     [Authorize(Roles = "Seller")]
     public class SellerController : Controller
     {
-        private readonly IProductRepository ProductRepository;
-        private readonly ICategoryRepository CategoryRepository;
         private readonly IOrderService orderService;
         private readonly Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> user;
+        private readonly IProductRepository productRepo;
+        private readonly ICategoryRepository catRepo;
         private readonly IOrderItemsRepository orderItemsRepository;
 
         public SellerController(IOrderService orderService,UserManager<ApplicationUser> user , IProductRepository productRepo ,
-            ICategoryRepository catRepo, HirafeyatContext context, IOrderItemsRepository orderItemsRepository)
+            SellerServices.ICategoryRepository catRepo, HirafeyatContext context, SellerServices.IOrderItemsRepository orderItemsRepository)
         {
             this.orderService = orderService;
+            this.orderService = orderService;
             this.user = user;
-            ProductRepository = productRepo;
-            CategoryRepository = catRepo;
+            this.productRepo = productRepo;
+            this.catRepo = catRepo;
+            this.orderItemsRepository = orderItemsRepository;
+       
             this.orderItemsRepository = orderItemsRepository;
         }
         public IActionResult Index()
         {
             var sId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            List<Product> products = ProductRepository.getProductsBySellerId(sId);
+            List<Product> products = productRepo.getProductsBySellerId(sId);
             return View("Index" , products);
         }
 
         public IActionResult New()
         {
-            ViewData["CatList"] = CategoryRepository.getAll() ;
+            ViewData["CatList"] = catRepo.getAll() ;
             return View("New");
         }
         
@@ -68,8 +71,8 @@ namespace Hirafeyat.Controllers
                     {
                         product.ImageUrl = ImageUploader.UploadImage(productfromModel.Image, "Imges");
                     }
-                    ProductRepository.add(product);
-                        ProductRepository.save();
+                    productRepo.add(product);
+                        productRepo.save();
                         return RedirectToAction("Index");
                     }
                     catch (Exception ex)
@@ -80,7 +83,7 @@ namespace Hirafeyat.Controllers
                 }
             
             
-            ViewData["catList"] = CategoryRepository.getAll();
+            ViewData["catList"] = catRepo.getAll();
             return View(productfromModel);
         }
 
@@ -88,7 +91,7 @@ namespace Hirafeyat.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var product = ProductRepository.getById(id);
+            var product = productRepo.getById(id);
             if (product == null) {
                 return NotFound();
             }
@@ -104,7 +107,7 @@ namespace Hirafeyat.Controllers
                 sellerId = product.SellerId
             };
             ViewBag.ProductId = id;
-            ViewData["catList"]= CategoryRepository.getAll();
+            ViewData["catList"]= catRepo.getAll();
             return View(productToEdit);
         }
 
@@ -115,7 +118,7 @@ namespace Hirafeyat.Controllers
         {
             if (ModelState.IsValid==true)
             {
-                var product = ProductRepository.getById(id);
+                var product = productRepo.getById(id);
                 if (product == null)
                 {
                     return NotFound();
@@ -133,13 +136,13 @@ namespace Hirafeyat.Controllers
                         product.ImageUrl = ImageUploader.UploadImage(model.Image, "Imges");
                 }
 
-                ProductRepository.update(product);
-                ProductRepository.save();
+                productRepo.update(product);
+                productRepo.save();
                 return RedirectToAction("Index");
             }
 
-            ViewData["catList"] = CategoryRepository.getAll();
-            model.ImageUrl = ProductRepository.getById(id)?.ImageUrl;
+            ViewData["catList"] = catRepo.getAll();
+            model.ImageUrl = productRepo.getById(id)?.ImageUrl;
             return View(model);
         }
 
@@ -147,7 +150,7 @@ namespace Hirafeyat.Controllers
 
         public IActionResult Details(int id)
         {
-            var product = ProductRepository.getById(id);
+            var product = productRepo.getById(id);
             if (product == null)
             {
                 return NotFound();
@@ -160,12 +163,12 @@ namespace Hirafeyat.Controllers
         [AutoValidateAntiforgeryToken]
         public IActionResult Delete(int id)
         {
-            Product pro = ProductRepository.getById(id);
+            Product pro = productRepo.getById(id);
             if (pro == null) { 
                 return NotFound();
             }
-            ProductRepository.delete(pro);
-            ProductRepository.save();
+            productRepo.delete(pro);
+            productRepo.save();
             return RedirectToAction("Index");
 
         }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hirafeyat.Migrations
 {
     [DbContext(typeof(HirafeyatContext))]
-    [Migration("20250510125042_newDataBase")]
-    partial class newDataBase
+    [Migration("20250510182645_InitDataBase")]
+    partial class InitDataBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -233,6 +233,9 @@ namespace Hirafeyat.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ItemStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
@@ -312,6 +315,7 @@ namespace Hirafeyat.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Quentity")
+                        .IsConcurrencyToken()
                         .HasColumnType("int");
 
                     b.Property<string>("SellerId")

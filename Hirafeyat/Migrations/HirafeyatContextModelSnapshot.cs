@@ -146,7 +146,7 @@ namespace Hirafeyat.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Hirafeyat.Models.Favorite", b =>
@@ -219,7 +219,7 @@ namespace Hirafeyat.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Hirafeyat.Models.OrderItem", b =>
@@ -229,6 +229,9 @@ namespace Hirafeyat.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ItemStatus")
+                        .HasColumnType("int");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -309,6 +312,7 @@ namespace Hirafeyat.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Quentity")
+                        .IsConcurrencyToken()
                         .HasColumnType("int");
 
                     b.Property<string>("SellerId")
@@ -328,7 +332,7 @@ namespace Hirafeyat.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
