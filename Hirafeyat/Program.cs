@@ -52,8 +52,8 @@ namespace Hirafeyat
 
 
             builder.Services.AddScoped<Services.IOrderService, SellerServices.OrderService>();
-            builder.Services.AddScoped<IProductRepository, SellerServices.ProductService>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryService>();
+            builder.Services.AddScoped<SellerServices.IProductRepository, SellerServices.ProductService>();
+            builder.Services.AddScoped<SellerServices.ICategoryRepository, SellerServices.CategoryService>();
             builder.Services.AddScoped<IOrderCustomerRepository, OrderCustomerRepository>();
             builder.Services.AddScoped<IOrderCustomerService, OrderCustoemrService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -71,15 +71,8 @@ namespace Hirafeyat
                 options.CallbackPath = "/signin-google";
            
             });
-
-            //StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
-
-
             builder.Services.AddSingleton<StripeConfigService>();
-
             var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
