@@ -77,20 +77,31 @@ namespace Hirafeyat.Controllers
         }
 
 
-        public IActionResult Shop(List<string> SelectedPrices)
+        public IActionResult Shop()
         {
+            // جلب جميع المنتجات من المستودع عند تحميل الصفحة
             var products = productRepository.getAll();
+            return View(products); // إرجاع المنتجات إلى الـ View
+        }
 
-            if (SelectedPrices != null && SelectedPrices.Count > 0)
+        [HttpGet]
+        public IActionResult FilteredProducts(string searchText, List<string> selectedPrices)
+        {
+            var products = productRepository.getAll();  // جلب جميع المنتجات باستخدام الريبوستوري
+
+            // التحقق من وجود فلاتر للأسعار
+            if (selectedPrices != null && selectedPrices.Count > 0)
             {
-                if (SelectedPrices.Contains("all"))
-                {
-                    return View(products);
-                }
-
                 var filteredProducts = new List<Product>();
 
-                foreach (var range in SelectedPrices)
+                // إذا كانت "all" مختارة، عرض جميع المنتجات
+                if (selectedPrices.Contains("all"))
+                {
+                    return PartialView("_ProductListPartial", products);  // عرض جميع المنتجات بدون فلترة
+                }
+
+                // تطبيق الفلاتر حسب الفئات السعرية المحددة
+                foreach (var range in selectedPrices)
                 {
                     var parts = range.Split('-');
                     if (parts.Length == 2 &&
@@ -104,10 +115,48 @@ namespace Hirafeyat.Controllers
                     }
                 }
 
+                // إزالة التكرار بعد إضافة المنتجات
                 products = filteredProducts.Distinct().ToList();
             }
 
-            return View(products); // تأكدي إن المنتجات بتتبعت هنا
+            // التصفية حسب النص البحثي إذا كان موجودًا
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                products = products.Where(p => p.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // إرجاع المنتجات بعد الفلترة إلى العرض الجزئي
+            return PartialView("_ProductListPartial", products);
+        }
+
+
+        public IActionResult Filter(string searchQuery, List<string> prices)
+        {
+            var products = productRepository.getAll();  // جلب جميع المنتجات باستخدام الريبوستوري
+
+            // فلترة المنتجات حسب النص البحثي
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                products = products.Where(p => p.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // فلترة المنتجات حسب الأسعار المحددة
+            if (prices != null && prices.Any())
+            {
+                foreach (var range in prices)
+                {
+                    var parts = range.Split('-');
+                    if (parts.Length == 2 &&
+                        decimal.TryParse(parts[0], out var minPrice) &&
+                        decimal.TryParse(parts[1], out var maxPrice))
+                    {
+                        products = products.Where(p => p.Price >= minPrice && p.Price <= maxPrice).ToList();
+                    }
+                }
+            }
+
+            // إرجاع المنتجات المصفاة بصيغة JSON
+            return Json(products);
         }
 
 

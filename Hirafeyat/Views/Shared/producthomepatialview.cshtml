@@ -16,9 +16,9 @@
                         <!-- زر الفيفورت بشكل مضبوط -->
                         <form method="post" asp-action="AddToFavourites" asp-controller="Favourite" class="position-absolute" style="top: 10px; right: 10px;">
                             <input type="hidden" name="productId" value="@pro.Id" />
-                            <button type="submit" class="btn btn-sm text-danger bg-white rounded-circle shadow-sm p-1" title="Add to Favourites">
+                            <a  asp-action="login" asp-controller="account" class="btn btn-sm text-danger bg-white rounded-circle shadow-sm p-1" title="Add to Favourites">
                                 ❤️
-                            </button>
+                            </a>
                         </form>
                     </div>
 
@@ -41,5 +41,6 @@
                 </div>
             </div>
         }
+ 
     </div>
 </div>
