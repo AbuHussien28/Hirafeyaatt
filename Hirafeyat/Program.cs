@@ -8,7 +8,6 @@ using Hirafeyat.SellerServices;
 using Hirafeyat.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Stripe;
 
 namespace Hirafeyat
 {
@@ -48,8 +47,7 @@ namespace Hirafeyat
             builder.Services.AddScoped<SellerServices.IProductRepository, SellerServices.ProductService>();
             builder.Services.AddScoped<SellerServices.ICategoryRepository, SellerServices.CategoryService>();
 
-            builder.Services.AddScoped<IProductRepository, SellerServices.ProductService>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryService>();
+            builder.Services.AddScoped<SellerServices.IProductRepository, SellerServices.ProductService>();
 
 
 
@@ -69,9 +67,7 @@ namespace Hirafeyat
            
             });
 
-
-    });
-            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+            //StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
             var app = builder.Build();
 
@@ -92,7 +88,7 @@ namespace Hirafeyat
                  //pattern: "{controller=Role}/{action=NewRole}")
                  // pattern: "{controller=User}/{action=Sellers}")
                  //pattern: "{controller=AdminOrder}/{action=Index}")
-                .WithStaticAssets();
+                //.WithStaticAssets();
             app.Run();
         }
     }
