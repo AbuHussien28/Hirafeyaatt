@@ -2,6 +2,8 @@
 using Hirafeyat.Models;
 using Hirafeyat.OtherServices;
 using Hirafeyat.ViewModel.Account.ForgetPassword;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +26,7 @@ namespace Hirafeyat.Controllers.LoginAndRegister
             this.emailSender = emailSender;
         }
         #region Register
+
         public IActionResult Register()
         {
             return View("Register");
@@ -32,6 +35,13 @@ namespace Hirafeyat.Controllers.LoginAndRegister
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            var existingUser = await userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "This Email is Already In DataBase");
+                return View("Register", model);
+            }
+
             if (ModelState.IsValid)
             {
                 ApplicationUser userFromDb = new ApplicationUser()
@@ -41,17 +51,18 @@ namespace Hirafeyat.Controllers.LoginAndRegister
                     PhoneNumber = model.PhoneNumber,
                     Address = model.Address,
                     FullName = model.FullName,
-                    PasswordHash = model.Password,
-                    ProfileImage = model.imagePath,
                     AccountCreatedDate = DateTime.Now,
                 };
+
                 if (model.ImageFile != null)
                 {
                     userFromDb.ProfileImage = ImageUploader.UploadImage(model.ImageFile, "Imges");
                 }
                 IdentityResult result = await userManager.CreateAsync(userFromDb, model.Password);
+
                 if (result.Succeeded)
                 {
+                    // Add external login if exists
                     if (TempData["LoginProvider"] != null && TempData["ProviderKey"] != null)
                     {
                         var info = new UserLoginInfo(
@@ -61,16 +72,25 @@ namespace Hirafeyat.Controllers.LoginAndRegister
 
                         await userManager.AddLoginAsync(userFromDb, info);
                     }
-                    await userManager.AddToRoleAsync(userFromDb, model.Role);
+                    var roleResult = await userManager.AddToRoleAsync(userFromDb, model.Role);
+                    if (!roleResult.Succeeded)
+                    {
+                        await userManager.DeleteAsync(userFromDb);
+                        foreach (var error in roleResult.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
+                        return View("Register", model);
+                    }
                     if (model.Role == "Seller" && !string.IsNullOrEmpty(model.BrandName))
                     {
-                        var claim = new Claim("BrandName", model.BrandName);
-                        await userManager.AddClaimAsync(userFromDb, claim);
+                        await userManager.AddClaimAsync(userFromDb,
+                            new Claim("BrandName", model.BrandName));
                     }
-                    await userManager.AddToRoleAsync(userFromDb, model.Role);
-                    await signInManager.SignInAsync(userFromDb, false);
+                    await signInManager.SignInAsync(userFromDb, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
@@ -80,38 +100,91 @@ namespace Hirafeyat.Controllers.LoginAndRegister
         }
         #endregion
         #region Logout
-        [Authorize]
-        public async Task<IActionResult> LogOut() 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
         {
-            await signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Account");
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
         }
         #endregion
         #region Login
-        public IActionResult Login()
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login(string? returnUrl = null)
         {
-            return View("Login");
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(new LoginViewModel { ReturnUrl = returnUrl });
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model) 
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (ModelState.IsValid) 
+            if (ModelState.IsValid)
             {
-                ApplicationUser userFromDB=await userManager.FindByNameAsync(model.UserName);
-                if (userFromDB != null) 
+                var user = await userManager.FindByNameAsync(model.UserName);
+
+                if (user != null)
                 {
-                    bool found=await userManager.CheckPasswordAsync(userFromDB, model.Password);
-                    if (found) 
+                    var result = await signInManager.PasswordSignInAsync(
+                        user.UserName,
+                        model.Password,
+                        model.RememberMe,
+                        lockoutOnFailure: false);
+
+                    if (result.Succeeded)
                     {
-                        await signInManager.SignInAsync(userFromDB, model.RememberMe);
+                        var roles = await userManager.GetRolesAsync(user);
+                        var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim("FullName", user.FullName ?? string.Empty),
+                    new Claim("ProfileImage", user.ProfileImage ?? "/images/default-profile.png")
+                };
+                        foreach (var role in roles)
+                        {
+                            claims.Add(new Claim(ClaimTypes.Role, role));
+                        }
+                        if (roles.Contains("Seller"))
+                        {
+                            var brandClaim = (await userManager.GetClaimsAsync(user))
+                                .FirstOrDefault(c => c.Type == "BrandName");
+                            if (brandClaim != null)
+                            {
+                                claims.Add(new Claim("BrandName", brandClaim.Value));
+                            }
+                        }
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            new ClaimsPrincipal(claimsIdentity),
+                            new AuthenticationProperties
+                            {
+                                IsPersistent = model.RememberMe,
+                                ExpiresUtc = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(30) : null
+                            });
+                        if (roles.Contains("Admin"))
+                        {
+                            return RedirectToAction("Sellers", "User");
+                        }
+                        else if (roles.Contains("Seller"))
+                        {
+                            return RedirectToAction("Index", "Seller");
+                        }
+                        else if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
+
                         return RedirectToAction("Index", "Home");
                     }
-                   
                 }
-                ModelState.AddModelError("", "Invalid Password");
+
+                ModelState.AddModelError("", "Invalid username or password");
             }
-            return View("Login", model);
+
+            return View(model);
         }
         #endregion
         #region Google SignIn
@@ -284,5 +357,10 @@ namespace Hirafeyat.Controllers.LoginAndRegister
         }
 
         #endregion
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Hirafeyat.Models;
 using Hirafeyat.ViewModel;
 using Hirafeyat.ViewModel.OrderCustomer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ using Stripe;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-
+[CustomerAuthorize]
 public class OrderController : Controller
 {
     private readonly HirafeyatContext _context;
