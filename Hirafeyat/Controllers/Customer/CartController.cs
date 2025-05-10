@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hirafeyat.Controllers.Customer
 {
-
+    [CustomerAuthorize]
     public class CartController : Controller
     {
         private readonly HirafeyatContext _context;
