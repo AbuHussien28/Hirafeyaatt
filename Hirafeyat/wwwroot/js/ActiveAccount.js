@@ -1,4 +1,4 @@
-﻿// Document ready function
+﻿﻿// Document ready function
 $(document).ready(function () {
     // Initialize the page
     updateBatchButtonsState();

@@ -1,0 +1,63 @@
+﻿@using X.PagedList
+@model IPagedList<Hirafeyat.Models.Product>
+
+@{
+    ViewBag.Title = "Manage Products";
+    Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<partial name="~/Views/AdminProducts/_NavPartial.cshtml" />
+
+<style>
+    .action-btns {
+        text-align: center;
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 80px;
+        margin: 2px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+        .btn-action i {
+            margin-right: 5px;
+        }
+</style>
+
+<div id="results">
+    @await Html.PartialAsync("~/Views/AdminProducts/_SearchResultsPartial.cshtml", Model)
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        function loadData(name, page = 1) {
+            $.ajax({
+                url: '@Url.Action("AjaxSearch", "Product")',
+                type: 'GET',
+                data: { name: name, pageNumber: page },
+                success: function (result) {
+                    $("#results").html(result);
+                }
+            });
+        }
+
+        $("#searchBtn").click(function () {
+            var name = $("#searchInput").val();
+            loadData(name);
+        });
+
+        $(document).on("click", ".pagination a", function (e) {
+            e.preventDefault();
+            var name = $("#searchInput").val();
+            var url = $(this).attr("href");
+            var page = new URLSearchParams(url.split('?')[1]).get("pageNumber");
+            loadData(name, page);
+        });
+    });
+</script>

@@ -1,0 +1,284 @@
+﻿@model Hirafeyat.ViewModel.OrderCustomer.CheckoutPageViewModel
+
+@{
+    Layout = null;
+    ViewBag.orderId = ViewBag.orderId ?? 0;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Hirafyat - Checkout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="img/favicon.ico" rel="icon">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="~/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container-fluid bg-secondary mb-2">
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 100px">
+            <h1 class="font-weight-semi-bold text-uppercase mb-3">Checkout</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid pt-5">
+        <form asp-action="PlaceOrder" method="post" id="payment-form">
+            @Html.AntiForgeryToken()
+            <div class="row px-xl-5">
+                <!-- Billing Info -->
+                <div class="col-lg-6">
+                    <div class="mb-4">
+                        <h4 class="font-weight-semi-bold mb-4">Billing Details</h4>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label asp-for="CheckoutForm.FullName"></label>
+                                <input asp-for="CheckoutForm.FullName" class="form-control" placeholder="John Doe" />
+                                <span asp-validation-for="CheckoutForm.FullName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12 form-group">
+                                <label asp-for="CheckoutForm.Email"></label>
+                                <input asp-for="CheckoutForm.Email" class="form-control" placeholder="example@email.com" />
+                                <span asp-validation-for="CheckoutForm.Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12 form-group">
+                                <label asp-for="CheckoutForm.PhoneNumber"></label>
+                                <input asp-for="CheckoutForm.PhoneNumber" class="form-control" placeholder="+123 456 789" />
+                                <span asp-validation-for="CheckoutForm.PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12 form-group">
+                                <label asp-for="CheckoutForm.Address"></label>
+                                <input asp-for="CheckoutForm.Address" class="form-control" placeholder="123 Main Street" />
+                                <span asp-validation-for="CheckoutForm.Address" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Total -->
+                <div class="col-lg-3">
+                    <div class="card border-secondary mb-4">
+                        <div class="card-header bg-secondary border-0">
+                            <h4 class="font-weight-semi-bold m-0">Order Total</h4>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="font-weight-medium mb-3">Cart</h5>
+                            @if (Model.CartItems.Any())
+                            {
+                                <ul class="list-unstyled">
+                                    @foreach (var item in Model.CartItems)
+                                    {
+                                        <li>@item.Product.Title x @item.Quantity = @(item.Product.Price* item.Quantity) EGP</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Your cart is empty</p>
+                            }
+                        </div>
+                        <div class="card-footer border-secondary bg-transparent">
+                            <div class="d-flex justify-content-between mt-2">
+                                <h5 class="font-weight-bold">Total</h5>
+                                <h5 class="font-weight-bold">@Model.TotalPrice EGP</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Options -->
+                <div class="col-lg-3">
+                    <div class="card border-secondary mb-4">
+                        <div class="card-header bg-secondary border-0">
+                            <h4 class="font-weight-semi-bold m-0">Payment</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="paymentMethod" id="stripe" value="stripe" checked>
+                                    <label class="custom-control-label" for="stripe">Credit Card (Stripe)</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="paymentMethod" id="paypal" value="paypal">
+                                    <label class="custom-control-label" for="paypal">PayPal</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="paymentMethod" id="cod" value="cod">
+                                    <label class="custom-control-label" for="cod">Cash on Delivery</label>
+                                </div>
+                            </div>
+
+                            <!-- Stripe Payment Form -->
+                            <div id="stripe-payment-container" class="mt-4">
+                                <div id="card-element" class="form-control" style="padding: 10px; height: 40px;"></div>
+                                <div id="card-errors" role="alert" class="text-danger mt-2"></div>
+                            </div>
+
+                            <!-- PayPal Not Available Message -->
+                            <div id="paypal-not-available" class="alert alert-warning mt-4" style="display: none;">
+                                <i class="fas fa-exclamation-circle"></i> PayPal payment is not available yet. Please choose another payment method.
+                            </div>
+
+                            <!-- COD Confirmation -->
+                            <div id="cod-confirmation" class="alert alert-info mt-4" style="display: none;">
+                                <i class="fas fa-info-circle"></i> You'll pay cash when your order is delivered.
+                            </div>
+                        </div>
+                        <div class="card-footer border-secondary bg-transparent">
+                            <button type="button" class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3" id="placeOrderBtn">
+                                Place Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="paymentIntentId" id="paymentIntentId" value="" />
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            const stripePublishableKey = '@Model.StripePublishableKey';
+            const clientSecret = '@Model.ClientSecret';
+            let stripe, cardElement;
+
+            if (stripePublishableKey && clientSecret) {
+                try {
+                    stripe = Stripe(stripePublishableKey);
+                    const elements = stripe.elements();
+                    cardElement = elements.create('card', {
+                        style: {
+                            base: {
+                                fontSize: '16px',
+                                color: '#32325d',
+                                '::placeholder': {
+                                    color: '#aab7c4'
+                                }
+                            },
+                            invalid: {
+                                color: '#fa755a',
+                                iconColor: '#fa755a'
+                            }
+                        }
+                    });
+                    cardElement.mount('#card-element');
+
+                    // Handle card changes
+                    cardElement.on('change', function(event) {
+                        const displayError = document.getElementById('card-errors');
+                        displayError.textContent = event.error?.message || '';
+                    });
+                } catch (err) {
+                    console.error('Stripe init error:', err);
+                    $('#stripe-payment-container').html(
+                        '<div class="alert alert-danger">Payment system error</div>'
+                    );
+                }
+            }
+            $('input[name="paymentMethod"]').change(function () {
+                const method = $(this).val();
+                    $('#stripe-payment-container').show();
+            $('#paypal-not-available').hide();
+            $('#cod-confirmation').hide();
+
+                if (method === 'paypal' || method === 'cod') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Unavailable',
+                        text: method === 'paypal'
+                            ? 'PayPal payment is not available yet.'
+                            : 'Cash on Delivery is not available now.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        $('#stripe').prop('checked', true).trigger('change');
+                    });
+                    return;
+                }
+                $('#stripe-payment-container').toggle(method === 'stripe');
+                $('#paypal-not-available').hide();
+                $('#cod-confirmation').hide();
+            }).trigger('change'); // Apply initial state
+            $('#placeOrderBtn').click(async function (e) {
+                e.preventDefault();
+                const $btn = $(this);
+                $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+                try {
+                    const formData = {
+                        FullName: $('#CheckoutForm_FullName').val().trim(),
+                        Email: $('#CheckoutForm_Email').val().trim(),
+                        PhoneNumber: $('#CheckoutForm_PhoneNumber').val().trim(),
+                        Address: $('#CheckoutForm_Address').val().trim(),
+                        PaymentMethod: $('input[name="paymentMethod"]:checked').val()
+                    };
+
+                    if (!validateForm(formData)) return;
+
+                    if (formData.PaymentMethod === 'stripe') {
+                        await processStripePayment(formData);
+                    } else {
+                        showAlert('Only Stripe payment is allowed at this time.');
+                        $btn.prop('disabled', false).text('Place Order');
+                    }
+                } catch (err) {
+                    console.error('Payment error:', err);
+                    showAlert(err.message || 'Payment failed');
+                    $btn.prop('disabled', false).text('Place Order');
+                }
+            });
+
+            function validateForm(data) {
+                if (!data.FullName || !data.Email || !data.PhoneNumber || !data.Address) {
+                    showAlert('Please fill all required fields');
+                    $('#placeOrderBtn').prop('disabled', false).text('Place Order');
+                    return false;
+                }
+                return true;
+            }
+
+            async function processStripePayment(data) {
+                if (!stripe || !clientSecret) throw new Error("Payment system error");
+
+                const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: data.FullName,
+                            email: data.Email,
+                            phone: data.PhoneNumber,
+                            address: { line1: data.Address }
+                        }
+                    }
+                });
+
+                if (error) throw error;
+                if (paymentIntent.status !== 'succeeded') throw new Error("Payment failed");
+
+                $('#paymentIntentId').val(paymentIntent.id);
+                $('#payment-form').submit();
+            }
+
+            function showAlert(message) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: message
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

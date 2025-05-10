@@ -19,20 +19,24 @@ namespace Hirafeyat.AdminServices
     DateTime? endDateFilter = null,
     string productFilter = null)
         {
-            var orders = await orderRepoAdmin.GetAllOrdersByCustomerAsync(page, pageSize, statusFilter,categoryFilter,startDateFilter,endDateFilter,productFilter);
+            var orders = await orderRepoAdmin.GetAllOrdersByCustomerAsync(page, pageSize, statusFilter, categoryFilter, startDateFilter, endDateFilter, productFilter);
 
 
-            var orderVM = orders.Select(o => new AdminOrderViewModel
-            {
-                SellerFullName =  o.Product.Seller.FullName,
-                CustomerFullName = o.Customer.FullName,
-                CustomerEmail = o.Customer.Email,
-                ProductTitle = o.Product.Title,
-                Quantity = o.Quantity,
-                ProductPrice = o.Product.Price,
-                OrderDate = o.OrderDate,
-                Status = o.Status,
-                DeliveryAddress = o.Address
+            var orderVM = orders.Select(o => {
+                var firstItem = o.OrderItems.FirstOrDefault();
+
+                return new AdminOrderViewModel
+                {
+                    SellerFullName = firstItem?.Product?.Seller?.FullName,
+                    CustomerFullName = o.Customer.FullName,
+                    CustomerEmail = o.Customer.Email,
+                    ProductTitle = firstItem?.Product?.Title,
+                    Quantity = firstItem?.Quantity ?? 0,
+                    ProductPrice = firstItem?.Product?.Price ?? 0,
+                    OrderDate = o.OrderDate,
+                    Status = o.Status,
+                    DeliveryAddress = o.Address
+                };
             }).ToList();
             return new StaticPagedList<AdminOrderViewModel>(
                 orderVM,

@@ -1,0 +1,71 @@
+﻿@using System.Globalization
+@model List<Hirafeyat.ViewModel.OrderCustomer.OrderWithPaymentViewModel>
+
+<h2 class="mb-4">My Orders</h2>
+
+@foreach (var order in Model)
+{
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Order #@order.OrderId</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>Status:</strong> <span class="badge bg-info">@order.Status</span></p>
+                    <p class="mb-1"><strong>Date:</strong> @order.OrderDate.ToString("dd MMM yyyy")</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>Payment Status:</strong> <span class="badge @GetPaymentStatusBadge(order.PaymentStatus)">@order.PaymentStatus</span></p>
+                    <p class="mb-1"><strong>Payment Method:</strong> @order.PaymentMethod</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <h6 class="mb-3">Order Items</h6>
+            <ul class="list-group mb-3">
+                @foreach (var item in order.OrderItems)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @item.Product.Title
+                        <span class="badge bg-primary rounded-pill">
+                            @item.Quantity × @item.Product.Price.ToString("C", new CultureInfo("en-EG")) =
+                            @((item.Product.Price * item.Quantity).ToString("C", new CultureInfo("en-EG")))
+                        </span>
+                    </li>
+                }
+            </ul>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Total: @order.TotalAmount.ToString("C")</h5>
+
+                @if (order.Status != "Shipped" && order.Status != "Delivered" && order.Status != "Cancelled")
+                {
+                    <form asp-action="CancelOrder" method="post">
+                        <input type="hidden" name="id" value="@order.OrderId" />
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="bi bi-x-circle"></i> Cancel Order
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+        <div class="card-footer text-muted small">
+            Order placed on @order.OrderDate.ToString("f")
+        </div>
+    </div>
+}
+
+@functions {
+    string GetPaymentStatusBadge(PaymentStatus status)
+    {
+        return status switch
+        {
+            PaymentStatus.Paid => "bg-success",
+            PaymentStatus.Pending => "bg-warning text-dark",
+            PaymentStatus.Failed => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
