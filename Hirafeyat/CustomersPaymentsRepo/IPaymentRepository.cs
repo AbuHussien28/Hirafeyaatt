@@ -5,6 +5,7 @@ namespace Hirafeyat.CustomersPaymentsRepo
     public interface IPaymentRepository
     {
         Task AddAsync(Payment payment);
-        Task<Order> GetOrderWithCustomerAsync(int id);
+        Task<OrderItem> GetOrderWithCustomerAsync(int id);
+        Task UpdateOrderAndPaymentStatusAsync(int orderId, OrderStatus orderStatus, PaymentStatus paymentStatus, string paymentIntentId = null);
     }
 }

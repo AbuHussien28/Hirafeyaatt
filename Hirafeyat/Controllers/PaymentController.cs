@@ -1,6 +1,7 @@
 ﻿using Hirafeyat.CustomersPaymentsSerives;
 using Hirafeyat.ViewModel.Payments;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace Hirafeyat.Controllers
 {
@@ -13,47 +14,64 @@ namespace Hirafeyat.Controllers
             this.paymentService = paymentService;
         }
         [HttpGet]
-        public IActionResult PaymentPay()
-        {
-            return View();
-        }
-
-        [HttpPost]
         public async Task<IActionResult> Checkout(int orderId)
         {
             try
             {
-                var order = await paymentService.GetByIdAsync(orderId);
-                if (order == null)
-                {
-                    TempData["ErrorMessage"] = "Order not found";
-                    return RedirectToAction("Failure");
-                }
-
-                await paymentService.HandleStripePaymentAsync(order);
-
-                TempData["OrderId"] = order.OrderId;
-                TempData["Amount"] = order.Amount.ToString();
-                TempData["CustomerEmail"] = order.CustomerEmail;
-
-                return RedirectToAction("Success");
+                var paymentViewModel = await paymentService.GetByIdAsync(orderId);
+                return View(paymentViewModel);
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction("Failure");
+                return RedirectToAction("PaymentFailed", new { orderId });
             }
         }
 
-
-
-        public IActionResult Success()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProcessPayment(int orderId, string paymentIntentId)
         {
+            try
+            {
+                var result = await paymentService.ProcessPaymentAsync(orderId, paymentIntentId);
+
+                if (!result.Success)
+                {
+                    return RedirectToAction("PaymentFailed", new
+                    {
+                        orderId = result.OrderId,
+                        error = result.ErrorMessage
+                    });
+                }
+
+                return RedirectToAction("PaymentSuccess", new { orderId = result.OrderId });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("PaymentFailed", new
+                {
+                    orderId,
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult PaymentSuccess(int orderId)
+        {
+            ViewBag.OrderId = orderId;
             return View();
         }
-        public IActionResult Failure()
+
+        [HttpGet]
+        public IActionResult PaymentFailed(int orderId, string error = null)
         {
+            ViewBag.OrderId = orderId;
+            ViewBag.ErrorMessage = error ?? TempData["ErrorMessage"]?.ToString() ??
+                "Payment processing failed";
             return View();
         }
-    }
+    
+}
 }

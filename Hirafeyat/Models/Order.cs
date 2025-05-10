@@ -11,13 +11,12 @@ namespace Hirafeyat.Models
         public string CustomerId { get; set; }
         [ForeignKey("CustomerId")]
         public  ApplicationUser Customer { get; set; }
-        public DateTime OrderDate { get; set; } = DateTime.Now;
         public string Address { get; set; }
         public string FullName { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
-
+        public Payment Payment { get; set; }
     }
     public enum OrderStatus
     {
