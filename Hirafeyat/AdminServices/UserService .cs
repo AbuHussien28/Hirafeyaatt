@@ -1,6 +1,7 @@
 ﻿using Hirafeyat.AdminRepository;
 using Hirafeyat.Models;
 using Hirafeyat.ViewModel.Admin;
+using Microsoft.AspNetCore.Identity;
 using X.PagedList;
 
 namespace Hirafeyat.AdminServices
@@ -20,9 +21,9 @@ namespace Hirafeyat.AdminServices
             
         }
 
-        public async Task<IPagedList<UserCustomerAdminViewModel>> GetCustomersAsync(int page, int pageSize)
+        public async Task<IPagedList<UserCustomerAdminViewModel>> GetCustomersAsync(int page, int pageSize, string query = "")
         {
-            var users = await repo.GetCustomersAsync(page, pageSize);
+            var users = await repo.GetCustomersAsync(page, pageSize, query);
 
 
             var CustomerVM = users.Select(u => new UserCustomerAdminViewModel
@@ -43,9 +44,9 @@ namespace Hirafeyat.AdminServices
                 users.TotalItemCount);
         }
 
-        public async Task<IPagedList<UserSellerAdminViewModel>> GetSellersAsync(int page, int pageSize)
+        public async Task<IPagedList<UserSellerAdminViewModel>> GetSellersAsync(int page, int pageSize, string query = "")
         {
-            var users = await repo.GetSellersAsync(page, pageSize);
+            var users = await repo.GetSellersAsync(page, pageSize, query);
 
 
             var viewModels = users.Select(u => new UserSellerAdminViewModel
@@ -70,5 +71,38 @@ namespace Hirafeyat.AdminServices
         {
             return await repo.ToggleUserStatus(userName);
         }
+        public async Task<UserSellerAdminViewModel> SellerDetailsAsync(string username)
+        {
+            var user = await repo.SellerDetailsAsync(username);
+            var result = new UserSellerAdminViewModel()
+            {
+                Address = user.Address,
+                Email = user.Email,
+                FullName = user.FullName,
+                UserName = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+                ProfileImage = user.ProfileImage,
+                AccountCreatedDate = user.AccountCreatedDate,
+                IsActive = !(user.LockoutEnabled && user.LockoutEnd > DateTimeOffset.Now)
+            };
+            return result;
+        }
+        public async Task<UserSellerAdminViewModel> CustomerDetailsAsync(string username)
+        {
+            var user = await repo.CustomerDetailsAsync(username);
+            var result = new UserSellerAdminViewModel()
+            {
+                Address = user.Address,
+                Email = user.Email,
+                FullName = user.FullName,
+                UserName = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+                ProfileImage = user.ProfileImage,
+                AccountCreatedDate = user.AccountCreatedDate,
+                IsActive = !(user.LockoutEnabled && user.LockoutEnd > DateTimeOffset.Now)
+            };
+            return result;
+        }
+       
     }
 }
