@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Category>
+
+<table class="table table-bordered table-hover">
+	<thead class="table-light text-center">
+		<tr>
+			<th>Categories</th>
+			<th style="width: 220px;">Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var category in Model)
+		{
+			<tr>
+				<td class="align-middle">@category.Name</td>
+				<td class="text-center">
+					<button class="btn btn-sm btn-info me-1" onclick="toggleDetails('@category.Id')">
+						<i class="fas fa-eye"></i>
+					</button>
+					<a class="btn btn-sm btn-warning me-1" href="@Url.Action("Edit", new { id = category.Id })" title="Edit">
+						<i class="fas fa-edit"></i>
+					</a>
+					<button class="btn btn-sm btn-danger" onclick="confirmDelete('@category.Id')">
+						<i class="fas fa-trash-alt"></i>
+					</button>
+				</td>
+			</tr>
+			<tr id="details-@category.Id" style="display:none;">
+				<td colspan="2">
+					<div class="p-3 bg-light border mt-2">
+						<strong>ID:</strong> @category.Id<br />
+						<strong>Name:</strong> @category.Name<br />
+					</div>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+

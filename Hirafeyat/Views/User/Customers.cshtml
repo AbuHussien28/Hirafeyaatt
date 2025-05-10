@@ -1,110 +1,209 @@
 ﻿@model X.PagedList.IPagedList<Hirafeyat.ViewModel.Admin.UserCustomerAdminViewModel>
 
 @{
-    ViewData["Title"] = "Customers";
+	ViewData["Title"] = "Customers";
+	Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Customers</title>
-    <style>
-        .inactive-row {
-            background-color: #ffdddd;
-        }
-        .status-badge {
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-        .status-active {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .status-inactive {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .action-buttons {
-            white-space: nowrap;
-        }
-    </style>
-</head>
-<body>
-    <p>
-        <button id="batchActivate" class="btn btn-success">Activate Selected</button>
-        <button id="batchDeactivate" class="btn btn-danger">Deactivate Selected</button>
-    </p>
-    <table class="table table-hover">
-        <thead class="thead-light">
-            <tr>
-                <th>
-                    <input type="checkbox" id="selectAll" />
-                </th>
-                <th>@Html.DisplayName("UserName")</th>
-                <th>@Html.DisplayName("Email")</th>
-                <th>@Html.DisplayName("Full Name")</th>
-                <th>@Html.DisplayName("Phone Number")</th>
-                <th>@Html.DisplayName("Profile Image")</th>
-                <th>@Html.DisplayName("Address")</th>
-                <th>@Html.DisplayName("Status")</th>
-                <th>@Html.DisplayName("Account Created Date")</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr class="@(item.IsActive ? "" : "inactive-row")">
-                    <td>
-                        <input type="checkbox" class="row-checkbox" data-userid="@item.UserName" />
-                    </td>
-                    <td>@Html.DisplayFor(modelItem => item.UserName)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
-                    <td>@Html.DisplayFor(modelItem => item.FullName)</td>
-                    <td>@Html.DisplayFor(modelItem => item.PhoneNumber)</td>
-                    <td>
-                        @if (!string.IsNullOrEmpty(item.ProfileImage))
-                        {
-                            <img src="@item.ProfileImage" alt="Profile" style="max-height: 50px;" />
-                        }
-                    </td>
-                    <td>@Html.DisplayFor(modelItem => item.Address)</td>
-                    <td>
-                        <span class="status-badge @(item.IsActive ? "status-active" : "status-inactive")">
-                            @(item.IsActive ? "Active" : "Inactive")
-                        </span>
-                    </td>
-                    <td>@item.AccountCreatedDate?.ToString("yyyy-MM-dd")</td>
-                    @* <td class="action-buttons"> *@
-                    @*     @if (item.IsActive) *@
-                    @*     { *@
-                    @*         <form asp-action="ToggleUserStatus" method="post" style="display: inline;"> *@
-                    @*             <input type="hidden" name="userName" value="@item.UserName" /> *@
-                    @*             <input type="hidden" name="sourceAction" value="Customers" /> *@
-                    @*             <button type="submit" class="btn btn-sm btn-danger">Deactivate</button> *@
-                    @*         </form> *@
-                    @*     } *@
-                    @*     else *@
-                    @*     { *@
-                    @*         <form asp-action="ToggleUserStatus" method="post" style="display: inline;"> *@
-                    @*             <input type="hidden" name="userName" value="@item.UserName" /> *@
-                    @*             <input type="hidden" name="sourceAction" value="Customers" /> *@
-                    @*             <button type="submit" class="btn btn-sm btn-success">Activate</button> *@
-                    @*         </form> *@
-                    @*     } *@
-                    @*     <a asp-action="Edit" asp-route-id="@item.UserName" class="btn btn-sm btn-info">Edit</a> *@
-                    @*     <a asp-action="Details" asp-route-id="@item.UserName" class="btn btn-sm btn-secondary">Details</a> *@
-                    @* </td> *@
-                </tr>
-            }
-        </tbody>
-    </table>
-    @await Html.PartialAsync("_PaginationPartial", Model)
+<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
 
-    @section Scripts {
-        <script src="~/js/ActiveAccount.js"></script>
-    }
-</body>
-</html>
+<style>
+	.inactive-row {
+		background-color: #fff5f5;
+	}
+
+	.status-badge {
+		padding: 6px 12px;
+		border-radius: 16px;
+		font-size: 14px;
+		font-weight: bold;
+		display: inline-block;
+	}
+
+	.status-active {
+		background-color: #d1e7dd;
+		color: #0f5132;
+	}
+
+	.status-inactive {
+		background-color: #f8d7da;
+		color: #842029;
+	}
+
+	.action-buttons button,
+	.action-buttons a {
+		margin-right: 10px;
+		margin-bottom: 5px;
+		padding: 8px 12px;
+		border-radius: 5px;
+	}
+
+	.action-buttons button {
+		border: none;
+	}
+
+	.profile-img {
+		height: 40px;
+		width: 40px;
+		border-radius: 50%;
+		object-fit: cover;
+	}
+
+	.top-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin-bottom: 15px;
+		gap: 15px;
+	}
+
+	.table th, .table td {
+		vertical-align: middle;
+		text-align: center;
+	}
+
+	.table th {
+		background-color: #f8f9fa;
+	}
+
+	.table-hover tbody tr:hover {
+		background-color: #f1f1f1;
+	}
+</style>
+
+<div class="container-fluid">
+	<div class="py-3 px-xl-5">
+
+		<div class="d-flex justify-content-end gap-2 mb-3">
+			<!-- زر التفعيل -->
+			<button id="batchActivate" class="btn btn-success btn-sm" title="Activate Selected" data-bs-toggle="tooltip" data-bs-placement="top">
+				<i class="fas fa-check"></i>
+			</button>
+
+			<!-- زر التعطيل -->
+			<button id="batchDeactivate" class="btn btn-danger btn-sm" title="Deactivate Selected" data-bs-toggle="tooltip" data-bs-placement="top">
+				<i class="fas fa-times"></i>
+			</button>
+		</div>
+
+		<div class="mb-3 d-flex justify-content-start">
+			<input type="text" id="customerSearch" placeholder="Search for Customers..." class="form-control" oninput="searchSellers()" />
+		</div>
+		<div id="customerResults">
+			<table class="table table-bordered table-hover">
+				<thead class="thead-light">
+					<tr>
+						<th><input type="checkbox" id="selectAll" /></th>
+						<th>@Html.DisplayName("Profile Image")</th>
+						<th>@Html.DisplayName("UserName")</th>
+						<th class="text-center">@Html.DisplayName("Status")</th>
+						<th class="text-center">Details</th>
+					</tr>
+				</thead>
+				<tbody>
+
+					@foreach (var item in Model)
+					{
+						<tr class="@(item.IsActive ? "" : "inactive-row")">
+							<td><input type="checkbox" class="row-checkbox" data-userid="@item.UserName" /></td>
+							<td>
+								@if (!string.IsNullOrEmpty(item.ProfileImage))
+								{
+									<img src="@Url.Content("~/" + item.ProfileImage)" alt="Profile" class="profile-img" />
+								}
+							</td>
+							<td>@Html.DisplayFor(modelItem => item.UserName)</td>
+							<td class="text-center">
+								<span class="status-badge @(item.IsActive ? "status-active" : "status-inactive")">
+									@(item.IsActive ? "Active" : "Inactive")
+								</span>
+							</td>
+							<td class="text-center action-buttons">
+								<form asp-action="ToggleUserStatus" method="post" style="display:inline;">
+									<input type="hidden" name="userName" value="@item.UserName" />
+								</form>
+								<a asp-action="CustomerDetails" asp-route-username="@item.UserName" class="btn btn-sm btn-secondary">Details</a>
+							</td>
+
+						</tr>
+					}
+				</tbody>
+			</table>
+			@await Html.PartialAsync("_PaginationPartial", Model)
+		</div>
+	</div>
+</div>
+<script>
+	const selectAllCheckbox = document.getElementById("selectAll");
+	const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+
+	selectAllCheckbox.addEventListener("change", function () {
+		rowCheckboxes.forEach(cb => cb.checked = this.checked);
+	});
+
+	rowCheckboxes.forEach(cb => {
+		cb.addEventListener("change", function () {
+			selectAllCheckbox.checked = [...rowCheckboxes].every(cb => cb.checked);
+		});
+	});
+</script>
+<script>
+	function getSelectedUserNames() {
+		const checkboxes = document.querySelectorAll(".row-checkbox:checked");
+		const userNames = Array.from(checkboxes).map(cb => cb.getAttribute("data-userid"));
+		return userNames;
+	}
+
+	document.getElementById("batchActivate").addEventListener("click", function () {
+		const selected = getSelectedUserNames(); // هنا الصح
+		if (selected.length === 0) {
+			alert("Please select at least one user.");
+			return;
+		}
+		fetch('/User/BatchToggleUserStatus?activate=true', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+			},
+			body: JSON.stringify(selected)
+		}).then(res => {
+			if (res.ok) {
+				location.reload(); // Refresh to show updated status
+			}
+		});
+	});
+
+	document.getElementById("batchDeactivate").addEventListener("click", function () {
+		const selected = getSelectedUserNames(); // نفس هنا
+		if (selected.length === 0) {
+			alert("Please select at least one user.");
+			return;
+		}
+		fetch('/User/BatchToggleUserStatus?activate=false', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+			},
+			body: JSON.stringify(selected)
+		}).then(res => {
+			if (res.ok) {
+				location.reload();
+			}
+		});
+	});
+</script>
+
+<script>
+	function searchSellers() {
+		const query = document.getElementById("customerSearch").value;
+		fetch(`/User/SearchCustomers?query=${encodeURIComponent(query)}`)
+			.then(response => response.text())
+			.then(html => {
+				document.getElementById("customerResults").innerHTML = html;
+			})
+			.catch(error => {
+				console.error("Search error:", error);
+			});
+	}
+</script>
