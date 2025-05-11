@@ -1,4 +1,10 @@
 ﻿@model List<CartItem>
+@{
+    ViewData["Title"] = "Details";
+    // var isSoldOut = Model.Quentity == 0;
+    Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
+}
+<partial name="~/Views/Customer/_TopPartialCustomer.cshtml" />
 
 <!-- Cart Start -->
 <div class="container-fluid bg-secondary mb-5">

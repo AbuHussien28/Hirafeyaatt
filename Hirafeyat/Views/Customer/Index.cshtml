@@ -9,7 +9,13 @@
 
 @foreach (var category in Model)
 {
-    <h3 class="mt-5 mb-3 text-center p-3">@category.Key</h3>
+    <div class="container-fluid  mb-5" style="background-color:#d19c97;">
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 70px ;">
+            <h1 class="font-weight-semi-bold text-uppercase mb-3">@category.Key</h1>
+
+        </div>
+    </div>
+
 
     var rowClass = category.Value.Count < 4 ? "row justify-content-center" : "row";
 

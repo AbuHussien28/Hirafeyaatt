@@ -1,8 +1,20 @@
 ﻿@using System.Globalization
 @model List<Hirafeyat.ViewModel.OrderCustomer.OrderWithPaymentViewModel>
+@{
+    ViewData["Title"] = "Details";
+    // var isSoldOut = Model.Quentity == 0;
+    Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
+}
+<partial name="~/Views/Customer/_TopPartialCustomer.cshtml" />
 
-<h2 class="mb-4">My Orders</h2>
 
+<div class="container-fluid  mb-5" style="background-color:#D19C97">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px">
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">My Orders</h1>
+
+    </div>
+</div>
+<div class="container">
 @foreach (var order in Model)
 {
     <div class="card mb-4 shadow-sm">
@@ -55,8 +67,9 @@
             Order placed on @order.OrderDate.ToString("f")
         </div>
     </div>
+    
 }
-
+</div>
 @functions {
     string GetPaymentStatusBadge(PaymentStatus status)
     {
