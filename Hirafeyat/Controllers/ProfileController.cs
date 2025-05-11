@@ -24,8 +24,12 @@ namespace Hirafeyat.Controllers
         // 3/5
         [HttpGet]
         [Authorize]
-        public IActionResult ChangeProfilePhoto()
+        public IActionResult ChangeProfilePhoto(string imagePath)
         {
+            if (!string.IsNullOrEmpty(imagePath))
+            {
+                ViewBag.CurrentPhoto = imagePath;
+            }
             return View();
         }
 

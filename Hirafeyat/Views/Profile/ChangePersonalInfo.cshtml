@@ -10,6 +10,11 @@
 else if (User.IsInRole("Admin"))
 {
 
+	<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
+}
+else if (User.IsInRole("Customer"))
+{
+	<partial name="~/Views/Customer/_TopPartialCustomer.cshtml" />
 }
 
 <div class="container-fluid">
