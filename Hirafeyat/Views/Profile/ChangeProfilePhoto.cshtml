@@ -1,13 +1,32 @@
 ﻿@{
-    ViewData["Title"] = "Change Profile Photo";
+	ViewData["Title"] = "Change Profile Photo";
+	Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
+<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
 
-<h2>@ViewData["Title"]</h2>
+<div class="container-fluid">
+	<div class="py-3 px-xl-5">
+		<div class="container py-4">
+			<h2 class="text-center text-primary mb-4">@ViewData["Title"]</h2>
 
-<form asp-action="ChangeProfilePhoto" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label>Select a new profile image</label>
-        <input type="file" name="ProfileImage" class="form-control mb-2" required />
-        <button type="submit" class="btn btn-primary">Upload</button>
-    </div>
-</form>
+			@if (ViewBag.SuccessMessage != null)
+			{
+				<div class="alert alert-success text-center">@ViewBag.SuccessMessage</div>
+			}
+
+			<div class="row justify-content-center">
+				<div class="col-md-6 text-center">
+					<img src="@ViewBag.CurrentPhoto ?? " /imges/default-profile.png"" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" alt="Current Profile Image" />
+
+					<form asp-action="ChangeProfilePhoto" method="post" enctype="multipart/form-data">
+						<div class="form-group">
+							<label class="font-weight-bold">Select a new profile image</label>
+							<input type="file" name="ProfileImage" class="form-control-file mb-3" required />
+							<button type="submit" class="btn btn-primary">Upload</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -2,123 +2,72 @@
 @{
     ViewData["Title"] = "Order Details";
     var sellerId = ViewBag.SellerId as string;
+    Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
-
-<h1>Order Details</h1>
-
-<div class="order-details-container">
-    @* <h4>Order Info</h4> *@
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Customer Name</dt>
-        <dd class="col-sm-10">@Model.FullName</dd>
-
-        <dt class="col-sm-2">Email</dt>
-        <dd class="col-sm-10">@Model.Email</dd>
-
-        <dt class="col-sm-2">Phone Number</dt>
-        <dd class="col-sm-10">@Model.PhoneNumber</dd>
-
-        <dt class="col-sm-2">Address</dt>
-        <dd class="col-sm-10">@Model.Address</dd>
-
-        <dt class="col-sm-2">Order Date</dt>
-        <dd class="col-sm-10">@Model.OrderDate.ToString("dd/MM/yyyy")</dd>
-
-        <dt class="col-sm-2">Status</dt>
-        <dd class="col-sm-10">@Model.Status</dd>
-    </dl>
-
-    <h4>Your Items in this Order</h4>
-    <table class="order-items-table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.OrderItems.Where(i => i.Product.SellerId == sellerId))
-            {
-                <tr>
-                    <td>@item.Product.Title</td>
-                    <td>@item.Quantity</td>
-                    <td>@item.Product.Price.ToString("C")</td> <!-- تنسيق السعر كعملة -->
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-
-<div class="mt-4">
-    <a asp-action="Orders" class="btn-back">Back to Orders</a>
-</div>
-
+<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
 <style>
-    /* ستايل الجدول الأساسي */
-    .order-items-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 25px 0;
-        font-size: 0.9em;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-        border-radius: 8px;
-        overflow: hidden;
+    .font{
+        color: #D1827A;
     }
-
-        /* رأس الجدول */
-        .order-items-table thead tr {
-            background-color: #8B4513; /* بني داكن */
-            color: #ffffff;
-            text-align: left;
-            font-weight: bold;
-        }
-
-        .order-items-table th,
-        .order-items-table td {
-            padding: 12px 15px;
-        }
-
-        /* خلايا الجدول */
-        .order-items-table tbody tr {
-            border-bottom: 1px solid #D2B48C; /* بني فاتح للخط الفاصل */
-            background-color: #FAF0E6; /* بيج خفيف جداً */
-        }
-
-            .order-items-table tbody tr:nth-of-type(even) {
-                background-color: #FFF8DC; /* درجة بيج مختلفة للتبادل */
-            }
-
-            .order-items-table tbody tr:last-of-type {
-                border-bottom: 2px solid #8B4513; /* بني داكن لآخر خط */
-            }
-
-            /* تأثيرات hover */
-            .order-items-table tbody tr:hover {
-                background-color: #F5DEB3; /* بيج أكثر وضوحاً عند hover */
-                transform: scale(1.005);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                transition: all 0.2s ease;
-            }
-
-    /* زر العودة */
-    .btn-back {
-        background-color: #8B4513;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        text-decoration: none;
-        transition: background-color 0.3s;
-    }
-
-        .btn-back:hover {
-            background-color: #A0522D;
-            color: white;
-        }
 </style>
+<div class="container py-4">
+    <h2 class="text-center mb-4 font display-5">Order Details</h2>
 
+    <div class="card shadow-lg mb-4 border-0">
+        <div class="card-body">
+            <dl class="row fs-5">
+                <dt class="col-sm-3 text-dark fw-bold">👤 Customer Name</dt>
+                <dd class="col-sm-9">@Model.FullName</dd>
 
+                <dt class="col-sm-3 text-dark fw-bold">📧 Email</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
 
+                <dt class="col-sm-3 text-dark fw-bold">📞 Phone Number</dt>
+                <dd class="col-sm-9">@Model.PhoneNumber</dd>
+
+                <dt class="col-sm-3 text-dark fw-bold">📍 Address</dt>
+                <dd class="col-sm-9">@Model.Address</dd>
+
+                <dt class="col-sm-3 text-dark fw-bold">🗓️ Order Date</dt>
+                <dd class="col-sm-9">@Model.OrderDate.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-3 text-dark fw-bold">📦 Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge bg-@(Model.Status == OrderStatus.Delivered ? "success" : Model.Status == OrderStatus.Pending ? "warning text-dark" : "secondary") p-2">
+                        @Model.Status
+                    </span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <h4 class="mb-3 font fw-bold">🛒 Your Items in this Order</h4>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center align-middle">
+            <thead class="table-primary text-dark fw-bold">
+                <tr>
+                    <th class="fs-6">Product</th>
+                    <th class="fs-6">Quantity</th>
+                    <th class="fs-6">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderItems.Where(i => i.Product.SellerId == sellerId))
+                {
+                    <tr>
+                        <td>@item.Product.Title</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Product.Price.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a asp-action="Orders" class="btn btn-outline-primary btn-lg px-4">
+            ← Back to Orders
+        </a>
+    </div>
+</div>

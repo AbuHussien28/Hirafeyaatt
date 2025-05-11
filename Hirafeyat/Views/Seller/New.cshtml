@@ -1,86 +1,100 @@
 ﻿@model Hirafeyat.ViewModel.NewProductViewModel
 
 @{
-    ViewData["Title"] = "New";
+	ViewData["Title"] = "New";
+	Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
+<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
 
-<h1>add New product</h1>
+<div class="container-fluid">
+	<div class="py-3 px-xl-5">
+		<h1 class="mb-5 text-center text-dark font-weight-bold">Add New Product</h1>
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="New" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Quentity" class="control-label"></label>
-                <input asp-for="Quentity" class="form-control" />
-                <span asp-validation-for="Quentity" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label asp-for="Image">Upload Product Image</label>
-                <input asp-for="Image" type="file" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-                <img id="imagePreview" src="#" alt="Selected Image" class="img-thumbnail mt-2" style="max-height: 200px; display: none;" />
+		<div class="row justify-content-center">
+			<div class="col-md-8 col-lg-6">
+				<div class="card shadow border-0 rounded-lg">
+					<div class="card-body p-4">
+                        <form asp-action="New" method="post" enctype="multipart/form-data">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <div class="form-group row my-5">
+                                <label class="control-label col-1 m-2 ">
+                                    <i class="fa-solid fa-envelope" style="color: #000000;"></i>
+                                </label>
+                                <input asp-for="Title" class="form-control col-10" placeholder="Title" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            <div class="form-group row my-5">
+                                <label class="control-label col-1 m-2">
+                                    <i class="fa-solid fa-audio-description" style="color: #000000;"></i>
+                                </label>
+                                <input asp-for="Description" class="form-control col-10" placeholder="Description" />
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                            <div class="form-group row my-5">
+                                <label class="control-label col-1 m-2">
+                                    <i class="fa-solid fa-tag" style="color: #000000;"></i>
+                                </label>
+                                <input asp-for="Price" class="form-control col-10" placeholder="Price" />
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+                            <div class="form-group row my-5">
+                                <label class="control-label col-1 m-2">
+                                    <i class="fa-solid fa-arrow-up-1-9" style="color: #000000;"></i>
+                                </label>
+                                <input asp-for="Quentity" class="form-control col-10" placeholder="Quentity" />
+                                <span asp-validation-for="Quentity" class="text-danger"></span>
+                            </div>
 
-            </div>
+                            <div class="form-group row my-5">
+                                <label class="col-1 m-2">
+                                    <i class="fa-solid fa-image" style="color: #0c0d0d;"></i>
+                                </label>
+                                <input asp-for="Image" type="file" class="form-control col-10" />
+                                <span asp-validation-for="Image" class="text-danger"></span>
+                                <img id="imagePreview" src="#" alt="Selected Image" class="img-thumbnail mt-2" style="max-height: 200px; display: none;" />
 
-            <div class="form-group">
-                <label asp-for="catId">Category</label>
-                <select asp-for="catId" class="form-control" asp-items="@(new SelectList((IEnumerable<Hirafeyat.Models.Category>)ViewData["catList"], "Id", "Name"))">
-                    <option value="">-- Select Category --</option>
-                </select>
-                <span asp-validation-for="catId" class="text-danger"></span>
-            </div>
+                            </div>
 
-            <input type="hidden" asp-for="sellerId" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value" />
+                            <div class="form-group row my-5">
+                                <label class="col-1 m-2">
+                                    <i class="fa-solid fa-layer-group" style="color: #000000;"></i>
+                                </label>
+                                <select asp-for="catId" class="form-control col-10" asp-items="@(new SelectList((IEnumerable<Hirafeyat.Models.Category>)ViewData["catList"], "Id", "Name"))">
+                                    <option value="">Select Category</option>
+                                </select>
+                                <span asp-validation-for="catId" class="text-danger"></span>
+                            </div>
 
-            <div class="form-group">
-                <input type="submit" value="Add" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+                            <input type="hidden" asp-for="sellerId" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value" />
+
+                            <div class="form-group mt-5 d-flex justify-content-center ">
+                                <input type="submit" value="Add" class="btn btn-primary w-50 h-50" />
+                            </div>
+                        </form>
+
+						<div class="text-center mt-4">
+							<a asp-action="Index" class="text-decoration-none text-primary fw-bold">← Back to List</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
-    <script>
-        document.getElementById("Image").addEventListener("change", function (event) {
-            var input = event.target;
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    var preview = document.getElementById("imagePreview");
-                    preview.src = e.target.result;
-                    preview.style.display = "block";
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        });
-    </script>
-}
+<partial name="_ValidationScriptsPartial" />
+<script>
+	document.getElementById("Image").addEventListener("change", function (event) {
+		var input = event.target;
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				var preview = document.getElementById("imagePreview");
+				preview.src = e.target.result;
+				preview.classList.remove("d-none");
+			};
+			reader.readAsDataURL(input.files[0]);
+		}
+	});
+</script>
 

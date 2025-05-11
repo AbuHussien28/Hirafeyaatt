@@ -36,6 +36,7 @@ namespace Hirafeyat.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound();
 
+
             if (ProfileImage != null && ProfileImage.Length > 0)
             {
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Imges");
@@ -52,7 +53,10 @@ namespace Hirafeyat.Controllers
             }
 
             return RedirectToAction("Index", "Home");
+
         }
+
+
         //----------------------------------------------------------
 
         [HttpGet]

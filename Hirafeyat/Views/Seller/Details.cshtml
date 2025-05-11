@@ -3,97 +3,128 @@
 @{
     ViewData["Title"] = "Details";
     var isSoldOut = Model.Quentity == 0;
+    Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
+<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
 
-<div class="row px-xl-5 py-5">
-    <div class="col-lg-5 pb-5">
-        <img class="w-100 fixed-image" src="@Model.ImageUrl" alt="Product Image">
-    </div>
-
-    <div class="col-lg-7 pb-5">
-        <h3 class="font-weight-semi-bold">@Model.Title</h3>
-
-        <div class="d-flex mb-3">
-            <div class="text-primary mr-2">
-                <small class="fas fa-star"></small>
-                <small class="fas fa-star"></small>
-                <small class="fas fa-star"></small>
-                <small class="fas fa-star-half-alt"></small>
-                <small class="far fa-star"></small>
-            </div>
-            <small class="pt-1">(50 Reviews)</small>
-        </div>
-
-        <div class="d-flex mb-3">
-            <div><h6 class="text-primary"><del>$@(Model.Price + 200) </del></h6></div>
-            <h6 class="text-muted ml-3">$@Model.Price</h6> 
-        </div>
-
-        <p class="mb-4">@Model.Description</p>
-
-        @if (isSoldOut)
-        {
-            <h5 class="text-danger"> Sold Out</h5>
-        }
-        else
-        {
-            <p class="text-dark">Available Quantity: <strong>@Model.Quentity</strong></p>
-        }
-
-        <div class="d-flex pt-2">
-            <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
-            <div class="d-inline-flex">
-                <a class="text-dark px-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                <a class="text-dark px-2" href="#"><i class="fab fa-twitter"></i></a>
-                <a class="text-dark px-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                <a class="text-dark px-2" href="#"><i class="fab fa-pinterest"></i></a>
-            </div>
-        </div>
-
-        <a asp-action="Index" asp-controller="Seller" class="btn btn-brown mt-4"> Back To List</a>
-    </div>
-</div>
 <style>
-    .btn-brown {
-        background-color: #8b5e3c;
-        color: white;
-        border: none;
+    .product-card-container {
+        max-width: 1100px;
+        margin: auto;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        padding: 40px;
+        background-color: #fff;
     }
 
-        .btn-brown:hover {
-            background-color: #6b3e26;
+    .product-image-container {
+        overflow: hidden;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        max-height: 500px;
+    }
+
+        .product-image-container img {
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
+
+        .product-image-container:hover img {
+            transform: scale(1.05);
+        }
+
+    .price-box del {
+        color: #999;
+        font-size: 1.2rem;
+    }
+
+    .price-box h6 {
+        font-size: 1.8rem;
+        color: #28a745;
+        display: inline;
+    }
+
+    .blue-stars i {
+        color: #d19c97 !important;
+        font-size: 1.2rem;
+    }
+
+    .product-details h3 {
+        font-weight: 700;
+        font-size: 2.2rem;
+    }
+
+    .product-details p {
+        font-size: 1.1rem;
+    }
+
+    .btn-lg-custom {
+        padding: 12px 28px;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+
+    .social-icons a:hover {
+        color: #007bff !important;
+    }
 </style>
 
+<div class="container py-5">
+    <div class="product-card-container">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-5">
+                <div class="product-image-container">
+                    <img src="@Model.ImageUrl" alt="Product Image">
+                </div>
+            </div>
 
+            <div class="col-lg-7 product-details">
+                <h3 class="mb-3">@Model.Title</h3>
 
+                <div class="d-flex align-items-center mb-3 blue-stars">
+                    <div class="me-2">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <i class="far fa-star"></i>
+                    </div>
+                    <small class="text-muted">(50 Reviews)</small>
+                </div>
 
-@* @model Product *@
+                <div class="price-box mb-3">
+                    <del>$@(Model.Price + 200)</del>
+                    <h6 class="ms-3">$@Model.Price</h6>
+                </div>
 
-@* @{ *@
-@*     ViewData["Title"] = "Details"; *@
-@*     var isSoldOut = Model.Quentity == 0; *@
-@* } *@
+                <p class="mb-4">@Model.Description</p>
 
-@* <h1>Details</h1> *@
+                @if (isSoldOut)
+                {
+                    <h5 class="text-danger fw-bold">Sold Out</h5>
+                }
+                else
+                {
+                    <p class="text-dark">Available Quantity: <strong>@Model.Quentity</strong></p>
+                }
 
-@* <div class="card @(isSoldOut ? "bg-danger text-white" : "")" style="width: 18rem;"> *@
-@*     <img src="@Model.ImageUrl" class="card-img-top" alt="Product Image"> *@
-@*     <div class="card-body"> *@
-@*         <h5 class="card-title">@Model.Title</h5> *@
-@*         <p class="card-text">@Model.Description</p> *@
-@*         <p class="card-text">@Model.Price.ToString("C")</p> *@
-@*         <p class="card-text"> *@
-@*             @if (isSoldOut) *@
-@*             { *@
-@*                 <strong>Sold Out</strong> *@
-@*             } *@
-@*             else *@
-@*             { *@
-@*                 <strong>Quantity: @Model.Quentity</strong> *@
-@*             } *@
-@*         </p> *@
-@*         <a asp-action="Index" asp-controller="Seller" class="btn btn-primary">Back To List</a> *@
-@*     </div> *@
-@* </div> *@
+                <div class="d-flex align-items-center mt-4">
+                    <span class="me-2 fw-semibold">Share on:</span>
+                    <div class="social-icons d-inline-flex">
+                        <a class="text-dark px-2" target="_blank" href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a>
+                        <a class="text-dark px-2" target="_blank" href="https://x.com/"><i class="fab fa-twitter"></i></a>
+                        <a class="text-dark px-2" target="_blank" href="https://www.linkedin.com/login"><i class="fab fa-linkedin-in"></i></a>
+                        <a class="text-dark px-2" target="_blank" href="https://www.instagram.com/"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
 
+                <a asp-action="Index" asp-controller="Seller" class="btn btn-primary mt-4 btn-lg-custom">
+                    ← Back To List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,200 +1,102 @@
 ﻿@{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
+<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
 
-<h1 style="color:#5c3a21;">My Products</h1>
+<div class="container-fluid">
+	<div class="py-3 px-xl-5">
+		<h2 class="mb-4 d-flex justify-content-center text-dark font-weight-bold">My Products</h2>
 
-<style>
-    .custom-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: 'Segoe UI', sans-serif;
-    }
+		<table class="table table-bordered table-hover table-striped text-center">
+			<thead class="thead-dark">
+				<tr>
+					<th class="align-middle">Title</th>
+					<th class="align-middle">Description</th>
+					<th class="align-middle">Price</th>
+					<th class="align-middle">Quantity</th>
+					<th class="align-middle">Image</th>
+					<th class="align-middle">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@{
+					var rowIndex = 0;
+				}
+				@foreach (var item in Model)
+				{
+					var rowClass = rowIndex % 2 == 0 ? "custom-row-brown" : "custom-row-beige";
+					<tr class="@rowClass">
+						<td class="align-middle">@item.Title</td>
+						<td class="align-middle">@item.Description</td>
+						<td class="align-middle">@item.Price$</td>
+						<td class="align-middle">@item.Quentity</td>
+						<td class="align-middle">
+							<img src="@item.ImageUrl" alt="Product Image"
+								 class="img-fluid rounded"
+								 style="max-width: 100px; max-height: 100px; object-fit: cover;" />
+						</td>
+						<td class="align-middle">
+							<div class="btn-group" role="group" aria-label="Action Buttons">
+								<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-success" title="View Details">
+									<i class="fas fa-eye"></i>
+								</a>
+								<a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit">
+									<i class="fas fa-edit"></i>
+								</a>
+								<button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(@item.Id)" title="Delete">
+									<i class="fas fa-trash-alt"></i>
+								</button>
+							</div>
+						</td>
 
-        .custom-table th {
-            background-color: #7b4f37;
-            color: #fff;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-        }
+					</tr>
+					rowIndex++;
+				}
+			</tbody>
+		</table>
 
-        .custom-table td {
-            padding: 12px;
-            border-bottom: 1px solid #d6c4b2;
-            vertical-align: middle;
-        }
 
-    .custom-row-brown {
-        /* background-color: #f0e6da; */
-        background-color: #e0d4c3;
-    }
 
-    .custom-row-beige {
-         background-color: #fffaf5; 
-        /* background-color: #f2e9e0; */
-    }
-
-    .custom-table tr:hover {
-        background-color: #e8dacc;
-        transition: background-color 0.3s ease;
-    }
-
-    .custom-table img {
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border: 1px solid #c2a98d;
-        border-radius: 4px;
-    }
-
-    .btn {
-        font-size: 14px;
-        padding: 6px 10px;
-    }
-</style>
-
-<table class="custom-table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Quentity</th>
-            <th>Image</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @{
-            var rowIndex = 0;
-        }
-        @foreach (var item in Model)
-        {
-            var rowClass = rowIndex % 2 == 0 ? "custom-row-brown" : "custom-row-beige";
-            <tr class="@rowClass">
-                <td>@item.Title</td>
-                <td>@item.Description</td>
-                <td>@item.Price$</td>
-                <td>@item.Quentity</td>
-                <td>
-                    <img src="@item.ImageUrl" />
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Details</a>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary m-1">Edit</a>
-                    <button class="btn btn-danger" onclick="confirmDelete(@item.Id)">Delete</button>
-                </td>
-            </tr>
-            rowIndex++;
-        }
-    </tbody>
-</table>
-
-<!-- Modal for Delete Confirmation -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content" style="background-color: #fffaf5; border: 2px solid #c2a98d;">
-            <div class="modal-header" style="background-color: #7b4f37;">
-                <h5 class="modal-title" style="color: white;">Confirm Delete</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete this product?
-            </div>
-            <div class="modal-footer">
-                <form id="deleteForm" method="post" asp-action="Delete" asp-controller="Seller">
-                    <input type="hidden" name="id" id="deleteProductId" />
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
+		<!-- Modal for Delete Confirmation -->
+		<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content" style="background-color: #fffaf5; border: 2px solid #c2a98d;">
+					<div class="modal-header" style="background-color: #7b4f37;">
+						<h5 class="modal-title text-white">Confirm Delete</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						Are you sure you want to delete this product?
+					</div>
+					<div class="modal-footer">
+						<form id="deleteForm" method="post" asp-action="Delete" asp-controller="Seller">
+							<input type="hidden" name="id" id="deleteProductId" />
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+							<button type="submit" class="btn btn-danger">Delete</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
-@section Scripts {
-    <script>
-        function confirmDelete(id) {
-            document.getElementById('deleteProductId').value = id;
-            $('#confirmDeleteModal').modal('show');
-        }
-    </script>
-}
+<script>
+	function confirmDelete(id) {
+		document.getElementById('deleteProductId').value = id;
+		$('#confirmDeleteModal').modal('show');
+	}
+</script>
 
+<style>
+	.custom-row-brown {
+		background-color: #f8f1eb;
+	}
 
-
-
-@* @{ *@
-@*     ViewData["Title"] = "Index"; *@
-@* } *@
-
-@* <h1>My Products</h1> *@
-@* <table class="table table-boardered"> *@
-@*     <thead> *@
-@*         <tr> *@
-@*             <td>Title</td> *@
-@*             <td>Description</td> *@
-@*             <td>Price</td> *@
-@*             <td>Quentity</td> *@
-@*             <td>Image</td> *@
-@*             <td>Actions</td> *@
-@*         </tr> *@
-@*     </thead> *@
-@*     <tbody> *@
-@*         @foreach (var item in Model) *@
-@*         { *@
-@*             <tr> *@
-@*                 <td>@item.Title</td> *@
-@*                 <td>@item.Description</td> *@
-@*                 <td>@item.Price</td> *@
-@*                 <td>@item.Quentity</td> *@
-@*                 <td> *@
-@*                     <img src="@item.ImageUrl" style="width:100px0; height:100px"> *@
-@*                 </td> *@
-@*                 <td> *@
-@*                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Details</a> *@
-@*                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary m-1">Edit</a> *@
-@*                     <button class="btn btn-danger " onclick="confirmDelete(@item.Id)">Delete</button> *@
-@*                 </td> *@
-@*             </tr> *@
-@*         } *@
-@*     </tbody> *@
-@* </table> *@
-
-@* <!-- Modal for Delete Confirmation --> *@
-@* <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"> *@
-@*     <div class="modal-dialog" role="document"> *@
-@*         <div class="modal-content"> *@
-@*             <div class="modal-header"> *@
-@*                 <h5 class="modal-title">Confirm Delete</h5> *@
-@*                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"> *@
-@*                     <span aria-hidden="true">&times;</span> *@
-@*                 </button> *@
-@*             </div> *@
-@*             <div class="modal-body"> *@
-@*                 Are you sure you want to delete this product? *@
-@*             </div> *@
-@*             <div class="modal-footer"> *@
-@*                 <form id="deleteForm" method="post" asp-action="Delete" asp-controller="Seller"> *@
-@*                     <input type="hidden" name="id" id="deleteProductId" /> *@
-@*                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> *@
-@*                     <button type="submit" class="btn btn-danger">Delete</button> *@
-@*                 </form> *@
-@*             </div> *@
-@*         </div> *@
-@*     </div> *@
-@* </div> *@
-
-@* @section Scripts { *@
-@*     <script> *@
-@*         function confirmDelete(id) { *@
-@*             document.getElementById('deleteProductId').value = id; *@
-@*             $('#confirmDeleteModal').modal('show'); *@
-@*         } *@
-@*     </script> *@
-@* } *@
-
-
+	.custom-row-beige {
+		background-color: #fffaf5;
+	}
+</style>

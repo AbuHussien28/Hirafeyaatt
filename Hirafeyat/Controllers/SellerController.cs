@@ -25,7 +25,7 @@ namespace Hirafeyat.Controllers
         public SellerController(IOrderService orderService,UserManager<ApplicationUser> user , IProductRepository productRepo ,
             SellerServices.ICategoryRepository catRepo, HirafeyatContext context, SellerServices.IOrderItemsRepository orderItemsRepository)
         {
-            this.orderService = orderService;
+            this.orderService = orderService; 
             this.orderService = orderService;
             this.user = user;
             this.productRepo = productRepo;
