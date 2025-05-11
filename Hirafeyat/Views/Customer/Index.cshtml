@@ -1,4 +1,10 @@
 ﻿@model Dictionary<string, List<Hirafeyat.Models.Product>>
+@{
+    ViewData["Title"] = "Details";
+    // var isSoldOut = Model.Quentity == 0;
+    Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
+}
+<partial name="~/Views/Customer/_TopPartialCustomer.cshtml" />
 
 
 @foreach (var category in Model)
@@ -68,7 +74,7 @@
 </div>
 }
 
-@section Scripts {
+
     <script>
         $(document).ready(function () {
             $('.add-to-cart-form').submit(function (e) {
@@ -118,4 +124,4 @@
             });
         });
     </script>
-}
+
