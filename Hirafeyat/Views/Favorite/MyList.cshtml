@@ -1,5 +1,10 @@
 ﻿@model List<Favorite>
-
+@{
+    ViewData["Title"] = "Details";
+    // var isSoldOut = Model.Quentity == 0;
+    Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
+}
+<partial name="~/Views/Customer/_TopPartialCustomer.cshtml" />
 
 <div class="container-fluid  mb-5" style="background-color:#d19c97;">
     <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px ;">
@@ -7,6 +12,7 @@
 
     </div>
 </div>
+<div class="container">
 <div class="row">
     @foreach (var item in Model)
     {
@@ -47,6 +53,8 @@
 
        
     }
+    </div>
+    </div>
 
 
 

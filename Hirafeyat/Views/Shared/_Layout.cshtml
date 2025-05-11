@@ -35,10 +35,7 @@
                         </button>
                         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
-                                <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                                <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Shop">Brands</a>
-                                <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Info">About Us</a>
-                                @if (User.IsInRole("Admin"))
+                                   @if (User.IsInRole("Admin"))
                                 {
                                     <div class="nav-item dropdown">
                                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Admin</a>
@@ -74,7 +71,7 @@
                                     </div>
                                 }
 
-                                <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
+                                @* <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Contact">Contact</a> *@
                             </div>
 
                             <div class="navbar-nav ml-auto py-0">
@@ -133,8 +130,8 @@
                                 }
                                 else
                                 {
-                                    <a asp-controller="Account" asp-action="Login" class="nav-item nav-link">Login</a>
-                                    <a asp-controller="Account" asp-action="Register" class="nav-item nav-link">Register</a>
+                                    @* <a asp-controller="Account" asp-action="Login" class="nav-item nav-link">Login</a> *@
+                                    @* <a asp-controller="Account" asp-action="Register" class="nav-item nav-link">Register</a> *@
                                 }
                             </div>
                         </div>

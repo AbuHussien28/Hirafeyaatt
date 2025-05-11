@@ -1,0 +1,88 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManage
+
+@{
+    var currentUser = SignInManage.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
+    var UserProfileImageUrl = currentUser?.ProfileImage ?? "/imges/default-profile.png";
+    var UserName = currentUser?.UserName ?? "User";
+}
+
+<div class="container-fluid">
+    <!-- Topbar Start -->
+    <div class="row bg-dark py-2 px-xl-5">
+        <div class="col-lg-6 d-none d-lg-block">
+            <div class="d-inline-flex align-items-center">
+                <a class="text-white" href="#">FAQs</a>
+                <span class="text-muted px-2">|</span>
+                <a class="text-white" href="#">Help</a>
+                <span class="text-muted px-2">|</span>
+                <a class="text-white" href="#">Support</a>
+            </div>
+        </div>
+        <div class="col-lg-6 text-center text-lg-right">
+            <div class="d-inline-flex align-items-center">
+                <a class="text-white px-2" href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a class="text-white px-2" href="https://x.com/" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a class="text-white px-2" href="https://www.linkedin.com/login" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                <a class="text-white px-2" href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a class="text-white px-2" href="https://www.youtube.com/" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header & Navbar -->
+    <div class="row align-items-center py-3 px-xl-5 position-relative">
+        <div class="col-lg-3 d-none d-lg-block">
+            <a href="#" class="text-decoration-none">
+                <h1 class="m-0 display-5 font-weight-semi-bold">
+                    <span class="text-primary font-weight-bold border px-3 mr-1">H</span>irafeyat
+                </h1>
+            </a>
+        </div>
+
+        <div class="col-lg-9 d-flex justify-content-end align-items-center">
+            <div class="d-inline-flex flex-wrap">
+                <a href="/Customer/index" class="nav-link px-3">Home</a>
+                <a href="/order/myorders" class="nav-link px-3">Orders</a>
+                <a href="/Cart/MyCart" class="nav-link px-3"><i class="fas fa-shopping-cart text-primary"></i></a>
+                <a href="/Favorite/MyList" class="nav-link px-3">  <i class="fas fa-heart text-primary"></i></a>
+          
+            </div>
+
+            <!-- Profile Button -->
+            <button id="profileToggle" class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px;">
+                <i class="fa fa-user"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Profile Sidebar -->
+    <div id="profileSidebar" class="position-fixed bg-white border rounded shadow-lg p-4" style="top: 70px; right: 20px; width: 300px; display: none; z-index: 1050;">
+        <div class="text-center">
+            <h5>@UserName</h5>
+            <img src="@UserProfileImageUrl" class="img-thumbnail rounded-circle my-2" style="width: 120px; height: 120px;" />
+            <a href="/Profile/ChangeProfilePhoto" class="btn btn-success btn-sm w-100 mb-2">Change Profile Photo</a>
+            <a href="/Profile/ChangePersonalInfo" class="btn btn-primary btn-sm w-100 mb-2">Change Personal Info</a>
+            <a href="/Profile/ChangePassword" class="btn btn-warning btn-sm w-100 mb-2">Change Password</a>
+            <form asp-controller="Account" asp-action="LogOut" method="post" class="w-100">
+                <button type="submit" class="btn btn-danger btn-sm w-100">Log Out</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("profileToggle").addEventListener("click", function () {
+        const sidebar = document.getElementById("profileSidebar");
+        sidebar.style.display = (sidebar.style.display === "none" || sidebar.style.display === "") ? "block" : "none";
+    });
+
+    document.addEventListener("click", function (event) {
+        const sidebar = document.getElementById("profileSidebar");
+        const toggle = document.getElementById("profileToggle");
+        if (!sidebar.contains(event.target) && event.target !== toggle && !toggle.contains(event.target)) {
+            sidebar.style.display = "none";
+        }
+    });
+</script>

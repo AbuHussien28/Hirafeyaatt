@@ -6,83 +6,95 @@
 <html>
 <head>
     <title>Payment Successful</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f4f6f9;
             margin: 0;
-            padding: 0;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .container {
-            max-width: 600px;
-            margin: 100px auto;
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            background: #ffffff;
+            padding: 40px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
         }
 
-        .alert-success {
-            color: #155724;
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            padding: 30px;
-            border-radius: 10px;
+        .success-icon {
+            font-size: 50px;
+            color: #27ae60;
+            background-color: #e6f4ea;
+            border-radius: 50%;
+            padding: 15px;
+            display: inline-block;
+            margin-bottom: 15px;
         }
 
-            .alert-success i {
-                color: #28a745;
-            }
+        h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        p {
+            font-size: 15px;
+            color: #34495e;
+            margin-bottom: 12px;
+        }
 
         .btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
-            text-decoration: none;
-            border-radius: 5px;
             display: inline-block;
+            margin-top: 15px;
+            padding: 12px 18px;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
             transition: background-color 0.3s ease;
         }
 
         .btn-primary {
-            background-color: #007bff;
-            color: white;
+            background-color: #27ae60;
+            color: #fff;
         }
 
             .btn-primary:hover {
-                background-color: #0056b3;
+                background-color: #219150;
             }
 
         .btn-secondary {
-            background-color: #6c757d;
-            color: white;
+            background-color: #27ae60;
+            color: #fff;
         }
 
             .btn-secondary:hover {
-                background-color: #5a6268;
+                background-color: #219150;
             }
 
     </style>
 </head>
 <body>
-    <div class="container text-center py-5">
-        <div class="alert alert-success">
-            <i class="fas fa-check-circle fa-3x mb-3"></i>
-            <h2>Payment Successful!</h2>
-            <p>Your order #@ViewBag.OrderId has been confirmed.</p>
-            <p>A confirmation email has been sent to your registered email address.</p>
-        </div>
+    <div class="container">
+        <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <h2>Payment Successful!</h2>
+        <p>We have received your order.</p>
+        <p><strong>Date:</strong> @DateTime.Now.ToString("MMM dd, yyyy @ hh:mm tt")</p>
+        <p><strong>Payment Method:</strong> Mastercard Ending in 1887</p>
 
         <div class="mt-4">
-            <a href="@Url.Action("MyOrders", "Order")" class="btn btn-primary">
-                View Your Orders
-            </a>
-            <a href="/" class="btn btn-secondary">
-                Continue Shopping
-            </a>
+            <a href="@Url.Action("MyOrders", "Order")" class="btn btn-primary">View Your Orders</a>
+            <a href="/customer/index" class="btn btn-secondary">Continue Shopping</a>
         </div>
+
     </div>
 </body>
 </html>
