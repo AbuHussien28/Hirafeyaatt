@@ -2,8 +2,14 @@
 	ViewData["Title"] = "Change Profile Photo";
 	Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
-<partial name="~/Views/Seller\_TopPartialSeller.cshtml" />
-
+@if (User.IsInRole("Seller"))
+{
+	<partial name="~/Views/Seller\_TopPartialSeller.cshtml" />
+}
+else if (User.IsInRole("Admin"))
+{
+	<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
+}
 <div class="container-fluid">
 	<div class="py-3 px-xl-5">
 		<div class="container py-4">
@@ -16,7 +22,7 @@
 
 			<div class="row justify-content-center">
 				<div class="col-md-6 text-center">
-					<img src="@ViewBag.CurrentPhoto ?? " /imges/default-profile.png"" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" alt="Current Profile Image" />
+					<img src="@ViewBag.CurrentPhoto" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" alt="Current Profile Image" />
 
 					<form asp-action="ChangeProfilePhoto" method="post" enctype="multipart/form-data">
 						<div class="form-group">

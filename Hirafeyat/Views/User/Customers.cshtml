@@ -108,7 +108,7 @@
 							<td>
 								@if (!string.IsNullOrEmpty(item.ProfileImage))
 								{
-									<img src="@Url.Content("~/" + item.ProfileImage)" alt="Profile" class="profile-img" />
+									<img src="@item.ProfileImage" alt="Profile" class="profile-img" />
 								}
 							</td>
 							<td>@Html.DisplayFor(modelItem => item.UserName)</td>

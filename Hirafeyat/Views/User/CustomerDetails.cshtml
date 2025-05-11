@@ -13,7 +13,7 @@
 			<div class="col-md-4 d-flex align-items-center justify-content-center bg-light p-4">
 				@if (!string.IsNullOrEmpty(Model.ProfileImage))
 				{
-					<img src="@Url.Content("~/" + Model.ProfileImage)"
+					<img src="@Model.ProfileImage"
 						 class="img-fluid rounded-circle shadow"
 						 alt="Profile Image"
 						 style="width: 220px; height: 220px; object-fit: cover;" />

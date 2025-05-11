@@ -37,8 +37,11 @@ namespace Hirafeyat.Controllers
         public IActionResult Index()
         {
             var sId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            List<Product> products = productRepo.getProductsBySellerId(sId);
-            return View("Index" , products);
+            List<Product> products = productRepo.getProductsBySellerId(sId)
+                .Where(p => p.Status == productStatus.Approved)
+                .ToList(); ;
+            return View("Index", products);
+
         }
 
         public IActionResult New()

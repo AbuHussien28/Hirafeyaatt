@@ -32,9 +32,7 @@ namespace Hirafeyat.Controllers
             foreach (var category in categories)
             {
                 var productsInCategory = productRepository.GetAllWithSeller()
-                    .Where(p => p.CategoryId == category.Id
-                    //&& p.Status == productStatus.Approved
-                    ).ToList();
+                    .Where(p => p.CategoryId == category.Id && p.Status == productStatus.Approved).ToList();
                 viewModel[category.Name] = productsInCategory;
             }
 

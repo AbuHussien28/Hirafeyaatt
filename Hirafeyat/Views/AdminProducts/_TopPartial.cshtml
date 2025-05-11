@@ -3,7 +3,7 @@
 @inject SignInManager<ApplicationUser> SignInManage
 
 @{
-    var currentUser = SignInManage.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
+    var currentUser = await UserManager.GetUserAsync(User) ;
     var UserProfileImageUrl = currentUser?.ProfileImage ?? "/imges/default-profile.png";
     var UserName = currentUser?.UserName ?? "User";
 }
@@ -43,7 +43,7 @@
 
         <div class="col-lg-9 d-flex justify-content-end align-items-center">
             <div class="d-inline-flex flex-wrap">
-                <a href="/Admin/Product/Board" class="nav-link px-3">Home</a>
+                @* <a href="/Admin/Product/Board" class="nav-link px-3">Home</a> *@
                 <a href="/Admin/Product/Index" class="nav-link px-3">Products</a>
                 <a href="/AdminOrder/Index" class="nav-link px-3">Orders</a>
                 <a href="/Category/index" class="nav-link px-3">Categories</a>

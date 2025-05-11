@@ -7,9 +7,9 @@
 {
 	<partial name="~/Views/Seller\_TopPartialSeller.cshtml" />
 }
-else if (User.IsInRole("Customer"))
+else if (User.IsInRole("Admin"))
 {
-
+	<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
 }
 
 <div class="container-fluid">
