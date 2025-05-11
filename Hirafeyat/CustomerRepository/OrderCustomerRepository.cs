@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 namespace Hirafeyat.CustomerRepository
 {
@@ -52,6 +53,32 @@ namespace Hirafeyat.CustomerRepository
 
         public async Task SaveChangesAsync()
         {
+            await context.SaveChangesAsync();
+        }
+        public async Task CreateOrderWithCartItemsAsync(string userId, string email)
+        {
+            var cartItems = await GetCartItemsByUserIdAsync(userId);
+
+            var order = new Order
+            {
+                CustomerId = userId,
+                OrderDate = DateTime.UtcNow,
+                Status = OrderStatus.Pending,
+                Email = email,
+                OrderItems = new List<OrderItem>()
+            };
+
+            foreach (var cartItem in cartItems)
+            {
+                order.OrderItems.Add(new OrderItem
+                {
+                    ProductId = cartItem.Product.Id,
+                    Quantity = cartItem.Quantity,
+                });
+            }
+
+            await context.Orders.AddAsync(order);
+            context.CartItems.RemoveRange(cartItems);
             await context.SaveChangesAsync();
         }
     }

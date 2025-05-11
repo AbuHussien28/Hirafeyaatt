@@ -51,6 +51,10 @@ namespace Hirafeyat.CustomersPaymentsRepo
 
             await context.SaveChangesAsync();
         }
-
+        public async Task<Order> GetOrderWithEmailByIdAsync(int orderId)
+        {
+            return await context.Orders
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+        }
     }
 }

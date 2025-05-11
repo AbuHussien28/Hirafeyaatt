@@ -17,12 +17,14 @@ public class OrderController : Controller
     private readonly IOrderCustomerService orderService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration configuration;
+    private readonly ILogger<OrderController> logger;
 
-    public OrderController(IOrderCustomerService orderService, UserManager<ApplicationUser> userManager , IConfiguration configuration)
+    public OrderController(IOrderCustomerService orderService, UserManager<ApplicationUser> userManager , IConfiguration configuration,ILogger<OrderController> logger)
     {
         this.orderService = orderService;
         _userManager = userManager;
         this.configuration = configuration;
+        this.logger = logger;
         var stripeSecretKey = configuration["Stripe:SecretKey"];
         if (!string.IsNullOrEmpty(stripeSecretKey))
         {
@@ -75,20 +77,20 @@ public class OrderController : Controller
                 return RedirectToAction("Login", "Account");
             }
 
-            // Process the order
             var orderId = await orderService.ProcessOrderAsync(
                 userId, model, paymentMethod, paymentIntentId);
 
-            // Redirect to payment success
+            logger.LogInformation("Order {OrderId} placed successfully by user {UserId}", orderId, userId);
+
             return RedirectToAction("PaymentSuccess", "Payment", new { orderId });
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Error placing order for user {UserId}", _userManager.GetUserId(User));
             TempData["ErrorMessage"] = ex.Message;
             return RedirectToAction("PaymentFailed", "Payment");
         }
     }
-
     [HttpGet]
     public async Task<IActionResult> MyOrders()
     {

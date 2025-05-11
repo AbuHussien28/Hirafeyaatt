@@ -7,6 +7,7 @@
         Task AddPaymentAsync(Payment payment);
         Task<Order> GetOrderByIdAsync(int orderId, string userId);
         Task<List<Order>> GetUserOrdersAsync(string userId);
+        Task CreateOrderWithCartItemsAsync(string userId, string email);
         Task SaveChangesAsync();
         void RemoveCartItems(List<CartItem> cartItems);
     }
