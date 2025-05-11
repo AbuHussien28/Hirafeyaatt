@@ -1,14 +1,22 @@
 ﻿@model Hirafeyat.ViewModel.Account.UpdateBrandViewModel
 
-<h2>Update Brand Name</h2>
+<div class="container-fluid  mb-5" style="background-color:#d19c97;">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px ;">
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">Update Brand Name</h1>
 
+    </div>
+</div>
+
+<div class="container">
 <form asp-action="UpdateBrandName" method="post">
     <div class="form-group">
         <label asp-for="BrandName" class="control-label"></label>
         <input asp-for="BrandName" class="form-control" />
         <span asp-validation-for="BrandName" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
+    <div class="d-flex align-items-center justify-content-center">
+        <button type="submit" class=" btn btn-primary w-25 h-25">Save</button>
+        </div>
 </form>
 
 @if (TempData["Success"] != null)
@@ -17,3 +25,4 @@
         @TempData["Success"]
     </div>
 }
+</div>

@@ -21,7 +21,12 @@ namespace Hirafeyat
             string clientId = googleAuthSettings["ClientId"];
             string clientSecret = googleAuthSettings["ClientSecret"];
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews()
+      .AddJsonOptions(options =>
+      {
+          options.JsonSerializerOptions.PropertyNamingPolicy = null;
+      });
+           
             builder.Services.AddDbContext<HirafeyatContext>(options =>
              options.UseSqlServer(builder.Configuration.GetConnectionString("CS")));
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

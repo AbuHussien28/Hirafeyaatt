@@ -1,0 +1,226 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManage
+
+
+@{
+    var currentUser = SignInManage.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
+    var UserProfileImageUrl = currentUser?.ProfileImage ?? "/imges/default-profile.png";
+    var UserName = currentUser?.UserName ?? "User";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Hirafeyat</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/Hirafeyat.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+<body>
+
+    <header>
+        <nav class=" navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+            <a href="" class="text-decoration-none d-block d-lg-none">
+                <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+            </a>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+
+                <div class="navbar-nav mr-auto mx-5 ">
+
+                    <a href="http://localhost:5227/customer/index" class="nav-item nav-link ">Home</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1 ">
+                            @* <li class="nav-item"> *@
+                            @*     <a class="nav-link text-dark" asp-area="" asp-controller="customer" asp-action="Index">Home</a> *@
+                            @* </li> *@
+
+                            @if (User.IsInRole("Customer"))
+                            {
+                                <li class="nav-item my-3">
+                                    <a href="/Order/MyOrders" class="btn btn-outline-primary"> View My Orders</a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Sellers">Sellers</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Customers">Customers</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Seller"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="UpdateBrandName">UpdateBrandName</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark position-relative" asp-area="" asp-controller="Seller" asp-action="New" title="Add New Product">
+                                        <i class="fas fa-plus-circle fa-lg" style="color: #8B4513; font-size: 1.5rem;"></i>
+                                        <span class="tooltip-text">Add New Product</span>
+                                    </a>
+                                </li>
+
+                            }
+                            @if (SignInManage.IsSignedIn(User) && User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="NewRole">NewRole</a>
+                                </li>
+                            }
+
+
+                        </ul>
+                        @if (SignInManage.IsSignedIn(User))
+                        {
+                            <!-- Trigger Button -->
+                            <button id="profileToggle" class="btn btn-light position-fixed" style="top:10px; right:20px; z-index:9999;">
+                                <i class="fa fa-user"></i>
+                            </button>
+                            @if (User.IsInRole("Customer"))
+                            {
+                                <!-- Favorite Button -->
+                                <a href="/Favorite/MyList" class="btn btn-light position-fixed" style="top:10px; right:70px; z-index:9999;">
+                                    <i class="fa fa-heart text-danger"></i>
+                                </a>
+
+                                <!-- Cart Button -->
+                                <a href="/Cart/MyCart" class="btn btn-light position-fixed" style="top:10px; right:120px; z-index:9999;">
+                                    <i class="fa fa-shopping-cart text-success"></i>
+                                </a>
+                            }
+                        }
+
+
+
+                        <div id="profileSidebar" class="profile-sidebar container">
+                            <div class="text-center">
+                                <h5>@UserName</h5>
+                                <img src="@UserProfileImageUrl" class="img-thumbnail rounded-circle" style="width: 200px;" />
+                                <a href="/Profile/ChangeProfilePhoto" class="btn btn-success">Change Profile Photo</a>
+                                <hr>
+                                <a href="/Profile/ChangePersonalInfo" class="btn btn-primary">Change Personal Info</a>
+                                <hr>
+                                <a href="/Profile/ChangePassword" class="btn btn-danger mt-1">Change Password</a>
+                                <hr>
+                                <form asp-controller="Account" asp-action="LogOut" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger">Log Out</button>
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <script src="~/lib/jquery/dist/jquery.min.js"></script>
+                <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+                <script src="~/js/site.js" asp-append-version="true"></script>
+             
+
+
+           
+               
+            </div>
+                
+        </nav>
+    </header>
+
+
+
+   
+
+
+    <style>
+        .profile-sidebar {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100%;
+            background: #fff;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease-in-out;
+            padding: 20px;
+            z-index: 9998;
+        }
+
+            .profile-sidebar.active {
+                right: 0;
+            }
+
+        .btn-success,
+        .btn-primary,
+        .btn-danger {
+            color: white !important;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 140px;
+            background-color: #8B4513; /* Brown color */
+            color: #fff;
+            text-align: center;
+            /* border-radius: 6px; */
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -70px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+
+        .fa-plus-circle {
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover .fa-plus-circle {
+            transform: scale(1.3);
+            color: #A0522D !important; /* Darker brown on hover */
+        }
+    </style>
+
+    <script>
+        document.getElementById("profileToggle").addEventListener("click", function () {
+            document.getElementById("profileSidebar").classList.toggle("active");
+        });
+    </script>
+
+    @* 3/5 *@
+</body>
+</html>

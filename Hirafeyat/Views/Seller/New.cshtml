@@ -4,56 +4,76 @@
     ViewData["Title"] = "New";
 }
 
-<h1>add New product</h1>
+<div class="container-fluid  mb-5" style="background-color:#d19c97;">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px ;">
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">Add Product</h1>
+    
+    </div>
+</div>
 
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="New" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
+            <div class="form-group row my-5">
+                <label  class="control-label col-1 m-2 ">
+                    <i class="fa-solid fa-envelope" style="color: #000000;"></i>
+                </label>
+                <input asp-for="Title" class="form-control col-10" placeholder="Title" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+            <div class="form-group row my-5">
+                <label class="control-label col-1 m-2">
+                    <i class="fa-solid fa-audio-description" style="color: #000000;"></i>
+                </label>
+                <input asp-for="Description" class="form-control col-10" placeholder="Description" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
+            <div class="form-group row my-5">
+                <label class="control-label col-1 m-2">
+                    <i class="fa-solid fa-tag" style="color: #000000;"></i>
+                </label>
+                <input asp-for="Price" class="form-control col-10" placeholder="Price" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Quentity" class="control-label"></label>
-                <input asp-for="Quentity" class="form-control" />
+            <div class="form-group row my-5">
+                <label  class="control-label col-1 m-2">
+                    <i class="fa-solid fa-arrow-up-1-9" style="color: #000000;"></i>
+                </label>
+                <input asp-for="Quentity" class="form-control col-10" placeholder="Quentity" />
                 <span asp-validation-for="Quentity" class="text-danger"></span>
             </div>
             
-            <div class="form-group">
-                <label asp-for="Image">Upload Product Image</label>
-                <input asp-for="Image" type="file" class="form-control" />
+            <div class="form-group row my-5">
+                <label class="col-1 m-2" >
+                    <i class="fa-solid fa-image" style="color: #0c0d0d;"></i>
+                </label>
+                <input asp-for="Image" type="file" class="form-control col-10" />
                 <span asp-validation-for="Image" class="text-danger"></span>
                 <img id="imagePreview" src="#" alt="Selected Image" class="img-thumbnail mt-2" style="max-height: 200px; display: none;" />
 
             </div>
 
-            <div class="form-group">
-                <label asp-for="catId">Category</label>
-                <select asp-for="catId" class="form-control" asp-items="@(new SelectList((IEnumerable<Hirafeyat.Models.Category>)ViewData["catList"], "Id", "Name"))">
-                    <option value="">-- Select Category --</option>
+            <div class="form-group row my-5">
+                <label class="col-1 m-2" >
+                    <i class="fa-solid fa-layer-group" style="color: #000000;"></i>
+                </label>
+                <select asp-for="catId" class="form-control col-10" asp-items="@(new SelectList((IEnumerable<Hirafeyat.Models.Category>)ViewData["catList"], "Id", "Name"))">
+                    <option value="">Select Category</option>
                 </select>
                 <span asp-validation-for="catId" class="text-danger"></span>
             </div>
 
             <input type="hidden" asp-for="sellerId" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value" />
 
-            <div class="form-group">
-                <input type="submit" value="Add" class="btn btn-primary" />
+            <div class="form-group mt-5 ">
+                <input type="submit" value="Add" class="btn btn-primary w-50 h-50" />
             </div>
         </form>
+    </div>
+    <div class="col-md-8">
+        <img class="img-fluid" src="~/img/2570923.jpg" alt="Alternate Text" />
     </div>
 </div>
 

@@ -84,80 +84,105 @@ namespace Hirafeyat.Controllers
             return View(products); // إرجاع المنتجات إلى الـ View
         }
 
+        
+        [HttpPost]
+        public JsonResult FilterProducts(List<string> SelectedPrices)
+        {
+            var products = productRepository.getAll();
+
+            if (SelectedPrices != null && SelectedPrices.Count > 0)
+            {
+                // فلترة المنتجات بناءً على الأسعار المحددة
+                if (!SelectedPrices.Contains("all"))
+                {
+                    products = products.Where(p =>
+                        (SelectedPrices.Contains("0-100") && p.Price >= 0 && p.Price <= 100) ||
+                        (SelectedPrices.Contains("100-200") && p.Price > 100 && p.Price <= 200) ||
+                        (SelectedPrices.Contains("200-300") && p.Price > 200 && p.Price <= 300)
+                    ).ToList();
+                }
+            }
+
+            // إعادة القائمة المصفاة كـ JSON
+            var filteredProducts = products.Select(p => new
+            {
+                id = p.Id,
+                title = p.Title,
+                price = p.Price,
+                imageUrl = p.ImageUrl,
+                category = new { name = p.Category.Name }
+            });
+
+            return Json(filteredProducts);
+        }
         [HttpGet]
-        public IActionResult FilteredProducts(string searchText, List<string> selectedPrices)
+        public JsonResult SearchProducts(string query)
         {
-            var products = productRepository.getAll();  // جلب جميع المنتجات باستخدام الريبوستوري
+            var products = productRepository.getAll();
 
-            // التحقق من وجود فلاتر للأسعار
-            if (selectedPrices != null && selectedPrices.Count > 0)
+            if (!string.IsNullOrEmpty(query))
             {
-                var filteredProducts = new List<Product>();
-
-                // إذا كانت "all" مختارة، عرض جميع المنتجات
-                if (selectedPrices.Contains("all"))
-                {
-                    return PartialView("_ProductListPartial", products);  // عرض جميع المنتجات بدون فلترة
-                }
-
-                // تطبيق الفلاتر حسب الفئات السعرية المحددة
-                foreach (var range in selectedPrices)
-                {
-                    var parts = range.Split('-');
-                    if (parts.Length == 2 &&
-                        decimal.TryParse(parts[0], out var minPrice) &&
-                        decimal.TryParse(parts[1], out var maxPrice))
-                    {
-                        var matching = products
-                            .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
-                            .ToList();
-                        filteredProducts.AddRange(matching);
-                    }
-                }
-
-                // إزالة التكرار بعد إضافة المنتجات
-                products = filteredProducts.Distinct().ToList();
+                products = products.Where(p => p.Title.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // التصفية حسب النص البحثي إذا كان موجودًا
-            if (!string.IsNullOrEmpty(searchText))
+            var filteredProducts = products.Select(p => new
             {
-                products = products.Where(p => p.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
+                id = p.Id,
+                title = p.Title,
+                price = p.Price,
+                imageUrl = p.ImageUrl,
+                category = new { name = p.Category.Name }
+            });
 
-            // إرجاع المنتجات بعد الفلترة إلى العرض الجزئي
-            return PartialView("_ProductListPartial", products);
+            return Json(filteredProducts);
+        }
+
+        [HttpGet]
+        public JsonResult GetAllProducts()
+        {
+            var products = productRepository.getAll();
+            var allProducts = products.Select(p => new
+            {
+                id = p.Id,
+                title = p.Title,
+                price = p.Price,
+                imageUrl = p.ImageUrl,
+                category = new { name = p.Category.Name }
+            });
+
+            return Json(allProducts);
         }
 
 
-        public IActionResult Filter(string searchQuery, List<string> prices)
-        {
-            var products = productRepository.getAll();  // جلب جميع المنتجات باستخدام الريبوستوري
 
-            // فلترة المنتجات حسب النص البحثي
-            if (!string.IsNullOrEmpty(searchQuery))
-            {
-                products = products.Where(p => p.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
+        //public IActionResult Filter(string searchQuery, List<string> prices)
+        //{
+        //    var products = productRepository.getAll();  // جلب جميع المنتجات باستخدام الريبوستوري
 
-            // فلترة المنتجات حسب الأسعار المحددة
-            if (prices != null && prices.Any())
-            {
-                foreach (var range in prices)
-                {
-                    var parts = range.Split('-');
-                    if (parts.Length == 2 &&
-                        decimal.TryParse(parts[0], out var minPrice) &&
-                        decimal.TryParse(parts[1], out var maxPrice))
-                    {
-                        products = products.Where(p => p.Price >= minPrice && p.Price <= maxPrice).ToList();
-                    }
-                }
-            }
+        //    // فلترة المنتجات حسب النص البحثي
+        //    if (!string.IsNullOrEmpty(searchQuery))
+        //    {
+        //        products = products.Where(p => p.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+        //    }
 
-            // إرجاع المنتجات المصفاة بصيغة JSON
-            return Json(products);
-        }
+        //    // فلترة المنتجات حسب الأسعار المحددة
+        //    if (prices != null && prices.Any())
+        //    {
+        //        foreach (var range in prices)
+        //        {
+        //            var parts = range.Split('-');
+        //            if (parts.Length == 2 &&
+        //                decimal.TryParse(parts[0], out var minPrice) &&
+        //                decimal.TryParse(parts[1], out var maxPrice))
+        //            {
+        //                products = products.Where(p => p.Price >= minPrice && p.Price <= maxPrice).ToList();
+        //            }
+        //        }
+        //    }
+
+        //    // إرجاع المنتجات المصفاة بصيغة JSON
+        //    return Json(products);
+        //}
 
 
         public IActionResult cart()

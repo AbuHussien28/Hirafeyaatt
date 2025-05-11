@@ -1,64 +1,60 @@
 ﻿@model List<Favorite>
 
-<h3>My Favorites ❤️</h3>
+
+<div class="container-fluid  mb-5" style="background-color:#d19c97;">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px ;">
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">My Favorites ❤️</h1>
+
+    </div>
+</div>
 <div class="row">
     @foreach (var item in Model)
     {
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <img src="@item.Product.ImageUrl" class="card-img-top" style="height:200px; object-fit:cover;" />
-                <div class="card-body">
-                    <h5 class="card-title">@item.Product.Title</h5>
-                    <p>@item.Product.Description</p>
-                    <p><strong>Price:</strong> @item.Product.Price.ToString("C")</p>
+         <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                <div class="card product-item border-0 mb-4">
 
-                    <!-- فورم إزالة من المفضلة -->
+                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                        <img class="img-fluid w-100 fixed-image" src="@item.Product.ImageUrl" >
+
+                        <!-- زر الفيفورت بشكل مضبوط -->
+                   
+                    </div>
+
+                    <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                        <h6 class="text-truncate mb-3">@item.Product.Title</h6>
+                        <div class="d-flex justify-content-center">
+                            <h6>$@(item.Product.Price - 200)</h6>
+                        <h6 class="text-muted ml-2"><del>$@item.Product.Price</del></h6>
+                        </div>
+                    </div>
+                <div class="card-footer d-flex justify-content-between bg-light border">
+                   
                     <form method="post" asp-area="Customer" asp-controller="Favorite" asp-action="RemoveFromFavourites">
                         <input type="hidden" name="id" value="@item.Id" />
-                        <button class="btn btn-outline-danger">Remove</button>
+                        <button class="btn btn-outline-danger ">Remove </button>
                     </form>
 
                     <!-- فورم الإضافة للسلة -->
                     <form method="post" asp-area="Customer" asp-controller="Cart" asp-action="AddToCart">
                         <input type="hidden" name="productId" value="@item.Product.Id" />
-                        <button class="btn btn-success">Add to Cart</button>
+                        <button class="btn btn-success ">Add to Cart</button>
                     </form>
-                </div>
-            </div>
+                    </div>
+
+                    </div>
+
         </div>
+
+       
     }
-</div>
 
 
 
 
 
 
-@* @model List<Favorite> *@
 
-@* <h3>My Favorites❤️</h3> *@
-@* <div class="row"> *@
-@*     @foreach (var item in Model) *@
-@*     { *@
-@*         <div class="col-md-4"> *@
-@*             <div class="card mb-3"> *@
-@*                 <img src="@item.Product.ImageUrl" class="card-img-top" style="height:200px; object-fit:cover;" /> *@
-@*                 <div class="card-body"> *@
-@*                     <h5 class="card-title">@item.Product.Title</h5> *@
-@*                     <p>@item.Product.Description</p> *@
-@*                     <p><strong>Price:</strong> @item.Product.Price.ToString("C")</p> *@
 
-@*                     <form method="post" asp-action="RemoveFromFavourites"> *@
-@*                         <input type="hidden" name="id" value="@item.Id" /> *@
-@*                         <button class="btn btn-outline-danger">Remove</button> *@
-@*                     </form> *@
 
-@*                     <form method="post" asp-controller="Cart" asp-action="AddToCart"> *@
-@*                         <input type="hidden" name="productId" value="@item.Product.Id" /> *@
-@*                         <button class="btn btn-success">Add to Cart</button> *@
-@*                     </form> *@
-@*                 </div> *@
-@*             </div> *@
-@*         </div> *@
-@*     } *@
-@* </div> *@
+
+
