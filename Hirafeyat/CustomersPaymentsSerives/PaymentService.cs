@@ -1,4 +1,5 @@
-﻿using Hirafeyat.CustomersPaymentsRepo;
+﻿using Hirafeyat.CustomerRepository;
+using Hirafeyat.CustomersPaymentsRepo;
 using Hirafeyat.Models;
 using Hirafeyat.Services;
 using Hirafeyat.ViewModel.Payments;
@@ -11,11 +12,13 @@ namespace Hirafeyat.CustomersPaymentsSerives
     {
         private readonly IPaymentRepository paymentRepository;
         private readonly IEmailSender emailSender;
+        private readonly ILogger<PaymentService> logger;
 
-        public PaymentService(IPaymentRepository paymentRepository, IEmailSender emailSender)
+        public PaymentService(IPaymentRepository paymentRepository ,IEmailSender emailSender, ILogger<PaymentService> logger)
         {
             this.paymentRepository = paymentRepository;
             this.emailSender = emailSender;
+            this.logger = logger;
         }
         public async Task<PaymentViewModel> GetByIdAsync(int id)
         {
@@ -81,6 +84,8 @@ namespace Hirafeyat.CustomersPaymentsSerives
 
                 if (intent.Status != "succeeded")
                 {
+                    logger.LogWarning("Payment not completed for order {OrderId}, status: {Status}",
+                        orderId, intent.Status);
                     return new PaymentResult
                     {
                         Success = false,
@@ -88,19 +93,33 @@ namespace Hirafeyat.CustomersPaymentsSerives
                         OrderId = orderId
                     };
                 }
+
                 await paymentRepository.UpdateOrderAndPaymentStatusAsync(
                     orderId,
                     OrderStatus.Processing,
                     PaymentStatus.Paid,
                     paymentIntentId);
-                var order = await paymentRepository.GetOrderWithCustomerAsync(orderId);
-                if (order?.Order?.Customer != null)
+
+                var order = await paymentRepository.GetOrderWithEmailByIdAsync(orderId);
+                if (order?.Email != null)
                 {
-                    await emailSender.SendEmailAsync(
-                        order.Order.Customer.Email,
-                        "Payment Confirmation",
-                        $"Thank you for your payment for order #{orderId}"
-                    );
+                    try
+                    {
+                        var emailMessage = $"Thank you for your payment for order #{orderId}.<br>" +
+                                           $"Amount: {intent.Amount / 100m:C}<br>" +
+                                           $"Payment Date: {DateTime.UtcNow:yyyy-MM-dd HH:mm}";
+
+                        await emailSender.SendEmailAsync(
+                            order.Email,
+                            "Payment Confirmation",
+                            emailMessage);
+
+                        logger.LogInformation("Payment confirmation email sent for order {OrderId}", orderId);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Failed to send payment confirmation email for order {OrderId}", orderId);
+                    }
                 }
 
                 return new PaymentResult
@@ -111,6 +130,7 @@ namespace Hirafeyat.CustomersPaymentsSerives
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, "Error processing payment for order {OrderId}", orderId);
                 return new PaymentResult
                 {
                     Success = false,

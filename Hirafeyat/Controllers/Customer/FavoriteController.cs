@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hirafeyat.Controllers.Customer
 {
+    [CustomerAuthorize]
     public class FavoriteController : Controller
     {
         private readonly HirafeyatContext _context;

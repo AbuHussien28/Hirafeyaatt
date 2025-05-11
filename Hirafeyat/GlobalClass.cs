@@ -7,3 +7,4 @@ global using Hirafeyat.ViewModel.Account.ForgetPassword;
 global using Hirafeyat.EmailServices;
 global using Hirafeyat.Models;
 global using Hirafeyat.ViewModel;
+global  using Hirafeyat.AdminServices;

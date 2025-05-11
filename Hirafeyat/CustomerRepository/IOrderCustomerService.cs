@@ -9,5 +9,6 @@ namespace Hirafeyat.CustomerRepository
         Task<List<OrderWithPaymentViewModel>> GetUserOrdersAsync(string userId);
 
         Task<bool> CancelOrderAsync(int orderId, string userId);
+        Task CreateBasicOrderAsync(string userId, string email);
     }
 }
