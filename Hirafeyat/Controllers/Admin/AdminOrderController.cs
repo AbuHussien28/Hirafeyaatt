@@ -1,8 +1,10 @@
 ﻿using Hirafeyat.AdminServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hirafeyat.Controllers.Admin
 {
+    [AdminAuthorize]
     public class AdminOrderController : Controller
     {
         private readonly IOrderAdminService orderAdminService;

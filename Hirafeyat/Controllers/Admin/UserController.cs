@@ -1,10 +1,11 @@
-﻿using Hirafeyat.AdminServices;
-using Hirafeyat.ViewModel.Admin;
+﻿using Hirafeyat.ViewModel.Admin;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace Hirafeyat.Controllers.Admin
 {
+    [AdminAuthorize]
     public class UserController : Controller
     {
         private readonly IUserService userService;

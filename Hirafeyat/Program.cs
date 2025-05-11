@@ -7,6 +7,7 @@ using Hirafeyat.EmailServices;
 using Hirafeyat.Models;
 using Hirafeyat.SellerServices;
 using Hirafeyat.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,12 @@ namespace Hirafeyat
             string clientId = googleAuthSettings["ClientId"];
             string clientSecret = googleAuthSettings["ClientSecret"];
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews()
+      .AddJsonOptions(options =>
+      {
+          options.JsonSerializerOptions.PropertyNamingPolicy = null;
+      });
+           
             builder.Services.AddDbContext<HirafeyatContext>(options =>
              options.UseSqlServer(builder.Configuration.GetConnectionString("CS")));
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -69,6 +75,22 @@ namespace Hirafeyat
            
             });
             builder.Services.AddSingleton<StripeConfigService>();
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+   .AddCookie(options =>
+   {
+       options.LoginPath = "/Account/Login";
+       options.AccessDeniedPath = "/Account/AccessDenied";
+       options.ExpireTimeSpan = TimeSpan.FromDays(30);
+       options.SlidingExpiration = true;
+       options.Cookie.HttpOnly = true;
+       options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+       options.Cookie.SameSite = SameSiteMode.Lax;
+   });
             var app = builder.Build();
             if (!app.Environment.IsDevelopment())
             {

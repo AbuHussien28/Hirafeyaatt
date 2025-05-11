@@ -1,18 +1,23 @@
 ﻿@model Dictionary<string, List<Hirafeyat.Models.Product>>
 
+
 @foreach (var category in Model)
 {
     <h3 class="mt-5 mb-3 text-center p-3">@category.Key</h3>
 
     var rowClass = category.Value.Count < 4 ? "row justify-content-center" : "row";
 
-    <div class="@rowClass">
+<div class="container">
+    <div class="row justify-content-center">
         @foreach (var product in category.Value)
         {
-            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
                 <div class="card product-item border-0 ml-3">
+                  
                     <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                        <img class="img-fluid w-100 fixed-image" src="@product.ImageUrl" alt="@product.Title" style="height: 200px; object-fit: cover;">
+                        <img class="img-fluid w-100 fixed-image" src="@product.ImageUrl" alt="@product.Title" >
+
+                        <!-- زر الفيفورت بشكل مضبوط -->
                         <form method="post" asp-action="AddToFavourites" asp-controller="Favorite" class="position-absolute" style="top: 10px; right: 10px;">
                             <input type="hidden" name="productId" value="@product.Id" />
                             <button type="submit" class="btn btn-sm text-danger bg-white rounded-circle shadow-sm p-1" title="Add to Favourites">
@@ -20,9 +25,9 @@
                             </button>
                         </form>
                     </div>
-
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Title</h5>
+                    
+                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                            <h5 class="text-truncate mb-3">@product.Title</h5>
                         <p class="card-text">@product.Description</p>
 
                         @if (product.Quentity > 0)
@@ -34,10 +39,11 @@
                             <p class="card-text text-danger"><strong>Status:</strong> Sold Out</p>
                         }
 
-                        <p class="card-text"><strong>Price:</strong> $@product.Price</p>
-                        <p class="card-text"><strong>Seller:</strong> @product.Seller?.FullName</p>
-
-                        <div class="d-flex justify-content-between">
+                            <div class="d-flex justify-content-center">
+                                <h6>$@(product.Price - 200)</h6>
+                                <h6 class="text-muted ml-2"><del>$@product.Price</del></h6>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between bg-light border">
                             @if (product.Quentity > 0)
                             {
                                 <form method="post" asp-action="AddToCart" asp-controller="Cart" class="add-to-cart-form">
@@ -50,20 +56,16 @@
                             {
                                 <button class="btn btn-secondary btn-sm" disabled>Add to Cart</button>
                             }
-                        </div>
-                    </div>
-
-                    <div class="card-body border-top text-center p-0 pt-3">
-                        <h6 class="text-truncate mb-3">@product.Category?.Name</h6>
-                        <div class="d-flex justify-content-center">
-                            <h6>$@(@product.Price - 200)</h6>
-                            <h6 class="text-muted ml-2"><del>$@product.Price</del></h6>
+                                <a asp-action="details" asp-controller="home" asp-route-Id="@product.Id" class="btn btn-sm text-dark p-0 bg-light border">
+                                    <i class="fas fa-eye text-primary mr-1"></i>View Detail
+                                </a>
                         </div>
                     </div>
                 </div>
             </div>
         }
     </div>
+</div>
 }
 
 @section Scripts {

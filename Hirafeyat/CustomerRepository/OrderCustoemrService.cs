@@ -1,4 +1,5 @@
-﻿using Hirafeyat.ViewModel.OrderCustomer;
+﻿using Hirafeyat.EmailServices;
+using Hirafeyat.ViewModel.OrderCustomer;
 using Stripe;
 
 namespace Hirafeyat.CustomerRepository
@@ -7,11 +8,15 @@ namespace Hirafeyat.CustomerRepository
     {
         private readonly IOrderCustomerRepository repo;
         private readonly IConfiguration configuration;
+        private readonly IEmailSender emailSender;
+        private readonly ILogger<OrderCustoemrService> logger;
 
-        public OrderCustoemrService(IOrderCustomerRepository _repo, IConfiguration configuration)
+        public OrderCustoemrService(IOrderCustomerRepository _repo, IConfiguration configuration,IEmailSender emailSender,ILogger<OrderCustoemrService> logger)
         {
             repo = _repo;
             this.configuration = configuration;
+            this.emailSender = emailSender;
+            this.logger = logger;
             //StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"];
             var stripeSecretKey = configuration["Stripe:SecretKey"];
             if (!string.IsNullOrEmpty(stripeSecretKey))
@@ -78,16 +83,11 @@ namespace Hirafeyat.CustomerRepository
                 throw new ArgumentException("User ID cannot be empty");
             }
 
-            // Get cart items
             var cartItems = await repo.GetCartItemsByUserIdAsync(userId);
-
-            // Check if cart items exist
             if (cartItems == null || !cartItems.Any())
             {
                 throw new InvalidOperationException("Cart is empty");
             }
-
-            // Create order
             var order = new Order
             {
                 CustomerId = userId,
@@ -96,23 +96,19 @@ namespace Hirafeyat.CustomerRepository
                 PhoneNumber = model.CheckoutForm.PhoneNumber,
                 Email = model.CheckoutForm.Email,
                 Status = paymentMethod == "cod" ? OrderStatus.Processing : OrderStatus.Pending,
-                OrderItems = new List<OrderItem>() 
+                OrderItems = cartItems.Select(c => new OrderItem
+                {
+                    ProductId = c.ProductId,
+                    Quantity = c.Quantity,
+                    ItemStatus = OrderStatus.Pending
+                }).ToList()
             };
 
-            // Add order items
-            foreach (var item in cartItems)
-            {
-                order.OrderItems.Add(new OrderItem
-                {
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity
-                });
-            }
-
+            var totalAmount = cartItems.Sum(c => c.Product.Price * c.Quantity);
             var payment = new Payment
             {
                 Order = order,
-                Amount = cartItems.Sum(c => c.Product.Price * c.Quantity),
+                Amount = totalAmount,
                 PaymentDate = DateTime.Now,
                 PaymentMethod = paymentMethod,
                 Status = paymentMethod == "cod" ? PaymentStatus.Paid : PaymentStatus.Pending
@@ -121,10 +117,6 @@ namespace Hirafeyat.CustomerRepository
             if (paymentMethod == "stripe" && !string.IsNullOrEmpty(paymentIntentId))
             {
                 payment.StripePaymentIntentId = paymentIntentId;
-                if (string.IsNullOrEmpty(StripeConfiguration.ApiKey))
-                {
-                    StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"];
-                }
 
                 var paymentIntentService = new PaymentIntentService();
                 var intent = await paymentIntentService.GetAsync(paymentIntentId);
@@ -135,11 +127,27 @@ namespace Hirafeyat.CustomerRepository
                     order.Status = OrderStatus.Processing;
                 }
             }
-
             await repo.AddOrderAsync(order);
             await repo.AddPaymentAsync(payment);
             repo.RemoveCartItems(cartItems);
             await repo.SaveChangesAsync();
+            try
+            {
+                var emailSubject = paymentMethod == "cod"
+                    ? "Order Confirmation (COD)"
+                    : "Order Confirmation (Paid)";
+
+                var emailMessage = $"Thank you for your order #{order.Id}.<br>" +
+                                   $"Total Amount: {totalAmount:C}<br>" +
+                                   $"Payment Method: {paymentMethod.ToUpper()}<br>" +
+                                   $"Status: {order.Status}";
+
+                await emailSender.SendEmailAsync(order.Email, emailSubject, emailMessage);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to send order confirmation email for order {OrderId}", order.Id);
+            }
 
             return order.Id.ToString();
         }
@@ -170,6 +178,10 @@ namespace Hirafeyat.CustomerRepository
             order.Status = OrderStatus.Cancelled;
             await repo.SaveChangesAsync();
             return true;
+        }
+        public async Task CreateBasicOrderAsync(string userId, string email)
+        {
+            await repo.CreateOrderWithCartItemsAsync(userId, email);
         }
     }
 }

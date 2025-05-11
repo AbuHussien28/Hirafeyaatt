@@ -1,10 +1,13 @@
-﻿using Hirafeyat.CustomersPaymentsSerives;
+﻿
+using Hirafeyat.CustomersPaymentsSerives;
 using Hirafeyat.ViewModel.Payments;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
 
 namespace Hirafeyat.Controllers
 {
+    [CustomerAuthorize]
     public class PaymentController : Controller
     {
         private readonly IPaymentService paymentService;
