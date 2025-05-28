@@ -2,9 +2,6 @@
 
 @{
     ViewData["Title"] = "Login";
-   
-
-
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -12,10 +9,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-   
-
     <!-- Font Icon -->
-
     <link rel="stylesheet" href="~/fonts/material-icon/css/material-design-iconic-font.min.css" />
     <!-- Main css -->
     <link rel="stylesheet" href="~/css/style2.css" />
@@ -64,17 +58,18 @@
                             </p>
                         </div>
                         </div>
-
-
                         <div class="form-group form-button">
                             <input type="submit" value="Login" class="form-submit" />
                         </div>
                     </form>
                     <span class="social-label">Or login with</span>
-                     <a class="btn btn-danger" asp-controller="Account" asp-action="ExternalLogin" asp-route-provider="Google"> 
-                        <i class="display-flex-center zmdi zmdi-google"></i> 
-                     </a> 
-           
+                        <a class="btn btn-danger"
+                           asp-controller="Account"
+                           asp-action="ExternalLogin"
+                           asp-route-provider="Google"
+                           aria-label="Login with Google">
+                            <i class="display-flex-center zmdi zmdi-google" aria-hidden="true"></i>
+                        </a>
                 </div>
             </div>
         </div>
