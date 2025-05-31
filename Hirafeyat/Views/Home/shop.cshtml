@@ -298,11 +298,10 @@
                     <div class="col-lg-4 col-md-6 mb-5">
                         <h5 class="text-white mb-4">Quick Links</h5>
                         <div class="d-flex flex-column">
-                            <a class="text-primary mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                            <a class="text-primary mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                            <a class="text-primary mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-                            <a class="text-primary mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                            <a class="text-primary" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                            <a class="text-primary mb-2" asp-action="Index" asp-controller="Home"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                            <a class="text-primary mb-2" asp-controller="Home" asp-action="Shop"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                            <a class="text-primary mb-2" asp-controller="Cart" asp-action="MyCart"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
+                            <a class="text-primary mb-2" asp-controller="Home" asp-action="Info"><i class="fa fa-angle-right mr-2"></i>About us</a>
                         </div>
                     </div>
                 </div>
