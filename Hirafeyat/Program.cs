@@ -42,6 +42,8 @@ namespace Hirafeyat
                 .AddDefaultTokenProviders();
 
             //regester service
+            builder.Services.AddSession();
+
             builder.Services.AddScoped<AdminRepository.IProductRepository, AdminRepository.ProductRepository>();
             builder.Services.AddScoped<AdminServices.IProductService, AdminServices.ProductService>();
 
@@ -96,6 +98,7 @@ namespace Hirafeyat
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.UseSession();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

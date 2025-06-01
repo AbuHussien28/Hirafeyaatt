@@ -185,30 +185,30 @@ namespace Hirafeyat.Controllers
         //}
 
 
-        public IActionResult cart()
-        {
-            var categories = categoryRepository.getAll();
-            var products = productRepository.getAll();
+        //public IActionResult cart()
+        //{
+        //    var categories = categoryRepository.getAll();
+        //    var products = productRepository.getAll();
 
-            var groupedProducts = new Dictionary<string, List<Product>>();
+        //    var groupedProducts = new Dictionary<string, List<Product>>();
 
-            foreach (var category in categories)
-            {
-                var productsInCategory = products
-                    .Where(p => p.CategoryId == category.Id).ToList();
+        //    foreach (var category in categories)
+        //    {
+        //        var productsInCategory = products
+        //            .Where(p => p.CategoryId == category.Id).ToList();
 
-                groupedProducts[category.Name] = productsInCategory;
-            }
+        //        groupedProducts[category.Name] = productsInCategory;
+        //    }
 
-            var vm = new homeviewmodel()
-            {
-                Categories = categories,
-                Products = products,
-                ProductDictionary = groupedProducts
-            };
+        //    var vm = new homeviewmodel()
+        //    {
+        //        Categories = categories,
+        //        Products = products,
+        //        ProductDictionary = groupedProducts
+        //    };
 
-            return View(vm);
-        }
+        //    return View(vm);
+        //}
 
          public IActionResult Details(int id)
         {

@@ -81,13 +81,14 @@
  
             </div>
             <div class="col-lg-3 col-6 text-right">
-                <a asp-action="login" asp-controller="account" class="btn border">
+               
+                <a asp-action="MyList" asp-controller="Favorite" class="btn border">
                     <i class="fas fa-heart text-primary"></i>
-                    <span class="badge">0</span>
+                    
                 </a>
-                <a asp-action="login" asp-controller="account" class="btn border">
+                <a asp-action="guestcart" asp-controller="Cart" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                
                 </a>
             </div>
         </div>
@@ -128,22 +129,32 @@
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="http://localhost:5227/home/index" class="nav-item nav-link active">Home</a>
-                            <a href="http://localhost:5227/home/shop" class="nav-item nav-link">brands</a>
-                            <a href="http://localhost:5227/home/info" class="nav-item nav-link">About us</a>
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                                <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="http://localhost:5227/home/cart" class="dropdown-item">Shopping Cart</a>
-                                    <a href="http://localhost:5227/home/checkout" class="dropdown-item">Checkout</a>
-                                </div>
-                            </div>
-                            <a href="http://localhost:5227/home/contact" class="nav-item nav-link">Contact</a>
+                            <a href="/Home/index" class="nav-item nav-link ">Home</a>
+                            <a href="/Home/shop" class="nav-item nav-link">brands</a>
+                            <a href="/Home/info" class="nav-item nav-link">About us</a>
+                            @* <div class="nav-item dropdown"> *@
+                            @*     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a> *@
+                            @*     <div class="dropdown-menu rounded-0 m-0"> *@
+                            @*         <a href="http://localhost:5227/home/cart" class="dropdown-item">Shopping Cart</a> *@
+                            @*         <a href="http://localhost:5227/home/checkout" class="dropdown-item">Checkout</a> *@
+                            @*     </div> *@
+                            @* </div> *@
+                            <a href="/Home/contact" class="nav-item nav-link">Contact</a>
                         </div>
+                        @if(User.Identity.IsAuthenticated){
+                        <div class="navbar-nav ml-auto py-0">
+                                <form asp-controller="Account" asp-action="LogOut" method="post" class="w-100">
+                                    <button type="submit" class="nav-item nav-link" style="border:none; background:none;" >LogOut</button>
+                                </form>
+                         
+                        </div>
+                        
+                        }else{
                         <div class="navbar-nav ml-auto py-0">
                             <a asp-action="login" asp-controller="account" class="nav-item nav-link">Login</a>
                             <a asp-action="register" asp-controller="account" class="nav-item nav-link">Register</a>
                         </div>
+                        }
                     </div>
                 </nav>
                 <div id="header-carousel" class="carousel slide" data-ride="carousel">
@@ -311,11 +322,11 @@
             <div class="col-lg-4 col-md-6 mb-5">
                 <h5 class="text-white mb-4">Quick Links</h5>
                 <div class="d-flex flex-column">
-                    <a class="text-primary mb-2" href="index.html"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                    <a class="text-primary mb-2" href="shop.html"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                    <a class="text-primary mb-2" href="detail.html"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-                    <a class="text-primary mb-2" href="cart.html"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                    <a class="text-primary" href="contact.html"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                    <a class="text-primary mb-2" asp-action="Index" asp-controller="Home"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                    <a class="text-primary mb-2" asp-controller="Home" asp-action="Shop"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                    <a class="text-primary mb-2" asp-controller="Cart" asp-action="MyCart"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
+                    <a class="text-primary mb-2" asp-controller="Home" asp-action="Info" ><i class="fa fa-angle-right mr-2"></i>About us</a>
+
                 </div>
             </div>
         </div>

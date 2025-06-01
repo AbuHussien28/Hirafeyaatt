@@ -1,7 +1,6 @@
-﻿@model List<CartItem>
+﻿@model Hirafeyat.ViewModel.NewFolder.cartvm
 @{
     ViewData["Title"] = "Details";
-    // var isSoldOut = Model.Quentity == 0;
     Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
 <partial name="~/Views/Customer/_TopPartialCustomer.cshtml" />
@@ -10,56 +9,49 @@
 <div class="container-fluid bg-secondary mb-5">
     <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
         <h1 class="font-weight-semi-bold text-uppercase mb-3">Shopping Cart</h1>
-    
     </div>
 </div>
 <div class="container-fluid pt-5">
     <div class="row px-xl-5">
         <div class="col-lg-8 table-responsive mb-5">
             <table class="table table-bordered text-center mb-0">
-                <thead >
+                <thead>
                     <tr>
                         <th class="font-weight-semi-bold card-header bg-secondary border-0">Product</th>
                         <th class="font-weight-semi-bold card-header bg-secondary border-0">Price</th>
                         <th class="font-weight-semi-bold card-header bg-secondary border-0">Quantity</th>
-                        <th class=" font-weight-semi-bold card-header bg-secondary border-0">Subtotal</th>
+                        <th class="font-weight-semi-bold card-header bg-secondary border-0">Subtotal</th>
                         <th class="font-weight-semi-bold card-header bg-secondary border-0">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="align-middle">
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.Items)
                     {
-                        if (item.Product != null)
-                        {
-                            <tr>
-                                <td class="align-middle"><img src="@item.Product.ImageUrl" alt="" style="width: 50px;"> @item.Product.Title</td>
-                                <td class="align-middle">$@item.Product.Price</td>
-                                <td class="align-middle">
-                                    <div class="input-group quantity mx-auto" style="width: 150px;">
-                                        <form method="post" asp-action="UpdateQuantity" class="d-flex align-items-center">
-                                            <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" name="quantity" value="@(item.Quantity - 1)" class="btn btn-sm btn-primary px-2">-</button>
-                                            <input type="text" class="form-control form-control-sm text-center font-weight-medium" value="@item.Quantity" readonly style="width: 50px;">
-                                            <button type="submit" name="quantity" value="@(item.Quantity + 1)" class="btn btn-sm btn-primary px-2">+</button>
-                                        </form>
-                                    </div>
-
-                                </td>
-                                <td class="align-middle">$@(item.Product.Price * item.Quantity)</td>
-                                <td class="align-middle">
-                                    <form method="post" asp-action="RemoveFromCart">
-                                        <input type="hidden" name="id" value="@item.Id" />
-                                        <button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
+                        <tr>
+                            <td class="align-middle">
+                                <img src="@item.ImageUrl" alt="" style="width: 50px;" /> @item.ProductName
+                            </td>
+                            <td class="align-middle">$@item.Price</td>
+                            <td class="align-middle">
+                                <div class="input-group quantity mx-auto" style="width: 150px;">
+                                    <form method="post" asp-action="UpdateQuantity" class="d-flex align-items-center">
+                                        <input type="hidden" name="id" value="@item.ProductId" />
+                                        <button type="submit" name="quantity" value="@(item.Quantity - 1)" class="btn btn-sm btn-primary px-2">-</button>
+                                        <input type="text" class="form-control form-control-sm text-center font-weight-medium" value="@item.Quantity" readonly style="width: 50px;" />
+                                        <button type="submit" name="quantity" value="@(item.Quantity + 1)" class="btn btn-sm btn-primary px-2">+</button>
                                     </form>
-                                </td>
-                            </tr>
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="5" class="text-danger">Product not found or deleted.</td>
-                            </tr>
-                        }
+                                </div>
+                            </td>
+                            <td class="align-middle">$@(item.Price * item.Quantity)</td>
+                            <td class="align-middle">
+                                <form method="post" asp-action="RemoveFromCart">
+                                    <input type="hidden" name="id" value="@item.ProductId" />
+                                    <button class="btn btn-sm btn-primary btn-remove" data-productid="@item.ProductId">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>
@@ -72,7 +64,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-3 pt-1">
                         <h6 class="font-weight-medium">Subtotal</h6>
-                        <h6 class="font-weight-medium">$@Model.Sum(i => i.Product.Price * i.Quantity)</h6>
+                        <h6 class="font-weight-medium">
+                            $@Model.Items.Sum(i => i.Price * i.Quantity)
+                        </h6>
                     </div>
                     <div class="d-flex justify-content-between">
                         <h6 class="font-weight-medium">Shipping</h6>
@@ -82,7 +76,9 @@
                 <div class="card-footer border-secondary bg-transparent">
                     <div class="d-flex justify-content-between mt-2">
                         <h5 class="font-weight-bold">Total</h5>
-                        <h5 class="font-weight-bold">$@(Model.Sum(i => i.Product.Price * i.Quantity) + 10)</h5>
+                        <h5 class="font-weight-bold">
+                            $@(Model.Items.Sum(i => i.Price * i.Quantity) + 10)
+                        </h5>
                     </div>
                     <form method="get" asp-controller="Order" asp-action="Checkout">
                         <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>

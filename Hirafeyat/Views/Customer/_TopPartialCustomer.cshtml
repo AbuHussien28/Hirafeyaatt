@@ -3,7 +3,7 @@
 @inject SignInManager<ApplicationUser> SignInManage
 
 @{
-    var currentUser = SignInManage.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
+    var currentUser = await UserManager.GetUserAsync(User);
     var UserProfileImageUrl = currentUser?.ProfileImage ?? "/imges/default-profile.png";
     var UserName = currentUser?.UserName ?? "User";
 }
@@ -43,7 +43,7 @@
 
         <div class="col-lg-9 d-flex justify-content-end align-items-center">
             <div class="d-inline-flex flex-wrap">
-                <a href="/Customer/index" class="nav-link px-3">Home</a>
+                <a href="/Home/index" class="nav-link px-3">Home</a>
                 <a href="/order/myorders" class="nav-link px-3">Orders</a>
                 <a href="/Cart/MyCart" class="nav-link px-3"><i class="fas fa-shopping-cart text-primary"></i></a>
                 <a href="/Favorite/MyList" class="nav-link px-3">  <i class="fas fa-heart text-primary"></i></a>
@@ -62,7 +62,7 @@
         <div class="text-center">
             <h5>@UserName</h5>
             <img src="@UserProfileImageUrl" class="img-thumbnail rounded-circle my-2" style="width: 120px; height: 120px;" />
-            <a href="/Profile/ChangeProfilePhoto" class="btn btn-success btn-sm w-100 mb-2">Change Profile Photo</a>
+            <a href="@Url.Action("ChangeProfilePhoto", "Profile", new { imagePath =  @UserProfileImageUrl})" class="btn btn-success btn-sm w-100 mb-2">Change Profile Photo</a>
             <a href="/Profile/ChangePersonalInfo" class="btn btn-primary btn-sm w-100 mb-2">Change Personal Info</a>
             <a href="/Profile/ChangePassword" class="btn btn-warning btn-sm w-100 mb-2">Change Password</a>
             <form asp-controller="Account" asp-action="LogOut" method="post" class="w-100">
