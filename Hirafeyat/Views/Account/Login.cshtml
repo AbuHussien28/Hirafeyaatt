@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Login";
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,29 +17,67 @@
 </head>
 <body>
     <div class="my-5">
-    <section class="sign-in ">
-        <div class="container-fluid ">
-            <div class="signin-content">
-                <div class="signin-image">
-                    <figure>
-                        <img src="~/images/signin-image.jpg" alt="sing up image" />
-                    </figure>
-                    <a asp-action="Register" class="signup-image-link">Create an account</a>
-                </div>
+        <section class="sign-in">
+            <div class="container-fluid">
+                <div class="signin-content">
+                    <div class="signin-image mr-0">
+                        <figure>
+                            <img src="~/images/signin-image.jpg" alt="sign in image" />
+                        </figure>
+                        <a asp-action="Register" class="signup-image-link">Create an account</a>
+                    </div>
 
-                <div class="signin-form">
-                    <h2 class="form-title">Sign up</h2>
-                    <form asp-action="Login" method="post">
-                        <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="signin-form">
+                        <h2 class="form-title">Sign in</h2>
+                        <form asp-action="Login" method="post">
+                            <div asp-validation-summary="All" class="text-danger"></div>
 
-                        <div class="form-group">
-                            <label asp-for="UserName">
-                                <i class="zmdi zmdi-account material-icons-name"></i>
-                            </label>
-                            <input type="text" asp-for="UserName" id="your_name" placeholder="Your Name" />
-                            <span asp-validation-for="UserName" class="text-danger"></span>
-                        </div>
+                            <!-- Username -->
+                            <div class="form-group">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="zmdi zmdi-account material-icons-name"></i>
+                                    <input type="text" asp-for="UserName" id="your_name" placeholder="Your Name" class="form-control" />
+                                </div>
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
 
+                            <!-- Password -->
+                            <div class="form-group">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="zmdi zmdi-lock"></i>
+                                    <input type="password" asp-for="Password" id="your_pass" placeholder="Password" class="form-control" />
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <!-- Remember Me -->
+                            <div class="form-group">
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="checkbox" asp-for="RememberMe" id="remember-me" class="agree-term" />
+                                    <label asp-for="RememberMe" class="label-agree-term">Remember me</label>
+                                </div>
+                                <span asp-validation-for="RememberMe" class="text-danger"></span>
+                            </div>
+
+                            <!-- Forgot Password -->
+                            <div class="form-group">
+                                <p class="pl-2">
+                                    <a asp-controller="Account" asp-action="ForgotPassword">Forgot Password?</a>
+                                </p>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="form-group form-button">
+                                <input type="submit" value="Login" class="form-submit" />
+                            </div>
+                        </form>
+
+                        <!-- Social Login -->
+                        <span class="social-label">Or login with</span>
+                        <a class="btn btn-danger rounded-circle " style="width:30px; height:30px;" asp-controller="Account" asp-action="ExternalLogin" asp-route-provider="Google">
+                            <i class="display-flex-center zmdi zmdi-google"></i>
+                        </a>
+                    </div>
                         <div class="form-group">
                             <label asp-for="Password"><i class="zmdi zmdi-lock"></i></label>
                             <input type="password" asp-for="Password" id="your_pass" placeholder="Password" />
@@ -71,16 +110,13 @@
                         </a>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
-    </section>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
-
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
 </body>
 </html>
-
-
-

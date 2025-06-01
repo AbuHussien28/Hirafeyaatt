@@ -5,80 +5,61 @@
     Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
 }
 <partial name="~/Views/Customer/_TopPartialCustomer.cshtml" />
-
-
 @foreach (var category in Model)
 {
-    <div class="container-fluid  mb-5" style="background-color:#d19c97;">
-        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 70px ;">
-            <h1 class="font-weight-semi-bold text-uppercase mb-3">@category.Key</h1>
+    <!-- هنا بنضيف الـ id على أساس اسم الكاتيجوري -->
+    <div id="category-@category.Key" class="category-section mt-5">
+        <h3 class="mt-5 mb-3 text-center p-3">@category.Key</h3>
 
-        </div>
-    </div>
+        @{
+            var rowClass = category.Value.Count < 4 ? "row justify-content-center" : "row";
+        }
 
+        <div class="@rowClass">
+            @foreach (var product in category.Value)
+            {
+                <div class="col-lg-3 col-md-6 col-sm-12 pb-3">
+                    <div class="card product-item border-0 mb-4 shadow-sm">
+                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                            <img class="img-fluid w-100 fixed-image" src="@product.ImageUrl" alt="@product.Title" style="height: 200px; object-fit: cover;">
 
-    var rowClass = category.Value.Count < 4 ? "row justify-content-center" : "row";
+                            <form method="post" asp-action="AddToFavourites" asp-controller="Favorite" class="position-absolute" style="top: 10px; right: 10px;">
+                                <input type="hidden" name="productId" value="@product.Id" />
+                                <button type="submit" class="btn btn-sm text-danger bg-white rounded-circle shadow-sm p-1" title="Add to Favourites">
+                                    ❤️
+                                </button>
+                            </form>
+                        </div>
 
-<div class="container">
-    <div class="row justify-content-center">
-        @foreach (var product in category.Value)
-        {
-            <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                <div class="card product-item border-0 ml-3">
-                  
-                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                        <img class="img-fluid w-100 fixed-image" src="@product.ImageUrl" alt="@product.Title" >
-
-                        <!-- زر الفيفورت بشكل مضبوط -->
-                        <form method="post" asp-action="AddToFavourites" asp-controller="Favorite" class="position-absolute" style="top: 10px; right: 10px;">
-                            <input type="hidden" name="productId" value="@product.Id" />
-                            <button type="submit" class="btn btn-sm text-danger bg-white rounded-circle shadow-sm p-1" title="Add to Favourites">
-                                ❤️
-                            </button>
-                        </form>
-                    </div>
-                    
-                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                            <h5 class="text-truncate mb-3">@product.Title</h5>
-                        <p class="card-text">@product.Description</p>
-
-                        @if (product.Quentity > 0)
-                        {
-                            <p class="card-text"><strong>Quantity:</strong> @product.Quentity</p>
-                        }
-                        else
-                        {
-                            <p class="card-text text-danger"><strong>Status:</strong> Sold Out</p>
-                        }
-
-                            <div class="d-flex justify-content-center">
-                                <h6>$@(product.Price - 200)</h6>
+                        <div class="card-body text-center p-3">
+                            <h6 class="text-truncate mb-2">@product.Category?.Name</h6>
+                            <div class="d-flex justify-content-center mb-2">
+                                <h6 class="text-primary">$@(@product.Price - 200)</h6>
                                 <h6 class="text-muted ml-2"><del>$@product.Price</del></h6>
                             </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                            @if (product.Quentity > 0)
-                            {
-                                <form method="post" asp-action="AddToCart" asp-controller="Cart" class="add-to-cart-form">
-                                    <input type="hidden" name="productId" value="@product.Id" />
-                                    <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
-                                    <div class="add-to-cart-message" style="display:none;"></div>
-                                </form>
-                            }
-                            else
-                            {
-                                <button class="btn btn-secondary btn-sm" disabled>Add to Cart</button>
-                            }
-                                <a asp-action="details" asp-controller="home" asp-route-Id="@product.Id" class="btn btn-sm text-dark p-0 bg-light border">
-                                    <i class="fas fa-eye text-primary mr-1"></i>View Detail
-                                </a>
+                          
+                            <p class="card-text small text-muted mb-2"><strong>Seller:</strong> @product.Seller?.FullName</p>
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-between bg-light border">
+                            <a asp-action="details" asp-controller="home" asp-route-Id="@product.Id" class="btn btn-sm text-dark p-0">
+                                <i class="fas fa-eye text-primary mr-1"></i>View Detail
+                            </a>
+
+                            <form method="post" asp-action="AddToCart" asp-controller="Cart" class="mb-0">
+                                <input type="hidden" name="productId" value="@product.Id" />
+                                <button type="submit" class="btn btn-sm text-dark p-0">
+                                    <i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
-</div>
 }
+
 
 
     <script>
