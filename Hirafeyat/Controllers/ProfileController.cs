@@ -56,7 +56,7 @@ namespace Hirafeyat.Controllers
                 await _userManager.UpdateAsync(user);
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("ChangeProfilePhoto" , new { imagePath = user.ProfileImage });
 
         }
 
@@ -99,7 +99,7 @@ namespace Hirafeyat.Controllers
 
             await _userManager.UpdateAsync(user);
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("ChangePersonalInfo");
         }
 
         //----------------------------------------------------------
@@ -129,7 +129,7 @@ namespace Hirafeyat.Controllers
             if (result.Succeeded)
             {
                 ViewBag.SuccessMessage = "Password changed successfully";
-                return View("Index", "Home");
+                return View();
             }
 
             foreach (var error in result.Errors)

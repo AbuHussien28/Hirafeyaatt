@@ -63,7 +63,6 @@
         <div class="text-center">
             <h5>@UserName</h5>
             <img src="@UserProfileImageUrl" class="img-thumbnail rounded-circle my-2" style="width: 120px; height: 120px;" />
-            @* <a href="/Profile/ChangeProfilePhoto" class="btn btn-success btn-sm w-100 mb-2">Change Profile Photo</a>    *@
             <a href="@Url.Action("ChangeProfilePhoto", "Profile", new { imagePath =  @UserProfileImageUrl})" class="btn btn-success btn-sm w-100 mb-2">Change Profile Photo</a> 
             <a href="/Profile/ChangePersonalInfo" class="btn btn-primary btn-sm w-100 mb-2">Change Personal Info</a>
             <a href="/Profile/ChangePassword" class="btn btn-warning btn-sm w-100 mb-2">Change Password</a>
