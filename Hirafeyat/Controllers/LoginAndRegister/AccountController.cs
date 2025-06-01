@@ -1,15 +1,10 @@
-﻿
-using Hirafeyat.Models;
+﻿using System.Security.Claims;
 using Hirafeyat.OtherServices;
-using Hirafeyat.ViewModel.Account.ForgetPassword;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Hirafeyat.Controllers.LoginAndRegister
 {
@@ -19,7 +14,7 @@ namespace Hirafeyat.Controllers.LoginAndRegister
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IEmailSender emailSender;
 
-        public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -195,9 +190,9 @@ namespace Hirafeyat.Controllers.LoginAndRegister
             var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
-        public async Task<IActionResult> ExternalLoginCallback( string? remoteError = null)
+        public async Task<IActionResult> ExternalLoginCallback(string? remoteError = null)
         {
-           
+
 
             if (remoteError != null)
             {
@@ -233,7 +228,7 @@ namespace Hirafeyat.Controllers.LoginAndRegister
             var email = TempData["ExternalEmail"]?.ToString();
             var model = new RegisterViewModel
             {
-                Email = email 
+                Email = email
             };
 
             return View("Register", model);
@@ -251,7 +246,7 @@ namespace Hirafeyat.Controllers.LoginAndRegister
 
             var model = new UpdateBrandViewModel
             {
-                BrandName = brandClaim?.Value 
+                BrandName = brandClaim?.Value
             };
 
             return View(model);
