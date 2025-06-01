@@ -10,6 +10,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
     <!-- Font Icon -->
     <link rel="stylesheet" href="~/fonts/material-icon/css/material-design-iconic-font.min.css" />
     <!-- Main css -->
@@ -78,36 +79,6 @@
                             <i class="display-flex-center zmdi zmdi-google"></i>
                         </a>
                     </div>
-                        <div class="form-group">
-                            <label asp-for="Password"><i class="zmdi zmdi-lock"></i></label>
-                            <input type="password" asp-for="Password" id="your_pass" placeholder="Password" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </div>
-                        <div class="row">
-                        <div class="form-group">
-                            <input type="checkbox" asp-for="RememberMe" id="remember-me" class="agree-term" />
-                            <label asp-for="RememberMe" class="label-agree-term">
-                                </span></span>Remember me
-                            </label>
-                            <span asp-validation-for="RememberMe" class="text-danger"></span>
-                        </div>
-                        <div>
-                            <p>
-                                <a asp-controller="Account" asp-action="ForgotPassword">Forgot Password ?</a>
-                            </p>
-                        </div>
-                        </div>
-                        <div class="form-group form-button">
-                            <input type="submit" value="Login" class="form-submit" />
-                        </div>
-                    </form>
-                        <a class="btn btn-danger"
-                           asp-controller="Account"
-                           asp-action="ExternalLogin"
-                           asp-route-provider="Google"
-                           aria-label="Login with Google">
-                            <i class="zmdi zmdi-google" aria-hidden="true"></i> Login with Google
-                        </a>
                 </div>
             </div>
         </section>
