@@ -1,4 +1,5 @@
-﻿using Hirafeyat.Models;
+﻿using System.Diagnostics;
+using Hirafeyat.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hirafeyat.Controllers.Customer
 {
-    [Authorize(Roles ="Customer")]
+    
     public class FavoriteController : Controller
     {
         private readonly HirafeyatContext _context;
@@ -21,33 +22,118 @@ namespace Hirafeyat.Controllers.Customer
         [HttpPost]
         public async Task<IActionResult> AddToFavourites(int productId)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (!_context.Favorites.Any(f => f.ProductId == productId && f.UserId == user.Id))
+            if (User.Identity.IsAuthenticated)
             {
-                _context.Favorites.Add(new Favorite { ProductId = productId, UserId = user.Id });
-                await _context.SaveChangesAsync();
+                var user = await _userManager.GetUserAsync(User);
+
+                bool alreadyFavorited = await _context.Favorites
+                    .AnyAsync(f => f.ProductId == productId && f.UserId == user.Id);
+
+                if (!alreadyFavorited)
+                {
+                    _context.Favorites.Add(new Favorite { ProductId = productId, UserId = user.Id });
+                    await _context.SaveChangesAsync();
+                }
+
+                return RedirectToAction("MyList");   // للمستخدمين المسجلين
             }
-            return RedirectToAction("MyList");
+            else
+            {
+                // Handle Guest Favorites using Session
+                var favs = HttpContext.Session.GetString("Favorites");
+                List<int> favList;
+
+                if (string.IsNullOrEmpty(favs))
+                {
+                    // لا يوجد بيانات في السيشن، ننشئ قائمة جديدة
+                    favList = new List<int>();
+                }
+                else
+                {
+                    favList = System.Text.Json.JsonSerializer.Deserialize<List<int>>(favs);
+                }
+
+                if (!favList.Contains(productId))
+                {
+                    favList.Add(productId);
+                    HttpContext.Session.SetString("Favorites", System.Text.Json.JsonSerializer.Serialize(favList));
+                }
+
+                return RedirectToAction("GuestList");
+            }
+        }
+
+
+
+        public IActionResult GuestList()
+        {
+            var favs = HttpContext.Session.GetString("Favorites");
+            List<int> favList = string.IsNullOrEmpty(favs) ? new List<int>() : System.Text.Json.JsonSerializer.Deserialize<List<int>>(favs);
+
+            var products = _context.Products
+                                   .Where(p => favList.Contains(p.Id))
+                                   .ToList();
+
+            return View(products); 
         }
 
         public async Task<IActionResult> MyList()
         {
-            var user = await _userManager.GetUserAsync(User);
-            var favs = _context.Favorites
-                               .Where(f => f.UserId == user.Id)
-                               .Include(f => f.Product)
-                               .ToList();
-            return View(favs);
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var favs = _context.Favorites
+                                   .Where(f => f.UserId == user.Id)
+                                   .Include(f => f.Product)
+                                   .ToList();
+                return View("MyList", favs);
+            }
+            else
+            {
+                var favs = new List<Product>();
+                var favsString = HttpContext.Session.GetString("Favorites");
+                if (!string.IsNullOrEmpty(favsString))
+                {
+                    var favIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(favsString);
+                    favs = _context.Products.Where(p => favIds.Contains(p.Id)).ToList();
+                }
+                return View("GuestList", favs);
+            }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> RemoveFromFavourites(int id)
+
+
+        //[Authorize(Roles = "Customer")]
+[HttpPost]
+public async Task<IActionResult> RemoveFromFavourites(int id)
+{
+    if (User.Identity.IsAuthenticated)
+    {
+        // حالة المستخدم المسجل: نحذف من قاعدة البيانات
+        var item = await _context.Favorites.FirstOrDefaultAsync(f => f.ProductId == id);
+                if (item != null)
         {
-            var item = await _context.Favorites.FindAsync(id);
             _context.Favorites.Remove(item);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("MyList");
+            _context.SaveChangesAsync();
         }
+        return RedirectToAction("MyList");
+    }
+    else
+    {
+        // حالة الضيف: نحذف من السيشن
+        var favs = HttpContext.Session.GetString("Favorites");
+        List<int> favList = string.IsNullOrEmpty(favs) ? new List<int>() : System.Text.Json.JsonSerializer.Deserialize<List<int>>(favs);
+
+        if (favList.Contains(id))
+        {
+            favList.Remove(id);
+            HttpContext.Session.SetString("Favorites", System.Text.Json.JsonSerializer.Serialize(favList));
+        }
+
+        return RedirectToAction("GuestList");
+    }
+}
+
 
     }
 }

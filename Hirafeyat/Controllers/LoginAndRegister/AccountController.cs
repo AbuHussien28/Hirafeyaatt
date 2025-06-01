@@ -177,7 +177,7 @@ namespace Hirafeyat.Controllers.LoginAndRegister
                             return Redirect(model.ReturnUrl);
                         }
 
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Customer");
                     }
                 }
 

@@ -81,13 +81,14 @@
  
             </div>
             <div class="col-lg-3 col-6 text-right">
-                <a asp-action="login" asp-controller="account" class="btn border">
+               
+                <a asp-action="MyList" asp-controller="Favorite" class="btn border">
                     <i class="fas fa-heart text-primary"></i>
-                    <span class="badge">0</span>
+                    
                 </a>
-                <a asp-action="login" asp-controller="account" class="btn border">
+                <a asp-action="guestcart" asp-controller="Cart" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                
                 </a>
             </div>
         </div>
@@ -131,19 +132,29 @@
                             <a href="http://localhost:5227/home/index" class="nav-item nav-link active">Home</a>
                             <a href="http://localhost:5227/home/shop" class="nav-item nav-link">brands</a>
                             <a href="http://localhost:5227/home/info" class="nav-item nav-link">About us</a>
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                                <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="http://localhost:5227/home/cart" class="dropdown-item">Shopping Cart</a>
-                                    <a href="http://localhost:5227/home/checkout" class="dropdown-item">Checkout</a>
-                                </div>
-                            </div>
+                            @* <div class="nav-item dropdown"> *@
+                            @*     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a> *@
+                            @*     <div class="dropdown-menu rounded-0 m-0"> *@
+                            @*         <a href="http://localhost:5227/home/cart" class="dropdown-item">Shopping Cart</a> *@
+                            @*         <a href="http://localhost:5227/home/checkout" class="dropdown-item">Checkout</a> *@
+                            @*     </div> *@
+                            @* </div> *@
                             <a href="http://localhost:5227/home/contact" class="nav-item nav-link">Contact</a>
                         </div>
+                        @if(User.Identity.IsAuthenticated){
+                        <div class="navbar-nav ml-auto py-0">
+                                <form asp-controller="Account" asp-action="LogOut" method="post" class="w-100">
+                                    <button type="submit" class="nav-item nav-link" style="border:none; background:none;" >LogOut</button>
+                                </form>
+                         
+                        </div>
+                        
+                        }else{
                         <div class="navbar-nav ml-auto py-0">
                             <a asp-action="login" asp-controller="account" class="nav-item nav-link">Login</a>
                             <a asp-action="register" asp-controller="account" class="nav-item nav-link">Register</a>
                         </div>
+                        }
                     </div>
                 </nav>
                 <div id="header-carousel" class="carousel slide" data-ride="carousel">
