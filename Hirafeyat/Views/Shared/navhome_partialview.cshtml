@@ -20,11 +20,23 @@
                 @* </div> *@
                 <a  href="/Home/contact" class="nav-item nav-link">Contact</a>
             </div>
-            <div class="navbar-nav ml-auto py-0">
-                <a asp-action="login" asp-controller="account" class="nav-item nav-link">Login</a>
-                <a asp-action="register" asp-controller="account" class="nav-item nav-link">Register</a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="navbar-nav ml-auto py-0">
+                    <form asp-controller="Account" asp-action="LogOut" method="post" class="w-100">
+                        <button type="submit" class="nav-item nav-link" style="border:none; background:none;">LogOut</button>
+                    </form>
 
-            </div>
+                </div>
+
+            }
+            else
+            {
+                <div class="navbar-nav ml-auto py-0">
+                    <a asp-action="login" asp-controller="account" class="nav-item nav-link">Login</a>
+                    <a asp-action="register" asp-controller="account" class="nav-item nav-link">Register</a>
+                </div>
+            }
         </div>
     </nav>
     <div id="header-carousel" class="carousel slide" data-ride="carousel">
