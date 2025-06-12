@@ -144,16 +144,5 @@ namespace Hirafeyat.Controllers.Admin
 
             return RedirectToAction(nameof(Index));
         }
-
-        #region Search
-
-        [HttpGet]
-        [Route("/Admin/Product/Board")]
-        public async Task<IActionResult> Board([FromQuery]string name, int pageNumber = 1, int pageSize = 10)
-        {
-
-            return PartialView("~/Views/AdminProducts/DashBoard.cshtml");
-        }
-        #endregion
     }
 }

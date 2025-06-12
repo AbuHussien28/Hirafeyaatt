@@ -94,9 +94,8 @@ namespace Hirafeyat.Controllers
 
         public IActionResult Shop()
         {
-            // جلب جميع المنتجات من المستودع عند تحميل الصفحة
             var products = productRepository.getAll();
-            return View(products); // إرجاع المنتجات إلى الـ View
+            return View(products); 
         }
 
         
