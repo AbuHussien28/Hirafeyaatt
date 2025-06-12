@@ -29,7 +29,7 @@ namespace Hirafeyat
       });
            
             builder.Services.AddDbContext<HirafeyatContext>(options =>
-             options.UseSqlServer(builder.Configuration.GetConnectionString("CS")));
+             options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("CS")));
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
@@ -68,6 +68,8 @@ namespace Hirafeyat
             builder.Services.AddTransient<IEmailSender, EmailSender>();
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+            builder.Services.AddScoped<IDashboardService, DashboardService>();
             builder.Services.AddAuthentication()
             .AddGoogle(options =>
             {

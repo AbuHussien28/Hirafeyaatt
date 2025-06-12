@@ -1,0 +1,798 @@
+﻿@using Hirafeyat.ViewModel.Admin.DashBoard
+@model DashboardData
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/AdminProducts/_DefaultLayout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<partial name="~/Views/AdminProducts/_TopPartial.cshtml" />
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --danger-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        --monthly-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+        position: relative;
+        overflow: hidden;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .stats-card.primary::before {
+            background: var(--primary-gradient);
+        }
+
+        .stats-card.success::before {
+            background: var(--success-gradient);
+        }
+
+        .stats-card.warning::before {
+            background: var(--warning-gradient);
+        }
+
+        .stats-card.info::before {
+            background: var(--info-gradient);
+        }
+
+        .stats-card.monthly::before {
+            background: var(--monthly-gradient);
+        }
+
+    .stats-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+        .stats-icon.primary {
+            background: var(--primary-gradient);
+        }
+
+        .stats-icon.success {
+            background: var(--success-gradient);
+        }
+
+        .stats-icon.warning {
+            background: var(--warning-gradient);
+        }
+
+        .stats-icon.info {
+            background: var(--info-gradient);
+        }
+
+        .stats-icon.monthly {
+            background: var(--monthly-gradient);
+        }
+
+    .stats-content {
+        flex-grow: 1;
+    }
+
+    .stats-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: #2c3e50;
+    }
+
+    .stats-label {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        font-weight: 500;
+    }
+
+    .stats-change {
+        font-size: 0.75rem;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+    }
+
+        .stats-change.positive {
+            color: #27ae60;
+        }
+
+        .stats-change.negative {
+            color: #e74c3c;
+        }
+
+        .stats-change.neutral {
+            color: #7f8c8d;
+        }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+ 
+
+    /* Chart Styles */
+    .chart-wrapper {
+        position: relative;
+        height: 250px;
+        max-height: 250px;
+        margin-bottom: 10px;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        min-height: 320px;
+        max-height: 400px;
+    }
+
+        .chart-container:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-container h4 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+            .chart-container h4 i {
+                margin-right: 10px;
+                color: #7f8c8d;
+                font-size: 1rem;
+            }
+
+    /* Table Styles */
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+
+        .table-container:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .table-container h4 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+            .table-container h4 i {
+                margin-right: 10px;
+                color: #7f8c8d;
+            }
+
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    .status-pending {
+        background-color: #ffeaa7;
+        color: #d63031;
+    }
+
+    .status-processing {
+        background-color: #74b9ff;
+        color: #0984e3;
+    }
+
+    .status-delivered {
+        background-color: #00b894;
+        color: #ffffff;
+    }
+
+    .status-cancelled {
+        background-color: #fd79a8;
+        color: #ffffff;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        border-radius: 10px;
+    }
+
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            border-top: none;
+        }
+
+        .table td {
+            vertical-align: middle;
+            border-top: 1px solid #f1f1f1;
+        }
+
+        .table tr:first-child td {
+            border-top: none;
+        }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(52, 152, 219, 0.05);
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 40px;
+        color: #95a5a6;
+    }
+
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #f5c6cb;
+    }
+    }
+</style>
+
+<div class="container-fluid">
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <!-- Stats Cards Row -->
+    <div class="row">
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="stats-card primary">
+                <div class="stats-icon primary">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@(Model?.Stats?.TotalProducts ?? 0)</div>
+                    <div class="stats-label">Total Products</div>
+                </div>
+                <div class="stats-change positive" id="products-growth">
+                    <i class="fas fa-arrow-up"></i> Loading...
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="stats-card success">
+                <div class="stats-icon success">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@(Model?.Stats?.TotalOrders ?? 0)</div>
+                    <div class="stats-label">Total Orders</div>
+                </div>
+                <div class="stats-change positive" id="orders-growth">
+                    <i class="fas fa-arrow-up"></i> Loading...
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="stats-card warning">
+                <div class="stats-icon warning">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@(Model?.Stats?.TotalUsers ?? 0)</div>
+                    <div class="stats-label">Registered Users</div>
+                </div>
+                <div class="stats-change positive">
+                    <i class="fas fa-arrow-up"></i> Active Users
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="stats-card info">
+                <div class="stats-icon info">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@((Model?.Stats?.TotalRevenue ?? 0).ToString("N0")) EGP</div>
+                    <div class="stats-label">Total Revenue</div>
+                </div>
+                <div class="stats-change positive" id="revenue-growth">
+                    <i class="fas fa-arrow-up"></i> Loading...
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Revenue Card -->
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="stats-card monthly">
+                <div class="stats-icon monthly">
+                    <i class="fas fa-calendar-month"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@((Model?.Stats?.MonthlyRevenue ?? 0).ToString("N0")) EGP</div>
+                    <div class="stats-label">Monthly Revenue</div>
+                </div>
+                <div class="stats-change neutral" id="monthly-revenue-growth">
+                    <div class="loading-spinner"></div> Loading...
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Sellers Card -->
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="stats-card primary">
+                <div class="stats-icon primary">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-number">@(Model?.Stats?.ActiveSellers ?? 0)</div>
+                    <div class="stats-label">Active Sellers</div>
+                </div>
+                <div class="stats-change positive">
+                    <i class="fas fa-check-circle"></i> Online
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Status Row -->
+    <div class="row mt-3">
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card" style="height: 120px;">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon" style="background: #f39c12; margin-bottom: 0; margin-right: 15px;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <div class="stats-number" style="font-size: 1.5rem;">@(Model?.Stats?.PendingOrders ?? 0)</div>
+                        <div class="stats-label">Pending Orders</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card" style="height: 120px;">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon" style="background: #3498db; margin-bottom: 0; margin-right: 15px;">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div>
+                        <div class="stats-number" style="font-size: 1.5rem;">@(Model?.Stats?.ProcessingOrders ?? 0)</div>
+                        <div class="stats-label">Processing Orders</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card" style="height: 120px;">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon" style="background: #27ae60; margin-bottom: 0; margin-right: 15px;">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div>
+                        <div class="stats-number" style="font-size: 1.5rem;">@(Model?.Stats?.DeliveredOrders ?? 0)</div>
+                        <div class="stats-label">Delivered Orders</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card" style="height: 120px;">
+                <div class="d-flex align-items-center">
+                    <div class="stats-icon" style="background: #e74c3c; margin-bottom: 0; margin-right: 15px;">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <div>
+                        <div class="stats-number" style="font-size: 1.5rem;">@(Model?.Stats?.CancelledOrders ?? 0)</div>
+                        <div class="stats-label">Cancelled Orders</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mt-4">
+        <div class="col-lg-6 col-md-12">
+            <div class="chart-container">
+                <h4><i class="fas fa-chart-line"></i> Monthly Orders Trend</h4>
+                <div class="chart-wrapper">
+                    <canvas id="ordersChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <div class="chart-container">
+                <h4><i class="fas fa-chart-bar"></i> Monthly Revenue Trend</h4>
+                <div class="chart-wrapper">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="table-container">
+                <h4><i class="fas fa-clipboard-list"></i> Recent Orders</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Order Date</th>
+                                <th>Payment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model?.RecentOrders != null && Model.RecentOrders.Any())
+                            {
+                                @foreach (var order in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td><strong>#@order.Id</strong></td>
+                                        <td>@(order.Customer?.FullName ?? order.FullName ?? "N/A")</td>
+                                        <td><strong>@((order.Payment?.Amount ?? 0).ToString("N0")) EGP</strong></td>
+                                        <td>
+                                            <span class="status-badge @GetStatusClass(order.Status.ToString())">
+                                                @order.Status
+                                            </span>
+                                        </td>
+                                        <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <span class="status-badge @GetPaymentStatusClass(order.Payment?.Status.ToString())">
+                                                @(order.Payment?.Status.ToString() ?? "N/A")
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="no-data">
+                                            <i class="fas fa-clipboard"></i>
+                                            <h5>No orders available</h5>
+                                            <p>There are no recent orders to display</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "status-pending",
+            "Processing" => "status-processing",
+            "Delivered" => "status-delivered",
+            "Cancelled" => "status-cancelled",
+            _ => "status-pending"
+        };
+    }
+
+    string GetPaymentStatusClass(string status)
+    {
+        return status switch
+        {
+            "Paid" => "status-delivered",
+            "Pending" => "status-pending",
+            "Failed" => "status-cancelled",
+            _ => "status-pending"
+        };
+    }
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function () {
+            loadGrowthPercentages();
+            loadChartsData();
+
+            function loadGrowthPercentages() {
+                $.get('/Dashboard/GetRevenueGrowthPercentage')
+                    .done(function(data) {
+                        if (data.success) {
+                            updateGrowthDisplay('#revenue-growth', data.percentage);
+                            updateGrowthDisplay('#monthly-revenue-growth', data.percentage);
+                        }
+                    })
+                    .fail(function() {
+                        $('#revenue-growth').html('<i class="fas fa-minus"></i> N/A');
+                        $('#monthly-revenue-growth').html('<i class="fas fa-minus"></i> N/A');
+                    });
+                $.get('/Dashboard/GetOrderGrowthPercentage')
+                    .done(function(data) {
+                        if (data.success) {
+                            updateGrowthDisplay('#orders-growth', data.percentage);
+                        }
+                    })
+                    .fail(function() {
+                        $('#orders-growth').html('<i class="fas fa-minus"></i> N/A');
+                    });
+            }
+
+            function updateGrowthDisplay(selector, percentage) {
+                var element = $(selector);
+                var roundedPercentage = Math.round(percentage * 100) / 100;
+
+                if (percentage > 0) {
+                    element.removeClass('negative neutral').addClass('positive');
+                    element.html('<i class="fas fa-arrow-up"></i> +' + roundedPercentage + '% from last month');
+                } else if (percentage < 0) {
+                    element.removeClass('positive neutral').addClass('negative');
+                    element.html('<i class="fas fa-arrow-down"></i> ' + roundedPercentage + '% from last month');
+                } else {
+                    element.removeClass('positive negative').addClass('neutral');
+                    element.html('<i class="fas fa-minus"></i> No change from last month');
+                }
+            }
+
+            function loadChartsData() {
+                $.get('/Dashboard/GetOrdersChartData?months=6')
+                    .done(function (data) {
+                        if (data.success && data.data) {
+                            createLineChart('ordersChart',
+                                Object.keys(data.data),
+                                Object.values(data.data),
+                                'Orders Count',
+                                '#667eea',
+                                '#764ba2');
+                        }
+                    })
+                    .fail(function() {
+                        console.error('Failed to load orders chart data');
+                    });
+                $.get('/Dashboard/GetRevenueChartData?months=6')
+                    .done(function (data) {
+                        if (data.success && data.data) {
+                            createBarChart('revenueChart',
+                                Object.keys(data.data),
+                                Object.values(data.data),
+                                'Revenue (EGP)',
+                                '#38ef7d',
+                                '#11998e');
+                        }
+                    })
+                    .fail(function() {
+                        console.error('Failed to load revenue chart data');
+                    });
+            }
+
+            function createLineChart(canvasId, labels, data, label, color1, color2) {
+                var ctx = document.getElementById(canvasId);
+                if (!ctx) return;
+
+                ctx = ctx.getContext('2d');
+                var gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                gradient.addColorStop(0, color1 + '40');
+                gradient.addColorStop(1, color2 + '10');
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            backgroundColor: gradient,
+                            borderColor: color1,
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: color1,
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 15,
+                                    font: {
+                                        size: 12,
+                                        family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial"
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                titleFont: { size: 13, weight: 'bold' },
+                                bodyFont: { size: 12 },
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function (context) {
+                                        return label + ': ' + context.parsed.y.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false, drawBorder: false },
+                                ticks: { color: '#95a5a6', font: { size: 11 } }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f1f1f1', drawBorder: false },
+                                ticks: {
+                                    color: '#95a5a6',
+                                    font: { size: 11 },
+                                    callback: function (value) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createBarChart(canvasId, labels, data, label, color1, color2) {
+                var ctx = document.getElementById(canvasId);
+                if (!ctx) return;
+
+                ctx = ctx.getContext('2d');
+                var gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                gradient.addColorStop(0, color1);
+                gradient.addColorStop(1, color2);
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            backgroundColor: gradient,
+                            borderColor: color1,
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 15,
+                                    font: {
+                                        size: 12,
+                                        family: "'Segoe UI', Roboto, 'Helvetica Neue', Arial"
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                titleFont: { size: 13, weight: 'bold' },
+                                bodyFont: { size: 12 },
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function (context) {
+                                        return label + ': ' + context.parsed.y.toLocaleString() + ' EGP';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false, drawBorder: false },
+                                ticks: { color: '#95a5a6', font: { size: 11 } }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f1f1f1', drawBorder: false },
+                                ticks: {
+                                    color: '#95a5a6',
+                                    font: { size: 11 },
+                                    callback: function (value) {
+                                        return value.toLocaleString() + ' EGP';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}
