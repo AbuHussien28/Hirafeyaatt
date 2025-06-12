@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
-using Hirafeyat.Models;
+﻿using Hirafeyat.Models;
 using Hirafeyat.SellerServices;
 using Hirafeyat.Services;
 using Hirafeyat.ViewModel;
 using Hirafeyat.ViewModel.Role;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace Hirafeyat.Controllers
 {
@@ -14,19 +15,55 @@ namespace Hirafeyat.Controllers
         private readonly IProductRepository productRepository;
         private readonly IOrderService orderService;
         private readonly ILogger<HomeController> _logger;
-       // private readonly HirafeyatContext con;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public HomeController(ICategoryRepository categoryRepository, IProductRepository productRepository, IOrderService orderService, ILogger<HomeController> logger)
+        // private readonly HirafeyatContext con;
+
+        public HomeController(ICategoryRepository categoryRepository, IProductRepository productRepository, IOrderService orderService, ILogger<HomeController> logger, UserManager<ApplicationUser> userManager)
         {
             this.categoryRepository = categoryRepository;
             this.productRepository = productRepository;
             this.orderService = orderService;
             _logger = logger;
-           
+            this.userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
+            //var categories = categoryRepository.getAll();
+            //var products = productRepository.getAll();
+
+            //var groupedProducts = new Dictionary<string, List<Product>>();
+
+            //foreach (var category in categories)
+            //{
+            //    var productsInCategory = products
+            //        .Where(p => p.CategoryId == category.Id).ToList();
+
+            //    groupedProducts[category.Name] = productsInCategory;
+            //}
+
+            //var vm = new homeviewmodel()
+            //{
+            //    Categories = categories,
+            //    Products = products,
+            //    ProductDictionary = groupedProducts
+            //};
+
+            //return View(vm);
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await userManager.GetUserAsync(User);
+                var roles = await userManager.GetRolesAsync(user);
+
+                if (roles.Contains("Admin"))
+                    return RedirectToAction("Index", "Dashboard");
+
+                if (roles.Contains("Seller"))
+                    return RedirectToAction("Index", "Seller");
+                 
+                    
+            }
             var categories = categoryRepository.getAll();
             var products = productRepository.getAll();
 
@@ -48,6 +85,7 @@ namespace Hirafeyat.Controllers
             };
 
             return View(vm);
+        
         }
 
         public IActionResult contact()
@@ -152,64 +190,6 @@ namespace Hirafeyat.Controllers
 
             return Json(allProducts);
         }
-
-
-
-        //public IActionResult Filter(string searchQuery, List<string> prices)
-        //{
-        //    var products = productRepository.getAll();  // جلب جميع المنتجات باستخدام الريبوستوري
-
-        //    // فلترة المنتجات حسب النص البحثي
-        //    if (!string.IsNullOrEmpty(searchQuery))
-        //    {
-        //        products = products.Where(p => p.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
-        //    }
-
-        //    // فلترة المنتجات حسب الأسعار المحددة
-        //    if (prices != null && prices.Any())
-        //    {
-        //        foreach (var range in prices)
-        //        {
-        //            var parts = range.Split('-');
-        //            if (parts.Length == 2 &&
-        //                decimal.TryParse(parts[0], out var minPrice) &&
-        //                decimal.TryParse(parts[1], out var maxPrice))
-        //            {
-        //                products = products.Where(p => p.Price >= minPrice && p.Price <= maxPrice).ToList();
-        //            }
-        //        }
-        //    }
-
-        //    // إرجاع المنتجات المصفاة بصيغة JSON
-        //    return Json(products);
-        //}
-
-
-        //public IActionResult cart()
-        //{
-        //    var categories = categoryRepository.getAll();
-        //    var products = productRepository.getAll();
-
-        //    var groupedProducts = new Dictionary<string, List<Product>>();
-
-        //    foreach (var category in categories)
-        //    {
-        //        var productsInCategory = products
-        //            .Where(p => p.CategoryId == category.Id).ToList();
-
-        //        groupedProducts[category.Name] = productsInCategory;
-        //    }
-
-        //    var vm = new homeviewmodel()
-        //    {
-        //        Categories = categories,
-        //        Products = products,
-        //        ProductDictionary = groupedProducts
-        //    };
-
-        //    return View(vm);
-        //}
-
          public IActionResult Details(int id)
         {
             Product pro = productRepository.getById(id);
@@ -287,34 +267,6 @@ namespace Hirafeyat.Controllers
             return View("producthomepatialview", products);
 
         }
-
-        //public IActionResult Index2()
-        //{
-        //    var categories = categoryRepository.getAll();
-        //    var products = productRepository.getAll();
-
-        //    var groupedProducts = new Dictionary<string, List<Product>>();
-
-        //    foreach (var category in categories)
-        //    {
-        //        var productsInCategory = products
-        //            .Where(p => p.CategoryId == category.Id).ToList();
-
-        //        groupedProducts[category.Name] = productsInCategory;
-        //    }
-
-        //    var vm = new homeviewmodel()
-        //    {
-        //        Categories = categories,
-        //        Products = products,
-        //        ProductDictionary = groupedProducts
-        //    };
-
-        //    return View(vm);
-        //}
-
-
-
         public IActionResult Privacy()
         {
             return View();
