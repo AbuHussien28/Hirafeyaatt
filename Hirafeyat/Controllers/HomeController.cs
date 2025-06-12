@@ -17,8 +17,6 @@ namespace Hirafeyat.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<ApplicationUser> userManager;
 
-        // private readonly HirafeyatContext con;
-
         public HomeController(ICategoryRepository categoryRepository, IProductRepository productRepository, IOrderService orderService, ILogger<HomeController> logger, UserManager<ApplicationUser> userManager)
         {
             this.categoryRepository = categoryRepository;
@@ -30,27 +28,6 @@ namespace Hirafeyat.Controllers
 
         public async Task<IActionResult> IndexAsync()
         {
-            //var categories = categoryRepository.getAll();
-            //var products = productRepository.getAll();
-
-            //var groupedProducts = new Dictionary<string, List<Product>>();
-
-            //foreach (var category in categories)
-            //{
-            //    var productsInCategory = products
-            //        .Where(p => p.CategoryId == category.Id).ToList();
-
-            //    groupedProducts[category.Name] = productsInCategory;
-            //}
-
-            //var vm = new homeviewmodel()
-            //{
-            //    Categories = categories,
-            //    Products = products,
-            //    ProductDictionary = groupedProducts
-            //};
-
-            //return View(vm);
             if (User.Identity.IsAuthenticated)
             {
                 var user = await userManager.GetUserAsync(User);
@@ -267,11 +244,6 @@ namespace Hirafeyat.Controllers
             return View("producthomepatialview", products);
 
         }
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
