@@ -161,7 +161,7 @@ namespace Hirafeyat.Controllers.LoginAndRegister
                             });
                         if (roles.Contains("Admin"))
                         {
-                            return RedirectToAction("Sellers", "User");
+                            return RedirectToAction("Index", "Dashboard");
                         }
                         else if (roles.Contains("Seller"))
                         {
