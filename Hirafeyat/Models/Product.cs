@@ -30,13 +30,13 @@ namespace Hirafeyat.Models
         public productStatus Status { get; set; }
         // Foreign Keys
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
+        public virtual Category Category { get; set; }
         //was int now string
         public string SellerId { get; set; }
-        public ApplicationUser Seller { get; set; }
+        public virtual ApplicationUser Seller { get; set; }
 
         // Navigation
-        public ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
 
 
     }
