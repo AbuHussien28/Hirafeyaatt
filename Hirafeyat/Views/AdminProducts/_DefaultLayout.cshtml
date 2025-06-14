@@ -1,15 +1,33 @@
 ﻿<!DOCTYPE html>
-
 <html>
 <head>
     <partial name="~/Views/AdminProducts/_HeadPartial.cshtml" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
-    <div>
-        @RenderBody()
-    </div>
-    <partial name="~\Views\Shared\Footer.cshtml" />
-    @RenderSection("Scripts", required: false)
+    <div class="wrapper">
+        <div class="content">
+            @RenderBody()
+        </div>
 
+        @await Html.PartialAsync("Footer")
+    </div>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

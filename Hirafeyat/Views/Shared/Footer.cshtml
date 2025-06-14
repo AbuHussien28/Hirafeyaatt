@@ -1,16 +1,12 @@
-﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+﻿
 
 @{
     var isAdmin = User.IsInRole("Admin");
     var isSeller = User.IsInRole("Seller");
     var isCustomer = User.IsInRole("Customer");
 }
-<!-- Footer Start -->
 <div class="container-fluid bg-dark text-light mt-3 pt-3 pb-2">
     <div class="row px-xl-5 pt-5">
-        <!-- Logo and Description -->
         <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
             <a href="#" class="text-decoration-none">
                 <h1 class="mb-4 display-6 font-weight-bold text-white">
@@ -21,39 +17,43 @@
                 Herafiyat is an innovative digital platform that enables young men and women to showcase and sell their handmade and homemade products.
             </p>
         </div>
-
-        <!-- Contact Info -->
         <div class="col-lg-4 col-md-6 mb-5">
             <h5 class="text-white mb-4">Contact Us</h5>
             <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, Menofia, Egypt</p>
             <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>Hirafeyat@outlook.com</p>
             <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
         </div>
-
-        <!-- Quick Links -->
         <div class="col-lg-4 col-md-6 mb-5">
             <h5 class="text-white mb-4">Quick Links</h5>
             <div class="d-flex flex-column">
                 @if (isAdmin)
                 {
-                    <a class="text-primary mb-2" href="/Admin/Dashboard"><i class="fa fa-angle-right mr-2"></i>Admin Dashboard</a>
-                    <a class="text-primary mb-2" href="/Admin/Users"><i class="fa fa-angle-right mr-2"></i>Manage Users</a>
+                    <a class="text-primary mb-2" href="/Dashboard/Index"><i class="fa fa-angle-right mr-2"></i> Dashboard</a>
+                    <a class="text-primary mb-2" href="/User/Sellers"><i class="fa fa-angle-right mr-2"></i>Sellers</a>
+                    <a class="text-primary mb-2" href="/User/customers"><i class="fa fa-angle-right mr-2"></i>Customers</a>
+                    <a class="text-primary mb-2" href="/AdminOrder/Index"><i class="fa fa-angle-right mr-2"></i>Orders</a>
                 }
                 else if (isSeller)
                 {
-                    <a class="text-primary mb-2" href="/Seller/MyProducts"><i class="fa fa-angle-right mr-2"></i>My Products</a>
-                    <a class="text-primary mb-2" href="/Seller/Orders"><i class="fa fa-angle-right mr-2"></i>Customer Orders</a>
+                    <a class="text-primary mb-2" href="/Seller/index"><i class="fa fa-angle-right mr-2"></i>My Products</a>
+                    <a class="text-primary mb-2" href="/Seller/Orders"><i class="fa fa-angle-right mr-2"></i>Orders By Customers</a>
+                    <a class="text-primary mb-2" href="/Seller/New"><i class="fa fa-angle-right mr-2"></i>New Product</a>
+                    <a class="text-primary mb-2" href="/Account/UpdateBrandName"><i class="fa fa-angle-right mr-2"></i> Your Brand</a>
                 }
                 else if (isCustomer)
                 {
-                    <a class="text-primary mb-2" href="/Shop"><i class="fa fa-angle-right mr-2"></i>Shop</a>
-                    <a class="text-primary mb-2" href="/Cart"><i class="fa fa-angle-right mr-2"></i>My Cart</a>
-                    <a class="text-primary mb-2" href="/Orders"><i class="fa fa-angle-right mr-2"></i>My Orders</a>
+                    <a class="text-primary mb-2" href="/Home"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                    <a class="text-primary mb-2" href="/Home/Shop"><i class="fa fa-angle-right mr-2"></i>Shop</a>
+                    <a class="text-primary mb-2" href="/Home/contact"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                    <a class="text-primary mb-2" href="/Home/info"><i class="fa fa-angle-right mr-2"></i>Info</a>
+                    <a class="text-primary mb-2" href="/Cart/MyCart"><i class="fa fa-angle-right mr-2"></i>My Cart</a>
+                    <a class="text-primary mb-2" href="/Order/MyOrders"><i class="fa fa-angle-right mr-2"></i>My Orders</a>
                 }
                 else
                 {
                     <a class="text-primary mb-2" href="/Home"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                    <a class="text-primary mb-2" href="/Contact"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                    <a class="text-primary mb-2" href="/Home/contact"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                    <a class="text-primary mb-2" href="/Home/info"><i class="fa fa-angle-right mr-2"></i>Info</a>
                 }
             </div>
         </div>
