@@ -18,7 +18,7 @@
                         <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
                             <img class="img-fluid w-100 fixed-image" src="@product.ImageUrl" alt="@product.Title" style="height: 200px; object-fit: cover;">
 
-                            <form method="post" asp-action="AddToFavourites" asp-controller="Favourite" class="position-absolute" style="top: 10px; right: 10px;">
+                            <form method="post" asp-action="AddToFavourites" asp-controller="Favorite" class="position-absolute" style="top: 10px; right: 10px;">
                                 <input type="hidden" name="productId" value="@product.Id" />
                                 <button type="submit" class="btn btn-sm text-danger bg-white rounded-circle shadow-sm p-1" title="Add to Favourites">
                                     ❤️
