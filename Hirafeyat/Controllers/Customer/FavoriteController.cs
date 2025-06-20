@@ -114,7 +114,7 @@ public async Task<IActionResult> RemoveFromFavourites(int id)
                 if (item != null)
         {
             _context.Favorites.Remove(item);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
         return RedirectToAction("MyList");
     }

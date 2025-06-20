@@ -35,7 +35,7 @@
                     </div>
                 <div class="card-footer d-flex justify-content-between bg-light border">
                    
-                    <form method="post" asp-area="Customer" asp-controller="Favorite" asp-action="RemoveFromFavourites">
+                        <form method="post" asp-area="Customer" asp-controller="Favorite" asp-action="RemoveFromFavourites">
                             <input type="hidden" name="id" value="@item.Product.Id" />
                         <button class="btn btn-outline-danger ">Remove </button>
                     </form>
